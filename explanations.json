@@ -1,963 +1,17 @@
 {
-  "ASK WHERE { <http://www.example.com/genealogy.owl#john_heath> <http://www.example.com/genealogy.owl#isFatherOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
-    "inferred" : {
-      "subject" : "john_heath",
-      "predicate" : "isFatherOf",
-      "object" : "ada_rachel_heath_1868"
-    },
-    "explanations" : [ [ "Directly asserted" ] ],
-    "size" : {
-      "min" : 1,
-      "max" : 1
-    }
-  },
-  "ASK { <http://www.example.com/genealogy.owl#Male> rdfs:subClassOf <http://www.example.com/genealogy.owl#Sex> }" : {
-    "inferred" : {
-      "subject" : "Male",
-      "predicate" : "subClassOf",
-      "object" : "Sex"
-    },
-    "explanations" : [ [ "Directly asserted" ] ],
-    "size" : {
-      "min" : 1,
-      "max" : 1
-    }
-  },
-  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasAncestor> ?object }" : {
+  "SELECT ?class WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> rdf:type ?class }" : {
     "inferred" : {
       "subject" : "ada_rachel_heath_1868",
-      "predicate" : "hasAncestor",
-      "object" : "sarah_jacobs_1834"
-    },
-    "explanations" : [ [ "hasAncestor InverseOf isAncestorOf", "sarah_jacobs_1834 isAncestorOf ada_rachel_heath_1868" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasFemalePartner> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
-    "inferred" : {
-      "subject" : "m135",
-      "predicate" : "hasFemalePartner",
-      "object" : "ada_rachel_heath_1868"
-    },
-    "explanations" : [ [ "Directly asserted" ] ],
-    "size" : {
-      "min" : 1,
-      "max" : 1
-    }
-  },
-  "ASK { <http://www.example.com/genealogy.owl#Man> rdfs:subClassOf <http://www.example.com/genealogy.owl#Person> }" : {
-    "inferred" : {
-      "subject" : "Man",
-      "predicate" : "subClassOf",
-      "object" : "Person"
-    },
-    "explanations" : [ ],
-    "size" : {
-      "min" : 0,
-      "max" : 0
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#gwendoline_heath_1878> <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#john_heath> }" : {
-    "inferred" : {
-      "subject" : "gwendoline_heath_1878",
-      "predicate" : "hasRelation",
-      "object" : "john_heath"
-    },
-    "explanations" : [ [ "gwendoline_heath_1878 hasRelation john_heath" ] ],
-    "size" : {
-      "min" : 1,
-      "max" : 1
-    }
-  },
-  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#isFemalePartnerIn> <http://www.example.com/genealogy.owl#m135> }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "isFemalePartnerIn",
-      "object" : "m135"
-    },
-    "explanations" : [ [ "isFemalePartnerIn InverseOf hasFemalePartner", "m135 hasFemalePartner ada_rachel_heath_1868" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasMother> <http://www.example.com/genealogy.owl#sarah_jacobs_1834> }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "hasMother",
-      "object" : "sarah_jacobs_1834"
-    },
-    "explanations" : [ [ "hasMother InverseOf isMotherOf", "sarah_jacobs_1834 isMotherOf ada_rachel_heath_1868" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasParent> <http://www.example.com/genealogy.owl#sarah_jacobs_1834> }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "hasParent",
-      "object" : "sarah_jacobs_1834"
-    },
-    "explanations" : [ [ "hasParent InverseOf isParentOf", "sarah_jacobs_1834 isParentOf ada_rachel_heath_1868" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#john_heath> <http://www.example.com/genealogy.owl#isParentOf> ?object }" : {
-    "inferred" : {
-      "subject" : "john_heath",
-      "predicate" : "isParentOf",
-      "object" : "ada_rachel_heath_1868"
-    },
-    "explanations" : [ [ "isParentOf InverseOf hasParent", "ada_rachel_heath_1868 hasParent john_heath" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#isChildOf> ?object }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "isChildOf",
-      "object" : "sarah_jacobs_1834"
-    },
-    "explanations" : [ [ "isChildOf InverseOf hasChild", "sarah_jacobs_1834 hasChild ada_rachel_heath_1868" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK { <http://www.example.com/genealogy.owl#Man> rdfs:subClassOf <http://www.example.com/genealogy.owl#DomainEntity> }" : {
-    "inferred" : {
-      "subject" : "Man",
-      "predicate" : "subClassOf",
-      "object" : "DomainEntity"
-    },
-    "explanations" : [ [ "Man subClassOf Person", "Person subClassOf DomainEntity" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?class WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> rdf:type ?class }" : {
-    "inferred" : {
-      "subject" : "sarah_jacobs_1834",
       "predicate" : "type",
       "object" : "Person"
     },
-    "explanations" : [ [ "sarah_jacobs_1834 type Ancestor", "Ancestor subClassOf Person" ], [ "ada_rachel_heath_1868 hasAncestor sarah_jacobs_1834", "Range(hasAncestor) = Person" ] ],
+    "explanations" : [ [ "Range(hasRelation) = Person", "gwendoline_heath_1878 hasRelation ada_rachel_heath_1868" ], [ "Range(isBloodrelationOf) = Person", "gwendoline_heath_1878 isBloodrelationOf ada_rachel_heath_1868" ], [ "Domain(isChildOf) = Person", "ada_rachel_heath_1868 isChildOf john_heath" ], [ "Domain(isFemalePartnerIn) = Person", "ada_rachel_heath_1868 isFemalePartnerIn m135" ], [ "Range(isSiblingOf) = Person", "gwendoline_heath_1878 isSiblingOf ada_rachel_heath_1868" ], [ "Domain(isSiblingOf) = Person", "ada_rachel_heath_1868 isSiblingOf ada_rachel_heath_1868" ], [ "Domain(isSiblingOf) = Person", "ada_rachel_heath_1868 isSiblingOf gwendoline_heath_1878" ], [ "Range(hasChild) = Person", "john_heath hasChild ada_rachel_heath_1868" ], [ "Domain(hasParent) = Person", "ada_rachel_heath_1868 hasParent john_heath" ], [ "Range(hasSister) = Person", "gwendoline_heath_1878 hasSister ada_rachel_heath_1868" ], [ "Domain(hasMother) = Person", "ada_rachel_heath_1868 hasMother sarah_jacobs_1834" ], [ "Domain(isSisterOf) = Person", "ada_rachel_heath_1868 isSisterOf gwendoline_heath_1878" ], [ "Domain(hasRelation) = Person", "ada_rachel_heath_1868 hasRelation ada_rachel_heath_1868" ], [ "Domain(isChildOf) = Person", "ada_rachel_heath_1868 isChildOf sarah_jacobs_1834" ], [ "Domain(isPartnerIn) = Person", "ada_rachel_heath_1868 isPartnerIn m135" ], [ "Domain(hasRelation) = Person", "ada_rachel_heath_1868 hasRelation sarah_jacobs_1834" ], [ "Range(isMotherOf) = Person", "sarah_jacobs_1834 isMotherOf ada_rachel_heath_1868" ], [ "Woman subClassOf Person", "ada_rachel_heath_1868 type Woman" ], [ "Domain(hasRelation) = Person", "ada_rachel_heath_1868 hasRelation john_heath" ], [ "Range(hasChild) = Person", "sarah_jacobs_1834 hasChild ada_rachel_heath_1868" ], [ "Domain(hasAncestor) = Person", "ada_rachel_heath_1868 hasAncestor john_heath" ], [ "Range(isFatherOf) = Person", "john_heath isFatherOf ada_rachel_heath_1868" ], [ "Range(hasRelation) = Person", "john_heath hasRelation ada_rachel_heath_1868" ], [ "Range(hasRelation) = Person", "ada_rachel_heath_1868 hasRelation ada_rachel_heath_1868" ], [ "Range(isBloodrelationOf) = Person", "ada_rachel_heath_1868 isBloodrelationOf ada_rachel_heath_1868" ], [ "Range(hasPartner) = Person", "m135 hasPartner ada_rachel_heath_1868" ], [ "Range(isAncestorOf) = Person", "sarah_jacobs_1834 isAncestorOf ada_rachel_heath_1868" ], [ "Domain(isBloodrelationOf) = Person", "ada_rachel_heath_1868 isBloodrelationOf ada_rachel_heath_1868" ], [ "Range(isSiblingOf) = Person", "ada_rachel_heath_1868 isSiblingOf ada_rachel_heath_1868" ], [ "Domain(hasAncestor) = Person", "ada_rachel_heath_1868 hasAncestor sarah_jacobs_1834" ], [ "Domain(hasParent) = Person", "ada_rachel_heath_1868 hasParent sarah_jacobs_1834" ], [ "Domain(hasFather) = Person", "ada_rachel_heath_1868 hasFather john_heath" ], [ "Range(hasFemalePartner) = Person", "m135 hasFemalePartner ada_rachel_heath_1868" ], [ "Range(isParentOf) = Person", "john_heath isParentOf ada_rachel_heath_1868" ], [ "Domain(isBloodrelationOf) = Person", "ada_rachel_heath_1868 isBloodrelationOf gwendoline_heath_1878" ], [ "Range(isParentOf) = Person", "sarah_jacobs_1834 isParentOf ada_rachel_heath_1868" ], [ "Range(hasRelation) = Person", "sarah_jacobs_1834 hasRelation ada_rachel_heath_1868" ], [ "Domain(hasRelation) = Person", "ada_rachel_heath_1868 hasRelation gwendoline_heath_1878" ], [ "Range(isAncestorOf) = Person", "john_heath isAncestorOf ada_rachel_heath_1868" ] ],
     "size" : {
       "min" : 2,
       "max" : 2
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#gwendoline_heath_1878> <http://www.example.com/genealogy.owl#isSiblingOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
-    "inferred" : {
-      "subject" : "gwendoline_heath_1878",
-      "predicate" : "isSiblingOf",
-      "object" : "ada_rachel_heath_1868"
     },
-    "explanations" : [ [ "hasSister SubPropertyOf isSiblingOf", "gwendoline_heath_1878 hasSister ada_rachel_heath_1868" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#sarah_jacobs_1834> }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "hasRelation",
-      "object" : "sarah_jacobs_1834"
-    },
-    "explanations" : [ [ "hasAncestor SubPropertyOf hasRelation", "ada_rachel_heath_1868 hasAncestor sarah_jacobs_1834" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#isPartnerIn> <http://www.example.com/genealogy.owl#m135> }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "isPartnerIn",
-      "object" : "m135"
-    },
-    "explanations" : [ [ "isPartnerIn InverseOf hasPartner", "m135 hasPartner ada_rachel_heath_1868" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#john_heath> <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
-    "inferred" : {
-      "subject" : "john_heath",
-      "predicate" : "hasRelation",
-      "object" : "ada_rachel_heath_1868"
-    },
-    "explanations" : [ [ "isAncestorOf SubPropertyOf hasRelation", "john_heath isAncestorOf ada_rachel_heath_1868" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#gwendoline_heath_1878> rdf:type <http://www.example.com/genealogy.owl#DomainEntity> }" : {
-    "inferred" : {
-      "subject" : "gwendoline_heath_1878",
-      "predicate" : "type",
-      "object" : "DomainEntity"
-    },
-    "explanations" : [ [ "gwendoline_heath_1878 type Person", "Person subClassOf DomainEntity" ], [ "gwendoline_heath_1878 hasRelation ada_rachel_heath_1868", "Domain(hasRelation) = DomainEntity" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#john_heath> rdf:type <http://www.example.com/genealogy.owl#Man> }" : {
-    "inferred" : {
-      "subject" : "john_heath",
-      "predicate" : "type",
-      "object" : "Man"
-    },
-    "explanations" : [ [ "ada_rachel_heath_1868 hasFather john_heath", "Range(hasFather) = Man" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK { <http://www.example.com/genealogy.owl#Male> rdfs:subClassOf <http://www.example.com/genealogy.owl#DomainEntity> }" : {
-    "inferred" : {
-      "subject" : "Male",
-      "predicate" : "subClassOf",
-      "object" : "DomainEntity"
-    },
-    "explanations" : [ [ "Male subClassOf Sex", "Sex subClassOf DomainEntity" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#john_heath> rdf:type <http://www.example.com/genealogy.owl#Person> }" : {
-    "inferred" : {
-      "subject" : "john_heath",
-      "predicate" : "type",
-      "object" : "Person"
-    },
-    "explanations" : [ [ "john_heath type Ancestor", "Ancestor subClassOf Person" ], [ "ada_rachel_heath_1868 hasAncestor john_heath", "Range(hasAncestor) = Person" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasParent> <http://www.example.com/genealogy.owl#john_heath> }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "hasParent",
-      "object" : "john_heath"
-    },
-    "explanations" : [ [ "hasParent InverseOf isParentOf", "john_heath isParentOf ada_rachel_heath_1868" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#john_heath> <http://www.example.com/genealogy.owl#hasChild> ?object }" : {
-    "inferred" : {
-      "subject" : "john_heath",
-      "predicate" : "hasChild",
-      "object" : "ada_rachel_heath_1868"
-    },
-    "explanations" : [ [ "hasChild InverseOf isChildOf", "ada_rachel_heath_1868 isChildOf john_heath" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK { <http://www.example.com/genealogy.owl#Marriage> rdfs:subClassOf <http://www.example.com/genealogy.owl#DomainEntity> }" : {
-    "inferred" : {
-      "subject" : "Marriage",
-      "predicate" : "subClassOf",
-      "object" : "DomainEntity"
-    },
-    "explanations" : [ [ "Directly asserted" ] ],
-    "size" : {
-      "min" : 1,
-      "max" : 1
-    }
-  },
-  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> <http://www.example.com/genealogy.owl#isParentOf> ?object }" : {
-    "inferred" : {
-      "subject" : "sarah_jacobs_1834",
-      "predicate" : "isParentOf",
-      "object" : "ada_rachel_heath_1868"
-    },
-    "explanations" : [ [ "isParentOf InverseOf hasParent", "ada_rachel_heath_1868 hasParent sarah_jacobs_1834" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasParent> ?object }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "hasParent",
-      "object" : "john_heath"
-    },
-    "explanations" : [ [ "hasParent InverseOf isParentOf", "john_heath isParentOf ada_rachel_heath_1868" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#m135> <http://www.example.com/genealogy.owl#hasFemalePartner> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
-    "inferred" : {
-      "subject" : "m135",
-      "predicate" : "hasFemalePartner",
-      "object" : "ada_rachel_heath_1868"
-    },
-    "explanations" : [ [ "Directly asserted" ] ],
-    "size" : {
-      "min" : 1,
-      "max" : 1
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#john_heath> <http://www.example.com/genealogy.owl#hasChild> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
-    "inferred" : {
-      "subject" : "john_heath",
-      "predicate" : "hasChild",
-      "object" : "ada_rachel_heath_1868"
-    },
-    "explanations" : [ [ "hasChild InverseOf isChildOf", "ada_rachel_heath_1868 isChildOf john_heath" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasMother> ?object }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "hasMother",
-      "object" : "sarah_jacobs_1834"
-    },
-    "explanations" : [ [ "hasMother InverseOf isMotherOf", "sarah_jacobs_1834 isMotherOf ada_rachel_heath_1868" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK { <http://www.example.com/genealogy.owl#Person> rdfs:subClassOf <http://www.example.com/genealogy.owl#DomainEntity> }" : {
-    "inferred" : {
-      "subject" : "Person",
-      "predicate" : "subClassOf",
-      "object" : "DomainEntity"
-    },
-    "explanations" : [ [ "Directly asserted" ] ],
-    "size" : {
-      "min" : 1,
-      "max" : 1
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> rdf:type <http://www.example.com/genealogy.owl#Woman> }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "type",
-      "object" : "Woman"
-    },
-    "explanations" : [ [ "m135 hasFemalePartner ada_rachel_heath_1868", "Range(hasFemalePartner) = Woman" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#m135> <http://www.example.com/genealogy.owl#hasPartner> ?object }" : {
-    "inferred" : {
-      "subject" : "m135",
-      "predicate" : "hasPartner",
-      "object" : "ada_rachel_heath_1868"
-    },
-    "explanations" : [ [ "hasPartner InverseOf isPartnerIn", "ada_rachel_heath_1868 isPartnerIn m135" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#isFemalePartnerIn> <http://www.example.com/genealogy.owl#m135> }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "isFemalePartnerIn",
-      "object" : "m135"
-    },
-    "explanations" : [ [ "isFemalePartnerIn InverseOf hasFemalePartner", "m135 hasFemalePartner ada_rachel_heath_1868" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasSister> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
-    "inferred" : {
-      "subject" : "gwendoline_heath_1878",
-      "predicate" : "hasSister",
-      "object" : "ada_rachel_heath_1868"
-    },
-    "explanations" : [ [ "hasSister InverseOf isSisterOf", "ada_rachel_heath_1868 isSisterOf gwendoline_heath_1878" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> rdf:type <http://www.example.com/genealogy.owl#Person> }" : {
-    "inferred" : {
-      "subject" : "sarah_jacobs_1834",
-      "predicate" : "type",
-      "object" : "Person"
-    },
-    "explanations" : [ [ "sarah_jacobs_1834 type Ancestor", "Ancestor subClassOf Person" ], [ "ada_rachel_heath_1868 hasAncestor sarah_jacobs_1834", "Range(hasAncestor) = Person" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#gwendoline_heath_1878> <http://www.example.com/genealogy.owl#hasSister> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
-    "inferred" : {
-      "subject" : "gwendoline_heath_1878",
-      "predicate" : "hasSister",
-      "object" : "ada_rachel_heath_1868"
-    },
-    "explanations" : [ [ "hasSister InverseOf isSisterOf", "ada_rachel_heath_1868 isSisterOf gwendoline_heath_1878" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#gwendoline_heath_1878> }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "hasRelation",
-      "object" : "gwendoline_heath_1878"
-    },
-    "explanations" : [ [ "isBloodrelationOf SubPropertyOf hasRelation", "ada_rachel_heath_1868 isBloodrelationOf gwendoline_heath_1878" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#isBloodrelationOf> <http://www.example.com/genealogy.owl#gwendoline_heath_1878> }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "isBloodrelationOf",
-      "object" : "gwendoline_heath_1878"
-    },
-    "explanations" : [ [ "isSiblingOf SubPropertyOf isBloodrelationOf", "ada_rachel_heath_1868 isSiblingOf gwendoline_heath_1878" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#isPartnerIn> <http://www.example.com/genealogy.owl#m135> }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "isPartnerIn",
-      "object" : "m135"
-    },
-    "explanations" : [ [ "isPartnerIn InverseOf hasPartner", "m135 hasPartner ada_rachel_heath_1868" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#m135> <http://www.example.com/genealogy.owl#hasFemalePartner> ?object }" : {
-    "inferred" : {
-      "subject" : "m135",
-      "predicate" : "hasFemalePartner",
-      "object" : "ada_rachel_heath_1868"
-    },
-    "explanations" : [ [ "Directly asserted" ] ],
-    "size" : {
-      "min" : 1,
-      "max" : 1
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasFather> <http://www.example.com/genealogy.owl#john_heath> }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "hasFather",
-      "object" : "john_heath"
-    },
-    "explanations" : [ [ "hasFather InverseOf isFatherOf", "john_heath isFatherOf ada_rachel_heath_1868" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#isSisterOf> <http://www.example.com/genealogy.owl#gwendoline_heath_1878> }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "isSisterOf",
-      "object" : "gwendoline_heath_1878"
-    },
-    "explanations" : [ [ "Directly asserted" ] ],
-    "size" : {
-      "min" : 1,
-      "max" : 1
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#john_heath> <http://www.example.com/genealogy.owl#isAncestorOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
-    "inferred" : {
-      "subject" : "john_heath",
-      "predicate" : "isAncestorOf",
-      "object" : "ada_rachel_heath_1868"
-    },
-    "explanations" : [ [ "isAncestorOf InverseOf hasAncestor", "ada_rachel_heath_1868 hasAncestor john_heath" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#isMotherOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
-    "inferred" : {
-      "subject" : "sarah_jacobs_1834",
-      "predicate" : "isMotherOf",
-      "object" : "ada_rachel_heath_1868"
-    },
-    "explanations" : [ [ "Directly asserted" ] ],
-    "size" : {
-      "min" : 1,
-      "max" : 1
-    }
-  },
-  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasRelation> ?object }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "hasRelation",
-      "object" : "gwendoline_heath_1878"
-    },
-    "explanations" : [ [ "isBloodrelationOf SubPropertyOf hasRelation", "ada_rachel_heath_1868 isBloodrelationOf gwendoline_heath_1878" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasParent> <http://www.example.com/genealogy.owl#john_heath> }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "hasParent",
-      "object" : "john_heath"
-    },
-    "explanations" : [ [ "hasParent InverseOf isParentOf", "john_heath isParentOf ada_rachel_heath_1868" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#isChildOf> <http://www.example.com/genealogy.owl#john_heath> }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "isChildOf",
-      "object" : "john_heath"
-    },
-    "explanations" : [ [ "isChildOf InverseOf hasChild", "john_heath hasChild ada_rachel_heath_1868" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#m135> rdf:type <http://www.example.com/genealogy.owl#DomainEntity> }" : {
-    "inferred" : {
-      "subject" : "m135",
-      "predicate" : "type",
-      "object" : "DomainEntity"
-    },
-    "explanations" : [ [ "m135 type Marriage", "Marriage subClassOf DomainEntity" ], [ "m135 hasFemalePartner ada_rachel_heath_1868", "Domain(hasFemalePartner) = DomainEntity" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasAncestor> <http://www.example.com/genealogy.owl#sarah_jacobs_1834> }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "hasAncestor",
-      "object" : "sarah_jacobs_1834"
-    },
-    "explanations" : [ [ "hasAncestor InverseOf isAncestorOf", "sarah_jacobs_1834 isAncestorOf ada_rachel_heath_1868" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasParent> <http://www.example.com/genealogy.owl#sarah_jacobs_1834> }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "hasParent",
-      "object" : "sarah_jacobs_1834"
-    },
-    "explanations" : [ [ "hasParent InverseOf isParentOf", "sarah_jacobs_1834 isParentOf ada_rachel_heath_1868" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#isSiblingOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
-    "inferred" : {
-      "subject" : "gwendoline_heath_1878",
-      "predicate" : "isSiblingOf",
-      "object" : "ada_rachel_heath_1868"
-    },
-    "explanations" : [ [ "hasSister SubPropertyOf isSiblingOf", "gwendoline_heath_1878 hasSister ada_rachel_heath_1868" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#isBloodrelationOf> ?object }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "isBloodrelationOf",
-      "object" : "gwendoline_heath_1878"
-    },
-    "explanations" : [ [ "isSiblingOf SubPropertyOf isBloodrelationOf", "ada_rachel_heath_1868 isSiblingOf gwendoline_heath_1878" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#john_heath> <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#sarah_jacobs_1834> }" : {
-    "inferred" : {
-      "subject" : "john_heath",
-      "predicate" : "hasRelation",
-      "object" : "sarah_jacobs_1834"
-    },
-    "explanations" : [ [ "john_heath hasRelation sarah_jacobs_1834" ] ],
-    "size" : {
-      "min" : 1,
-      "max" : 1
-    }
-  },
-  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#isSisterOf> ?object }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "isSisterOf",
-      "object" : "gwendoline_heath_1878"
-    },
-    "explanations" : [ [ "Directly asserted" ] ],
-    "size" : {
-      "min" : 1,
-      "max" : 1
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#isChildOf> <http://www.example.com/genealogy.owl#sarah_jacobs_1834> }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "isChildOf",
-      "object" : "sarah_jacobs_1834"
-    },
-    "explanations" : [ [ "isChildOf InverseOf hasChild", "sarah_jacobs_1834 hasChild ada_rachel_heath_1868" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#gwendoline_heath_1878> <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
-    "inferred" : {
-      "subject" : "gwendoline_heath_1878",
-      "predicate" : "hasRelation",
-      "object" : "ada_rachel_heath_1868"
-    },
-    "explanations" : [ [ "isBloodrelationOf SubPropertyOf hasRelation", "gwendoline_heath_1878 isBloodrelationOf ada_rachel_heath_1868" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK { <http://www.example.com/genealogy.owl#Woman> rdfs:subClassOf <http://www.example.com/genealogy.owl#DomainEntity> }" : {
-    "inferred" : {
-      "subject" : "Woman",
-      "predicate" : "subClassOf",
-      "object" : "DomainEntity"
-    },
-    "explanations" : [ [ "Woman subClassOf Person", "Person subClassOf DomainEntity" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#john_heath> rdf:type <http://www.example.com/genealogy.owl#Ancestor> }" : {
-    "inferred" : {
-      "subject" : "john_heath",
-      "predicate" : "type",
-      "object" : "Ancestor"
-    },
-    "explanations" : [ [ "ada_rachel_heath_1868 hasAncestor john_heath", "Range(hasAncestor) = Ancestor" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#isSisterOf> <http://www.example.com/genealogy.owl#gwendoline_heath_1878> }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "isSisterOf",
-      "object" : "gwendoline_heath_1878"
-    },
-    "explanations" : [ [ "Directly asserted" ] ],
-    "size" : {
-      "min" : 1,
-      "max" : 1
-    }
-  },
-  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasPartner> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
-    "inferred" : {
-      "subject" : "m135",
-      "predicate" : "hasPartner",
-      "object" : "ada_rachel_heath_1868"
-    },
-    "explanations" : [ [ "hasPartner InverseOf isPartnerIn", "ada_rachel_heath_1868 isPartnerIn m135" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#gwendoline_heath_1878> <http://www.example.com/genealogy.owl#isSiblingOf> ?object }" : {
-    "inferred" : {
-      "subject" : "gwendoline_heath_1878",
-      "predicate" : "isSiblingOf",
-      "object" : "ada_rachel_heath_1868"
-    },
-    "explanations" : [ [ "hasSister SubPropertyOf isSiblingOf", "gwendoline_heath_1878 hasSister ada_rachel_heath_1868" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> rdf:type <http://www.example.com/genealogy.owl#Woman> }" : {
-    "inferred" : {
-      "subject" : "sarah_jacobs_1834",
-      "predicate" : "type",
-      "object" : "Woman"
-    },
-    "explanations" : [ [ "ada_rachel_heath_1868 hasMother sarah_jacobs_1834", "Range(hasMother) = Woman" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#gwendoline_heath_1878> }" : {
-    "inferred" : {
-      "subject" : "sarah_jacobs_1834",
-      "predicate" : "hasRelation",
-      "object" : "gwendoline_heath_1878"
-    },
-    "explanations" : [ [ "sarah_jacobs_1834 hasRelation gwendoline_heath_1878" ] ],
-    "size" : {
-      "min" : 1,
-      "max" : 1
-    }
-  },
-  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#john_heath> <http://www.example.com/genealogy.owl#isAncestorOf> ?object }" : {
-    "inferred" : {
-      "subject" : "john_heath",
-      "predicate" : "isAncestorOf",
-      "object" : "ada_rachel_heath_1868"
-    },
-    "explanations" : [ [ "isAncestorOf InverseOf hasAncestor", "ada_rachel_heath_1868 hasAncestor john_heath" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#john_heath> rdf:type <http://www.example.com/genealogy.owl#DomainEntity> }" : {
-    "inferred" : {
-      "subject" : "john_heath",
-      "predicate" : "type",
-      "object" : "DomainEntity"
-    },
-    "explanations" : [ [ "john_heath type Ancestor", "Ancestor subClassOf DomainEntity" ], [ "ada_rachel_heath_1868 hasAncestor john_heath", "Range(hasAncestor) = DomainEntity" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#isFatherOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
-    "inferred" : {
-      "subject" : "john_heath",
-      "predicate" : "isFatherOf",
-      "object" : "ada_rachel_heath_1868"
-    },
-    "explanations" : [ [ "Directly asserted" ] ],
-    "size" : {
-      "min" : 1,
-      "max" : 1
-    }
-  },
-  "ASK { <http://www.example.com/genealogy.owl#Ancestor> rdfs:subClassOf <http://www.example.com/genealogy.owl#DomainEntity> }" : {
-    "inferred" : {
-      "subject" : "Ancestor",
-      "predicate" : "subClassOf",
-      "object" : "DomainEntity"
-    },
-    "explanations" : [ [ "Ancestor subClassOf Person", "Person subClassOf DomainEntity" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#gwendoline_heath_1878> <http://www.example.com/genealogy.owl#hasSister> ?object }" : {
-    "inferred" : {
-      "subject" : "gwendoline_heath_1878",
-      "predicate" : "hasSister",
-      "object" : "ada_rachel_heath_1868"
-    },
-    "explanations" : [ [ "hasSister InverseOf isSisterOf", "ada_rachel_heath_1868 isSisterOf gwendoline_heath_1878" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#isFemalePartnerIn> ?object }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "isFemalePartnerIn",
-      "object" : "m135"
-    },
-    "explanations" : [ [ "isFemalePartnerIn InverseOf hasFemalePartner", "m135 hasFemalePartner ada_rachel_heath_1868" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#john_heath> <http://www.example.com/genealogy.owl#isFatherOf> ?object }" : {
-    "inferred" : {
-      "subject" : "john_heath",
-      "predicate" : "isFatherOf",
-      "object" : "ada_rachel_heath_1868"
-    },
-    "explanations" : [ [ "Directly asserted" ] ],
-    "size" : {
-      "min" : 1,
-      "max" : 1
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#gwendoline_heath_1878> <http://www.example.com/genealogy.owl#isBloodrelationOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
-    "inferred" : {
-      "subject" : "gwendoline_heath_1878",
-      "predicate" : "isBloodrelationOf",
-      "object" : "ada_rachel_heath_1868"
-    },
-    "explanations" : [ [ "isSiblingOf SubPropertyOf isBloodrelationOf", "gwendoline_heath_1878 isSiblingOf ada_rachel_heath_1868" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#gwendoline_heath_1878> }" : {
-    "inferred" : {
-      "subject" : "sarah_jacobs_1834",
-      "predicate" : "hasRelation",
-      "object" : "gwendoline_heath_1878"
-    },
-    "explanations" : [ [ "sarah_jacobs_1834 hasRelation gwendoline_heath_1878" ] ],
-    "size" : {
-      "min" : 1,
-      "max" : 1
-    }
-  },
-  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#john_heath> <http://www.example.com/genealogy.owl#hasRelation> ?object }" : {
-    "inferred" : {
-      "subject" : "john_heath",
-      "predicate" : "hasRelation",
-      "object" : "gwendoline_heath_1878"
-    },
-    "explanations" : [ [ "john_heath hasRelation gwendoline_heath_1878" ] ],
-    "size" : {
-      "min" : 1,
-      "max" : 1
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#john_heath> }" : {
-    "inferred" : {
-      "subject" : "sarah_jacobs_1834",
-      "predicate" : "hasRelation",
-      "object" : "john_heath"
-    },
-    "explanations" : [ [ "sarah_jacobs_1834 hasRelation john_heath" ] ],
-    "size" : {
-      "min" : 1,
-      "max" : 1
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#gwendoline_heath_1878> rdf:type <http://www.example.com/genealogy.owl#Person> }" : {
-    "inferred" : {
-      "subject" : "gwendoline_heath_1878",
-      "predicate" : "type",
-      "object" : "Person"
-    },
-    "explanations" : [ [ "gwendoline_heath_1878 hasRelation ada_rachel_heath_1868", "Domain(hasRelation) = Person" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?class WHERE { <http://www.example.com/genealogy.owl#m135> rdf:type ?class }" : {
-    "inferred" : {
-      "subject" : "m135",
-      "predicate" : "type",
-      "object" : "Marriage"
-    },
-    "explanations" : [ [ "m135 hasFemalePartner ada_rachel_heath_1868", "Domain(hasFemalePartner) = Marriage" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#isBloodrelationOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
-    "inferred" : {
-      "subject" : "gwendoline_heath_1878",
-      "predicate" : "isBloodrelationOf",
-      "object" : "ada_rachel_heath_1868"
-    },
-    "explanations" : [ [ "isSiblingOf SubPropertyOf isBloodrelationOf", "gwendoline_heath_1878 isSiblingOf ada_rachel_heath_1868" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#isChildOf> <http://www.example.com/genealogy.owl#sarah_jacobs_1834> }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "isChildOf",
-      "object" : "sarah_jacobs_1834"
-    },
-    "explanations" : [ [ "isChildOf InverseOf hasChild", "sarah_jacobs_1834 hasChild ada_rachel_heath_1868" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#john_heath> }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "hasRelation",
-      "object" : "john_heath"
-    },
-    "explanations" : [ [ "hasAncestor SubPropertyOf hasRelation", "ada_rachel_heath_1868 hasAncestor john_heath" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?class WHERE { <http://www.example.com/genealogy.owl#john_heath> rdf:type ?class }" : {
-    "inferred" : {
-      "subject" : "john_heath",
-      "predicate" : "type",
-      "object" : "DomainEntity"
-    },
-    "explanations" : [ [ "john_heath type Ancestor", "Ancestor subClassOf DomainEntity" ], [ "ada_rachel_heath_1868 hasAncestor john_heath", "Range(hasAncestor) = DomainEntity" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
+    "explanationCount" : 39,
+    "sparql_queries" : [ "SELECT ?class WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> rdf:type ?class }", "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> rdf:type <http://www.example.com/genealogy.owl#Person> }" ]
   },
   "ASK { <http://www.example.com/genealogy.owl#Female> rdfs:subClassOf <http://www.example.com/genealogy.owl#DomainEntity> }" : {
     "inferred" : {
@@ -969,79 +23,50 @@
     "size" : {
       "min" : 2,
       "max" : 2
-    }
+    },
+    "explanationCount" : 1
   },
-  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasFather> <http://www.example.com/genealogy.owl#john_heath> }" : {
+  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#isFemalePartnerIn> ?object }" : {
     "inferred" : {
       "subject" : "ada_rachel_heath_1868",
-      "predicate" : "hasFather",
-      "object" : "john_heath"
+      "predicate" : "isFemalePartnerIn",
+      "object" : "m135"
     },
-    "explanations" : [ [ "hasFather InverseOf isFatherOf", "john_heath isFatherOf ada_rachel_heath_1868" ] ],
+    "explanations" : [ [ "hasFemalePartner InverseOf isFemalePartnerIn", "m135 hasFemalePartner ada_rachel_heath_1868", "hasFemalePartner InverseOf isFemalePartnerIn", "m135 hasFemalePartner ada_rachel_heath_1868" ] ],
     "size" : {
-      "min" : 2,
-      "max" : 2
-    }
+      "min" : 4,
+      "max" : 4
+    },
+    "explanationCount" : 1,
+    "sparql_queries" : [ "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#isFemalePartnerIn> ?object }", "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#isFemalePartnerIn> <http://www.example.com/genealogy.owl#m135> }", "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#isFemalePartnerIn> <http://www.example.com/genealogy.owl#m135> }" ]
   },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> rdf:type <http://www.example.com/genealogy.owl#Person> }" : {
+  "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#gwendoline_heath_1878> }" : {
     "inferred" : {
       "subject" : "ada_rachel_heath_1868",
-      "predicate" : "type",
-      "object" : "Person"
-    },
-    "explanations" : [ [ "ada_rachel_heath_1868 type Woman", "Woman subClassOf Person" ], [ "ada_rachel_heath_1868 hasAncestor john_heath", "Domain(hasAncestor) = Person" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#isParentOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
-    "inferred" : {
-      "subject" : "sarah_jacobs_1834",
-      "predicate" : "isParentOf",
-      "object" : "ada_rachel_heath_1868"
-    },
-    "explanations" : [ [ "isParentOf InverseOf hasParent", "ada_rachel_heath_1868 hasParent sarah_jacobs_1834" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> <http://www.example.com/genealogy.owl#isAncestorOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
-    "inferred" : {
-      "subject" : "sarah_jacobs_1834",
-      "predicate" : "isAncestorOf",
-      "object" : "ada_rachel_heath_1868"
-    },
-    "explanations" : [ [ "isAncestorOf InverseOf hasAncestor", "ada_rachel_heath_1868 hasAncestor sarah_jacobs_1834" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> <http://www.example.com/genealogy.owl#hasRelation> ?object }" : {
-    "inferred" : {
-      "subject" : "sarah_jacobs_1834",
       "predicate" : "hasRelation",
       "object" : "gwendoline_heath_1878"
     },
-    "explanations" : [ [ "sarah_jacobs_1834 hasRelation gwendoline_heath_1878" ] ],
-    "size" : {
-      "min" : 1,
-      "max" : 1
-    }
-  },
-  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasChild> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
-    "inferred" : {
-      "subject" : "sarah_jacobs_1834",
-      "predicate" : "hasChild",
-      "object" : "ada_rachel_heath_1868"
-    },
-    "explanations" : [ [ "hasChild InverseOf isChildOf", "ada_rachel_heath_1868 isChildOf sarah_jacobs_1834" ] ],
+    "explanations" : [ [ "isSisterOf SubPropertyOf hasRelation", "ada_rachel_heath_1868 isSisterOf gwendoline_heath_1878" ], [ "isSiblingOf SubPropertyOf hasRelation", "ada_rachel_heath_1868 isSiblingOf gwendoline_heath_1878" ], [ "isBloodrelationOf SubPropertyOf hasRelation", "ada_rachel_heath_1868 isBloodrelationOf gwendoline_heath_1878" ], [ "isSisterOf SubPropertyOf hasRelation", "ada_rachel_heath_1868 isSisterOf gwendoline_heath_1878" ] ],
     "size" : {
       "min" : 2,
       "max" : 2
-    }
+    },
+    "explanationCount" : 4,
+    "sparql_queries" : [ "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#gwendoline_heath_1878> }", "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasRelation> ?object }", "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#gwendoline_heath_1878> }" ]
+  },
+  "SELECT ?class WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> rdf:type ?class }" : {
+    "inferred" : {
+      "subject" : "sarah_jacobs_1834",
+      "predicate" : "type",
+      "object" : "Woman"
+    },
+    "explanations" : [ [ "Range(hasMother) = Woman", "ada_rachel_heath_1868 hasMother sarah_jacobs_1834" ], [ "Domain(isMotherOf) = Woman", "sarah_jacobs_1834 isMotherOf ada_rachel_heath_1868" ] ],
+    "size" : {
+      "min" : 2,
+      "max" : 2
+    },
+    "explanationCount" : 2,
+    "sparql_queries" : [ "SELECT ?class WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> rdf:type ?class }", "ASK WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> rdf:type <http://www.example.com/genealogy.owl#Woman> }" ]
   },
   "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#isBloodrelationOf> <http://www.example.com/genealogy.owl#gwendoline_heath_1878> }" : {
     "inferred" : {
@@ -1049,11 +74,13 @@
       "predicate" : "isBloodrelationOf",
       "object" : "gwendoline_heath_1878"
     },
-    "explanations" : [ [ "isSiblingOf SubPropertyOf isBloodrelationOf", "ada_rachel_heath_1868 isSiblingOf gwendoline_heath_1878" ] ],
+    "explanations" : [ [ "ada_rachel_heath_1868 hasRelation john_heath", "john_heath hasRelation gwendoline_heath_1878" ], [ "ada_rachel_heath_1868 hasMother sarah_jacobs_1834", "sarah_jacobs_1834 hasRelation gwendoline_heath_1878" ], [ "ada_rachel_heath_1868 isChildOf sarah_jacobs_1834", "sarah_jacobs_1834 hasRelation gwendoline_heath_1878" ], [ "ada_rachel_heath_1868 hasParent john_heath", "john_heath hasRelation gwendoline_heath_1878" ], [ "isSisterOf SubPropertyOf isBloodrelationOf", "ada_rachel_heath_1868 isSisterOf gwendoline_heath_1878" ], [ "ada_rachel_heath_1868 hasAncestor sarah_jacobs_1834", "sarah_jacobs_1834 hasRelation gwendoline_heath_1878" ], [ "isSiblingOf SubPropertyOf isBloodrelationOf", "ada_rachel_heath_1868 isSiblingOf gwendoline_heath_1878" ], [ "ada_rachel_heath_1868 hasFather john_heath", "john_heath hasRelation gwendoline_heath_1878" ], [ "ada_rachel_heath_1868 hasAncestor john_heath", "john_heath hasRelation gwendoline_heath_1878" ], [ "isSisterOf SubPropertyOf isBloodrelationOf", "ada_rachel_heath_1868 isSisterOf gwendoline_heath_1878" ], [ "ada_rachel_heath_1868 hasRelation sarah_jacobs_1834", "sarah_jacobs_1834 hasRelation gwendoline_heath_1878" ], [ "ada_rachel_heath_1868 hasParent sarah_jacobs_1834", "sarah_jacobs_1834 hasRelation gwendoline_heath_1878" ], [ "ada_rachel_heath_1868 isChildOf john_heath", "john_heath hasRelation gwendoline_heath_1878" ] ],
     "size" : {
       "min" : 2,
       "max" : 2
-    }
+    },
+    "explanationCount" : 13,
+    "sparql_queries" : [ "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#isBloodrelationOf> <http://www.example.com/genealogy.owl#gwendoline_heath_1878> }", "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#isBloodrelationOf> <http://www.example.com/genealogy.owl#gwendoline_heath_1878> }", "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#isBloodrelationOf> ?object }" ]
   },
   "ASK WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> <http://www.example.com/genealogy.owl#isParentOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
     "inferred" : {
@@ -1061,275 +88,40 @@
       "predicate" : "isParentOf",
       "object" : "ada_rachel_heath_1868"
     },
-    "explanations" : [ [ "isParentOf InverseOf hasParent", "ada_rachel_heath_1868 hasParent sarah_jacobs_1834" ] ],
+    "explanations" : [ [ "isMotherOf SubPropertyOf isParentOf", "sarah_jacobs_1834 isMotherOf ada_rachel_heath_1868" ], [ "hasChild", "sarah_jacobs_1834 hasChild ada_rachel_heath_1868" ], [ "hasChild", "isMotherOf SubPropertyOf isParentOf", "sarah_jacobs_1834 isMotherOf ada_rachel_heath_1868" ], [ "sarah_jacobs_1834 hasRelation john_heath", "john_heath isAncestorOf ada_rachel_heath_1868" ], [ "sarah_jacobs_1834 hasRelation john_heath", "john_heath hasRelation ada_rachel_heath_1868" ], [ "hasParent InverseOf isParentOf", "ada_rachel_heath_1868 hasParent sarah_jacobs_1834" ], [ "sarah_jacobs_1834 hasRelation gwendoline_heath_1878", "gwendoline_heath_1878 isSiblingOf ada_rachel_heath_1868" ], [ "isMotherOf SubPropertyOf isParentOf", "sarah_jacobs_1834 isMotherOf ada_rachel_heath_1868" ], [ "sarah_jacobs_1834 hasRelation john_heath", "john_heath isFatherOf ada_rachel_heath_1868", "isFatherOf SubPropertyOf isParentOf" ], [ "sarah_jacobs_1834 hasRelation gwendoline_heath_1878", "gwendoline_heath_1878 hasSister ada_rachel_heath_1868" ], [ "hasParent InverseOf isParentOf", "ada_rachel_heath_1868 hasParent sarah_jacobs_1834" ], [ "sarah_jacobs_1834 hasRelation john_heath", "john_heath hasChild ada_rachel_heath_1868", "hasChild SubPropertyOf isParentOf" ], [ "sarah_jacobs_1834 hasRelation gwendoline_heath_1878", "gwendoline_heath_1878 isBloodrelationOf ada_rachel_heath_1868" ], [ "hasChild", "sarah_jacobs_1834 hasChild ada_rachel_heath_1868" ], [ "sarah_jacobs_1834 hasRelation gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation ada_rachel_heath_1868" ] ],
     "size" : {
       "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#gwendoline_heath_1878> <http://www.example.com/genealogy.owl#hasRelation> ?object }" : {
-    "inferred" : {
-      "subject" : "gwendoline_heath_1878",
-      "predicate" : "hasRelation",
-      "object" : "sarah_jacobs_1834"
+      "max" : 3
     },
-    "explanations" : [ [ "gwendoline_heath_1878 hasRelation sarah_jacobs_1834" ] ],
+    "explanationCount" : 15,
+    "sparql_queries" : [ "ASK WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> <http://www.example.com/genealogy.owl#isParentOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }", "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> <http://www.example.com/genealogy.owl#isParentOf> ?object }", "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#isParentOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" ]
+  },
+  "ASK { <http://www.example.com/genealogy.owl#Male> rdfs:subClassOf <http://www.example.com/genealogy.owl#Sex> }" : {
+    "inferred" : {
+      "subject" : "Male",
+      "predicate" : "subClassOf",
+      "object" : "Sex"
+    },
+    "explanations" : [ [ "Directly asserted" ] ],
     "size" : {
       "min" : 1,
       "max" : 1
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#m135> rdf:type <http://www.example.com/genealogy.owl#Marriage> }" : {
-    "inferred" : {
-      "subject" : "m135",
-      "predicate" : "type",
-      "object" : "Marriage"
     },
-    "explanations" : [ [ "m135 hasFemalePartner ada_rachel_heath_1868", "Domain(hasFemalePartner) = Marriage" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
+    "explanationCount" : 1
   },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasMother> <http://www.example.com/genealogy.owl#sarah_jacobs_1834> }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "hasMother",
-      "object" : "sarah_jacobs_1834"
-    },
-    "explanations" : [ [ "hasMother InverseOf isMotherOf", "sarah_jacobs_1834 isMotherOf ada_rachel_heath_1868" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#john_heath> }" : {
-    "inferred" : {
-      "subject" : "sarah_jacobs_1834",
-      "predicate" : "hasRelation",
-      "object" : "john_heath"
-    },
-    "explanations" : [ [ "sarah_jacobs_1834 hasRelation john_heath" ] ],
-    "size" : {
-      "min" : 1,
-      "max" : 1
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> rdf:type <http://www.example.com/genealogy.owl#DomainEntity> }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "type",
-      "object" : "DomainEntity"
-    },
-    "explanations" : [ [ "ada_rachel_heath_1868 type Woman", "Woman subClassOf DomainEntity" ], [ "ada_rachel_heath_1868 hasAncestor john_heath", "Domain(hasAncestor) = DomainEntity" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasAncestor> <http://www.example.com/genealogy.owl#john_heath> }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "hasAncestor",
-      "object" : "john_heath"
-    },
-    "explanations" : [ [ "hasAncestor InverseOf isAncestorOf", "john_heath isAncestorOf ada_rachel_heath_1868" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?class WHERE { <http://www.example.com/genealogy.owl#gwendoline_heath_1878> rdf:type ?class }" : {
-    "inferred" : {
-      "subject" : "gwendoline_heath_1878",
-      "predicate" : "type",
-      "object" : "Person"
-    },
-    "explanations" : [ [ "gwendoline_heath_1878 hasRelation ada_rachel_heath_1868", "Domain(hasRelation) = Person" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#john_heath> <http://www.example.com/genealogy.owl#isParentOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
+  "ASK WHERE { <http://www.example.com/genealogy.owl#john_heath> <http://www.example.com/genealogy.owl#isAncestorOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
     "inferred" : {
       "subject" : "john_heath",
-      "predicate" : "isParentOf",
+      "predicate" : "isAncestorOf",
       "object" : "ada_rachel_heath_1868"
     },
-    "explanations" : [ [ "isParentOf InverseOf hasParent", "ada_rachel_heath_1868 hasParent john_heath" ] ],
+    "explanations" : [ [ "hasChild SubPropertyOf isAncestorOf", "john_heath hasChild ada_rachel_heath_1868" ], [ "john_heath hasRelation gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation ada_rachel_heath_1868" ], [ "john_heath hasRelation gwendoline_heath_1878", "gwendoline_heath_1878 isBloodrelationOf ada_rachel_heath_1868" ], [ "isFatherOf SubPropertyOf isAncestorOf", "john_heath isFatherOf ada_rachel_heath_1868" ], [ "isParentOf SubPropertyOf isAncestorOf", "john_heath isParentOf ada_rachel_heath_1868" ], [ "john_heath hasRelation sarah_jacobs_1834", "sarah_jacobs_1834 hasRelation ada_rachel_heath_1868" ], [ "john_heath hasRelation sarah_jacobs_1834", "sarah_jacobs_1834 isParentOf ada_rachel_heath_1868", "isParentOf SubPropertyOf isAncestorOf" ], [ "john_heath hasRelation gwendoline_heath_1878", "gwendoline_heath_1878 hasSister ada_rachel_heath_1868" ], [ "john_heath hasRelation sarah_jacobs_1834", "sarah_jacobs_1834 isMotherOf ada_rachel_heath_1868", "isMotherOf SubPropertyOf isAncestorOf" ], [ "isParentOf SubPropertyOf isAncestorOf", "john_heath isParentOf ada_rachel_heath_1868" ], [ "john_heath hasRelation sarah_jacobs_1834", "sarah_jacobs_1834 hasChild ada_rachel_heath_1868", "hasChild SubPropertyOf isAncestorOf" ], [ "john_heath hasRelation gwendoline_heath_1878", "gwendoline_heath_1878 isSiblingOf ada_rachel_heath_1868" ], [ "hasAncestor InverseOf isAncestorOf", "ada_rachel_heath_1868 hasAncestor john_heath" ], [ "hasAncestor InverseOf isAncestorOf", "ada_rachel_heath_1868 hasAncestor john_heath" ] ],
     "size" : {
       "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasAncestor> <http://www.example.com/genealogy.owl#sarah_jacobs_1834> }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "hasAncestor",
-      "object" : "sarah_jacobs_1834"
+      "max" : 3
     },
-    "explanations" : [ [ "hasAncestor InverseOf isAncestorOf", "sarah_jacobs_1834 isAncestorOf ada_rachel_heath_1868" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
-    "inferred" : {
-      "subject" : "sarah_jacobs_1834",
-      "predicate" : "hasRelation",
-      "object" : "ada_rachel_heath_1868"
-    },
-    "explanations" : [ [ "isAncestorOf SubPropertyOf hasRelation", "sarah_jacobs_1834 isAncestorOf ada_rachel_heath_1868" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasFather> ?object }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "hasFather",
-      "object" : "john_heath"
-    },
-    "explanations" : [ [ "hasFather InverseOf isFatherOf", "john_heath isFatherOf ada_rachel_heath_1868" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#isSiblingOf> ?object }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "isSiblingOf",
-      "object" : "gwendoline_heath_1878"
-    },
-    "explanations" : [ [ "isSisterOf SubPropertyOf isSiblingOf", "ada_rachel_heath_1868 isSisterOf gwendoline_heath_1878" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> rdf:type <http://www.example.com/genealogy.owl#DomainEntity> }" : {
-    "inferred" : {
-      "subject" : "sarah_jacobs_1834",
-      "predicate" : "type",
-      "object" : "DomainEntity"
-    },
-    "explanations" : [ [ "sarah_jacobs_1834 type Ancestor", "Ancestor subClassOf DomainEntity" ], [ "ada_rachel_heath_1868 hasAncestor sarah_jacobs_1834", "Range(hasAncestor) = DomainEntity" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#gwendoline_heath_1878> <http://www.example.com/genealogy.owl#isBloodrelationOf> ?object }" : {
-    "inferred" : {
-      "subject" : "gwendoline_heath_1878",
-      "predicate" : "isBloodrelationOf",
-      "object" : "ada_rachel_heath_1868"
-    },
-    "explanations" : [ [ "isSiblingOf SubPropertyOf isBloodrelationOf", "gwendoline_heath_1878 isSiblingOf ada_rachel_heath_1868" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?class WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> rdf:type ?class }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "type",
-      "object" : "DomainEntity"
-    },
-    "explanations" : [ [ "ada_rachel_heath_1868 type Woman", "Woman subClassOf DomainEntity" ], [ "ada_rachel_heath_1868 hasAncestor john_heath", "Domain(hasAncestor) = DomainEntity" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> <http://www.example.com/genealogy.owl#isMotherOf> ?object }" : {
-    "inferred" : {
-      "subject" : "sarah_jacobs_1834",
-      "predicate" : "isMotherOf",
-      "object" : "ada_rachel_heath_1868"
-    },
-    "explanations" : [ [ "Directly asserted" ] ],
-    "size" : {
-      "min" : 1,
-      "max" : 1
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> rdf:type <http://www.example.com/genealogy.owl#Ancestor> }" : {
-    "inferred" : {
-      "subject" : "sarah_jacobs_1834",
-      "predicate" : "type",
-      "object" : "Ancestor"
-    },
-    "explanations" : [ [ "ada_rachel_heath_1868 hasAncestor sarah_jacobs_1834", "Range(hasAncestor) = Ancestor" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#m135> <http://www.example.com/genealogy.owl#hasPartner> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
-    "inferred" : {
-      "subject" : "m135",
-      "predicate" : "hasPartner",
-      "object" : "ada_rachel_heath_1868"
-    },
-    "explanations" : [ [ "hasPartner InverseOf isPartnerIn", "ada_rachel_heath_1868 isPartnerIn m135" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#isSiblingOf> <http://www.example.com/genealogy.owl#gwendoline_heath_1878> }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "isSiblingOf",
-      "object" : "gwendoline_heath_1878"
-    },
-    "explanations" : [ [ "isSisterOf SubPropertyOf isSiblingOf", "ada_rachel_heath_1868 isSisterOf gwendoline_heath_1878" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#gwendoline_heath_1878> <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#sarah_jacobs_1834> }" : {
-    "inferred" : {
-      "subject" : "gwendoline_heath_1878",
-      "predicate" : "hasRelation",
-      "object" : "sarah_jacobs_1834"
-    },
-    "explanations" : [ [ "gwendoline_heath_1878 hasRelation sarah_jacobs_1834" ] ],
-    "size" : {
-      "min" : 1,
-      "max" : 1
-    }
-  },
-  "ASK { <http://www.example.com/genealogy.owl#Sex> rdfs:subClassOf <http://www.example.com/genealogy.owl#DomainEntity> }" : {
-    "inferred" : {
-      "subject" : "Sex",
-      "predicate" : "subClassOf",
-      "object" : "DomainEntity"
-    },
-    "explanations" : [ [ "Directly asserted" ] ],
-    "size" : {
-      "min" : 1,
-      "max" : 1
-    }
-  },
-  "ASK { <http://www.example.com/genealogy.owl#Woman> rdfs:subClassOf <http://www.example.com/genealogy.owl#Person> }" : {
-    "inferred" : {
-      "subject" : "Woman",
-      "predicate" : "subClassOf",
-      "object" : "Person"
-    },
-    "explanations" : [ ],
-    "size" : {
-      "min" : 0,
-      "max" : 0
-    }
+    "explanationCount" : 14,
+    "sparql_queries" : [ "ASK WHERE { <http://www.example.com/genealogy.owl#john_heath> <http://www.example.com/genealogy.owl#isAncestorOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }", "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#john_heath> <http://www.example.com/genealogy.owl#isAncestorOf> ?object }", "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#isAncestorOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" ]
   },
   "ASK { <http://www.example.com/genealogy.owl#Ancestor> rdfs:subClassOf <http://www.example.com/genealogy.owl#Person> }" : {
     "inferred" : {
@@ -1341,55 +133,78 @@
     "size" : {
       "min" : 0,
       "max" : 0
-    }
+    },
+    "explanationCount" : 0
   },
-  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> <http://www.example.com/genealogy.owl#hasChild> ?object }" : {
+  "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasFather> <http://www.example.com/genealogy.owl#john_heath> }" : {
     "inferred" : {
-      "subject" : "sarah_jacobs_1834",
+      "subject" : "ada_rachel_heath_1868",
+      "predicate" : "hasFather",
+      "object" : "john_heath"
+    },
+    "explanations" : [ [ "hasFather InverseOf isFatherOf", "john_heath isFatherOf ada_rachel_heath_1868" ], [ "ada_rachel_heath_1868 isSiblingOf gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation john_heath" ], [ "ada_rachel_heath_1868 isChildOf sarah_jacobs_1834", "sarah_jacobs_1834 hasRelation john_heath" ], [ "ada_rachel_heath_1868 hasRelation sarah_jacobs_1834", "sarah_jacobs_1834 hasRelation john_heath" ], [ "hasFather InverseOf isFatherOf", "john_heath isFatherOf ada_rachel_heath_1868" ], [ "ada_rachel_heath_1868 isSisterOf gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation john_heath" ], [ "ada_rachel_heath_1868 hasAncestor sarah_jacobs_1834", "sarah_jacobs_1834 hasRelation john_heath" ], [ "ada_rachel_heath_1868 hasMother sarah_jacobs_1834", "sarah_jacobs_1834 hasRelation john_heath" ], [ "ada_rachel_heath_1868 hasParent sarah_jacobs_1834", "sarah_jacobs_1834 hasRelation john_heath" ], [ "ada_rachel_heath_1868 hasRelation gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation john_heath" ] ],
+    "size" : {
+      "min" : 2,
+      "max" : 2
+    },
+    "explanationCount" : 10,
+    "sparql_queries" : [ "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasFather> <http://www.example.com/genealogy.owl#john_heath> }", "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasFather> <http://www.example.com/genealogy.owl#john_heath> }", "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasFather> ?object }" ]
+  },
+  "ASK WHERE { <http://www.example.com/genealogy.owl#m135> <http://www.example.com/genealogy.owl#hasPartner> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
+    "inferred" : {
+      "subject" : "m135",
+      "predicate" : "hasPartner",
+      "object" : "ada_rachel_heath_1868"
+    },
+    "explanations" : [ [ "hasFemalePartner SubPropertyOf hasPartner", "m135 hasFemalePartner ada_rachel_heath_1868" ], [ "hasPartner InverseOf isPartnerIn", "ada_rachel_heath_1868 isPartnerIn m135" ], [ "hasFemalePartner SubPropertyOf hasPartner", "m135 hasFemalePartner ada_rachel_heath_1868" ], [ "hasPartner InverseOf isPartnerIn", "ada_rachel_heath_1868 isPartnerIn m135" ] ],
+    "size" : {
+      "min" : 2,
+      "max" : 2
+    },
+    "explanationCount" : 4,
+    "sparql_queries" : [ "ASK WHERE { <http://www.example.com/genealogy.owl#m135> <http://www.example.com/genealogy.owl#hasPartner> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }", "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasPartner> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }", "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#m135> <http://www.example.com/genealogy.owl#hasPartner> ?object }" ]
+  },
+  "ASK WHERE { <http://www.example.com/genealogy.owl#john_heath> rdf:type <http://www.example.com/genealogy.owl#Person> }" : {
+    "inferred" : {
+      "subject" : "john_heath",
+      "predicate" : "type",
+      "object" : "Person"
+    },
+    "explanations" : [ [ "Domain(isParentOf) = Person", "john_heath isParentOf ada_rachel_heath_1868" ], [ "Range(hasAncestor) = Person", "ada_rachel_heath_1868 hasAncestor john_heath" ], [ "Range(hasParent) = Person", "ada_rachel_heath_1868 hasParent john_heath" ], [ "Domain(hasRelation) = Person", "john_heath hasRelation john_heath" ], [ "Domain(hasRelation) = Person", "john_heath hasRelation sarah_jacobs_1834" ], [ "Domain(isAncestorOf) = Person", "john_heath isAncestorOf ada_rachel_heath_1868" ], [ "Range(hasRelation) = Person", "ada_rachel_heath_1868 hasRelation john_heath" ], [ "Range(hasFather) = Person", "ada_rachel_heath_1868 hasFather john_heath" ], [ "Man subClassOf Person", "john_heath type Man" ], [ "Range(hasRelation) = Person", "sarah_jacobs_1834 hasRelation john_heath" ], [ "Range(isBloodrelationOf) = Person", "john_heath isBloodrelationOf john_heath" ], [ "Domain(hasRelation) = Person", "john_heath hasRelation gwendoline_heath_1878" ], [ "Domain(isSiblingOf) = Person", "john_heath isSiblingOf john_heath" ], [ "Domain(isBloodrelationOf) = Person", "john_heath isBloodrelationOf john_heath" ], [ "Range(hasRelation) = Person", "john_heath hasRelation john_heath" ], [ "Range(isSiblingOf) = Person", "john_heath isSiblingOf john_heath" ], [ "Domain(hasRelation) = Person", "john_heath hasRelation ada_rachel_heath_1868" ], [ "Range(isChildOf) = Person", "ada_rachel_heath_1868 isChildOf john_heath" ], [ "Domain(hasChild) = Person", "john_heath hasChild ada_rachel_heath_1868" ], [ "Ancestor subClassOf Person", "john_heath type Ancestor" ], [ "Range(hasRelation) = Person", "gwendoline_heath_1878 hasRelation john_heath" ], [ "Domain(isFatherOf) = Person", "john_heath isFatherOf ada_rachel_heath_1868" ] ],
+    "size" : {
+      "min" : 2,
+      "max" : 2
+    },
+    "explanationCount" : 22,
+    "sparql_queries" : [ "ASK WHERE { <http://www.example.com/genealogy.owl#john_heath> rdf:type <http://www.example.com/genealogy.owl#Person> }", "SELECT ?class WHERE { <http://www.example.com/genealogy.owl#john_heath> rdf:type ?class }" ]
+  },
+  "ASK WHERE { <http://www.example.com/genealogy.owl#gwendoline_heath_1878> <http://www.example.com/genealogy.owl#isBloodrelationOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
+    "inferred" : {
+      "subject" : "gwendoline_heath_1878",
+      "predicate" : "isBloodrelationOf",
+      "object" : "ada_rachel_heath_1868"
+    },
+    "explanations" : [ [ "hasSister SubPropertyOf isBloodrelationOf", "gwendoline_heath_1878 hasSister ada_rachel_heath_1868" ], [ "gwendoline_heath_1878 hasRelation john_heath", "john_heath hasChild ada_rachel_heath_1868" ], [ "gwendoline_heath_1878 hasRelation sarah_jacobs_1834", "sarah_jacobs_1834 isParentOf ada_rachel_heath_1868" ], [ "gwendoline_heath_1878 hasRelation sarah_jacobs_1834", "sarah_jacobs_1834 isAncestorOf ada_rachel_heath_1868" ], [ "isSiblingOf SubPropertyOf isBloodrelationOf", "gwendoline_heath_1878 isSiblingOf ada_rachel_heath_1868" ], [ "gwendoline_heath_1878 hasRelation sarah_jacobs_1834", "sarah_jacobs_1834 hasRelation ada_rachel_heath_1868" ], [ "gwendoline_heath_1878 hasRelation john_heath", "john_heath isAncestorOf ada_rachel_heath_1868" ], [ "gwendoline_heath_1878 hasRelation john_heath", "john_heath hasRelation ada_rachel_heath_1868" ], [ "gwendoline_heath_1878 hasRelation sarah_jacobs_1834", "sarah_jacobs_1834 isMotherOf ada_rachel_heath_1868" ], [ "gwendoline_heath_1878 hasRelation sarah_jacobs_1834", "sarah_jacobs_1834 hasChild ada_rachel_heath_1868" ], [ "gwendoline_heath_1878 hasRelation john_heath", "john_heath isFatherOf ada_rachel_heath_1868" ], [ "gwendoline_heath_1878 hasRelation john_heath", "john_heath isParentOf ada_rachel_heath_1868" ], [ "isSiblingOf SubPropertyOf isBloodrelationOf", "gwendoline_heath_1878 isSiblingOf ada_rachel_heath_1868" ] ],
+    "size" : {
+      "min" : 2,
+      "max" : 2
+    },
+    "explanationCount" : 13,
+    "sparql_queries" : [ "ASK WHERE { <http://www.example.com/genealogy.owl#gwendoline_heath_1878> <http://www.example.com/genealogy.owl#isBloodrelationOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }", "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#gwendoline_heath_1878> <http://www.example.com/genealogy.owl#isBloodrelationOf> ?object }", "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#isBloodrelationOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" ]
+  },
+  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#john_heath> <http://www.example.com/genealogy.owl#hasChild> ?object }" : {
+    "inferred" : {
+      "subject" : "john_heath",
       "predicate" : "hasChild",
       "object" : "ada_rachel_heath_1868"
     },
-    "explanations" : [ [ "hasChild InverseOf isChildOf", "ada_rachel_heath_1868 isChildOf sarah_jacobs_1834" ] ],
+    "explanations" : [ [ "john_heath hasRelation gwendoline_heath_1878", "gwendoline_heath_1878 isBloodrelationOf ada_rachel_heath_1868" ], [ "john_heath hasRelation gwendoline_heath_1878", "gwendoline_heath_1878 hasSister ada_rachel_heath_1868" ], [ "john_heath hasRelation sarah_jacobs_1834", "sarah_jacobs_1834 isAncestorOf ada_rachel_heath_1868" ], [ "hasChild", "john_heath isParentOf ada_rachel_heath_1868" ], [ "hasChild InverseOf isChildOf", "ada_rachel_heath_1868 isChildOf john_heath" ], [ "john_heath hasRelation sarah_jacobs_1834", "sarah_jacobs_1834 isMotherOf ada_rachel_heath_1868", "isMotherOf SubPropertyOf hasChild" ], [ "john_heath hasRelation gwendoline_heath_1878", "gwendoline_heath_1878 isSiblingOf ada_rachel_heath_1868" ], [ "isFatherOf SubPropertyOf hasChild", "john_heath isFatherOf ada_rachel_heath_1868" ], [ "john_heath hasRelation sarah_jacobs_1834", "sarah_jacobs_1834 isParentOf ada_rachel_heath_1868", "isParentOf SubPropertyOf hasChild" ], [ "hasChild", "isFatherOf SubPropertyOf hasChild", "john_heath isFatherOf ada_rachel_heath_1868" ], [ "hasChild InverseOf isChildOf", "ada_rachel_heath_1868 isChildOf john_heath" ], [ "john_heath hasRelation gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation ada_rachel_heath_1868" ], [ "isFatherOf SubPropertyOf hasChild", "john_heath isFatherOf ada_rachel_heath_1868" ], [ "hasChild", "john_heath isParentOf ada_rachel_heath_1868" ], [ "john_heath hasRelation sarah_jacobs_1834", "sarah_jacobs_1834 hasRelation ada_rachel_heath_1868" ] ],
     "size" : {
       "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#isPartnerIn> ?object }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "isPartnerIn",
-      "object" : "m135"
+      "max" : 3
     },
-    "explanations" : [ [ "isPartnerIn InverseOf hasPartner", "m135 hasPartner ada_rachel_heath_1868" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#isSiblingOf> <http://www.example.com/genealogy.owl#gwendoline_heath_1878> }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "isSiblingOf",
-      "object" : "gwendoline_heath_1878"
-    },
-    "explanations" : [ [ "isSisterOf SubPropertyOf isSiblingOf", "ada_rachel_heath_1868 isSisterOf gwendoline_heath_1878" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#john_heath> <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#gwendoline_heath_1878> }" : {
-    "inferred" : {
-      "subject" : "john_heath",
-      "predicate" : "hasRelation",
-      "object" : "gwendoline_heath_1878"
-    },
-    "explanations" : [ [ "john_heath hasRelation gwendoline_heath_1878" ] ],
-    "size" : {
-      "min" : 1,
-      "max" : 1
-    }
+    "explanationCount" : 15,
+    "sparql_queries" : [ "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#john_heath> <http://www.example.com/genealogy.owl#hasChild> ?object }", "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasChild> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }", "ASK WHERE { <http://www.example.com/genealogy.owl#john_heath> <http://www.example.com/genealogy.owl#hasChild> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" ]
   },
   "ASK { <http://www.example.com/genealogy.owl#Female> rdfs:subClassOf <http://www.example.com/genealogy.owl#Sex> }" : {
     "inferred" : {
@@ -1401,45 +216,287 @@
     "size" : {
       "min" : 1,
       "max" : 1
-    }
-  },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
-    "inferred" : {
-      "subject" : "sarah_jacobs_1834",
-      "predicate" : "hasRelation",
-      "object" : "ada_rachel_heath_1868"
     },
-    "explanations" : [ [ "isAncestorOf SubPropertyOf hasRelation", "sarah_jacobs_1834 isAncestorOf ada_rachel_heath_1868" ] ],
+    "explanationCount" : 1
+  },
+  "SELECT ?class WHERE { <http://www.example.com/genealogy.owl#gwendoline_heath_1878> rdf:type ?class }" : {
+    "inferred" : {
+      "subject" : "gwendoline_heath_1878",
+      "predicate" : "type",
+      "object" : "DomainEntity"
+    },
+    "explanations" : [ [ "Domain(hasRelation) = DomainEntity", "gwendoline_heath_1878 hasRelation john_heath" ], [ "Range(hasRelation) = DomainEntity", "sarah_jacobs_1834 hasRelation gwendoline_heath_1878" ], [ "Domain(hasRelation) = DomainEntity", "gwendoline_heath_1878 hasRelation ada_rachel_heath_1868" ], [ "Range(hasRelation) = DomainEntity", "john_heath hasRelation gwendoline_heath_1878" ], [ "Domain(hasSister) = DomainEntity", "gwendoline_heath_1878 hasSister ada_rachel_heath_1868" ], [ "Domain(isSiblingOf) = DomainEntity", "gwendoline_heath_1878 isSiblingOf ada_rachel_heath_1868" ], [ "Domain(isBloodrelationOf) = DomainEntity", "gwendoline_heath_1878 isBloodrelationOf gwendoline_heath_1878" ], [ "Range(hasRelation) = DomainEntity", "ada_rachel_heath_1868 hasRelation gwendoline_heath_1878" ], [ "Domain(hasRelation) = DomainEntity", "gwendoline_heath_1878 hasRelation gwendoline_heath_1878" ], [ "Range(isSisterOf) = DomainEntity", "ada_rachel_heath_1868 isSisterOf gwendoline_heath_1878" ], [ "Range(hasRelation) = DomainEntity", "gwendoline_heath_1878 hasRelation gwendoline_heath_1878" ], [ "Range(isBloodrelationOf) = DomainEntity", "ada_rachel_heath_1868 isBloodrelationOf gwendoline_heath_1878" ], [ "Range(isBloodrelationOf) = DomainEntity", "gwendoline_heath_1878 isBloodrelationOf gwendoline_heath_1878" ], [ "Domain(isSiblingOf) = DomainEntity", "gwendoline_heath_1878 isSiblingOf gwendoline_heath_1878" ], [ "Domain(isBloodrelationOf) = DomainEntity", "gwendoline_heath_1878 isBloodrelationOf ada_rachel_heath_1868" ], [ "Domain(hasRelation) = DomainEntity", "gwendoline_heath_1878 hasRelation sarah_jacobs_1834" ], [ "Person subClassOf DomainEntity", "gwendoline_heath_1878 type Person" ], [ "Range(isSiblingOf) = DomainEntity", "gwendoline_heath_1878 isSiblingOf gwendoline_heath_1878" ], [ "Range(isSiblingOf) = DomainEntity", "ada_rachel_heath_1868 isSiblingOf gwendoline_heath_1878" ] ],
     "size" : {
       "min" : 2,
       "max" : 2
-    }
+    },
+    "explanationCount" : 19,
+    "sparql_queries" : [ "SELECT ?class WHERE { <http://www.example.com/genealogy.owl#gwendoline_heath_1878> rdf:type ?class }", "ASK WHERE { <http://www.example.com/genealogy.owl#gwendoline_heath_1878> rdf:type <http://www.example.com/genealogy.owl#DomainEntity> }" ]
   },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasAncestor> <http://www.example.com/genealogy.owl#john_heath> }" : {
+  "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#isChildOf> <http://www.example.com/genealogy.owl#sarah_jacobs_1834> }" : {
+    "inferred" : {
+      "subject" : "ada_rachel_heath_1868",
+      "predicate" : "isChildOf",
+      "object" : "sarah_jacobs_1834"
+    },
+    "explanations" : [ [ "ada_rachel_heath_1868 hasParent john_heath", "john_heath hasRelation sarah_jacobs_1834", "hasParent SubPropertyOf isChildOf" ], [ "ada_rachel_heath_1868 isSisterOf gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation sarah_jacobs_1834" ], [ "ada_rachel_heath_1868 hasAncestor john_heath", "john_heath hasRelation sarah_jacobs_1834" ], [ "ada_rachel_heath_1868 isBloodrelationOf gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation sarah_jacobs_1834" ], [ "ada_rachel_heath_1868 hasFather john_heath", "john_heath hasRelation sarah_jacobs_1834", "hasFather SubPropertyOf isChildOf" ], [ "hasParent", "ada_rachel_heath_1868 hasParent sarah_jacobs_1834" ], [ "ada_rachel_heath_1868 hasRelation john_heath", "john_heath hasRelation sarah_jacobs_1834" ], [ "hasMother SubPropertyOf isChildOf", "ada_rachel_heath_1868 hasMother sarah_jacobs_1834" ], [ "hasMother SubPropertyOf isChildOf", "ada_rachel_heath_1868 hasMother sarah_jacobs_1834" ], [ "hasParent", "hasMother SubPropertyOf isChildOf", "ada_rachel_heath_1868 hasMother sarah_jacobs_1834" ], [ "hasChild InverseOf isChildOf", "sarah_jacobs_1834 hasChild ada_rachel_heath_1868" ], [ "ada_rachel_heath_1868 hasRelation gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation sarah_jacobs_1834" ], [ "hasChild InverseOf isChildOf", "sarah_jacobs_1834 hasChild ada_rachel_heath_1868" ], [ "hasParent", "ada_rachel_heath_1868 hasParent sarah_jacobs_1834" ], [ "ada_rachel_heath_1868 isSiblingOf gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation sarah_jacobs_1834" ] ],
+    "size" : {
+      "min" : 2,
+      "max" : 3
+    },
+    "explanationCount" : 15,
+    "sparql_queries" : [ "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#isChildOf> <http://www.example.com/genealogy.owl#sarah_jacobs_1834> }", "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#isChildOf> <http://www.example.com/genealogy.owl#sarah_jacobs_1834> }", "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#isChildOf> ?object }" ]
+  },
+  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasParent> <http://www.example.com/genealogy.owl#sarah_jacobs_1834> }" : {
+    "inferred" : {
+      "subject" : "ada_rachel_heath_1868",
+      "predicate" : "hasParent",
+      "object" : "sarah_jacobs_1834"
+    },
+    "explanations" : [ [ "hasParent InverseOf isParentOf", "sarah_jacobs_1834 isParentOf ada_rachel_heath_1868" ], [ "ada_rachel_heath_1868 hasFather john_heath", "john_heath hasRelation sarah_jacobs_1834", "hasFather SubPropertyOf hasParent" ], [ "ada_rachel_heath_1868 isSisterOf gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation sarah_jacobs_1834" ], [ "ada_rachel_heath_1868 isBloodrelationOf gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation sarah_jacobs_1834" ], [ "hasParent", "hasMother SubPropertyOf hasParent", "ada_rachel_heath_1868 hasMother sarah_jacobs_1834" ], [ "ada_rachel_heath_1868 hasAncestor john_heath", "john_heath hasRelation sarah_jacobs_1834" ], [ "ada_rachel_heath_1868 hasRelation john_heath", "john_heath hasRelation sarah_jacobs_1834" ], [ "hasMother SubPropertyOf hasParent", "ada_rachel_heath_1868 hasMother sarah_jacobs_1834" ], [ "hasParent", "ada_rachel_heath_1868 isChildOf sarah_jacobs_1834" ], [ "ada_rachel_heath_1868 isChildOf john_heath", "john_heath hasRelation sarah_jacobs_1834", "isChildOf SubPropertyOf hasParent" ], [ "hasParent InverseOf isParentOf", "sarah_jacobs_1834 isParentOf ada_rachel_heath_1868" ], [ "ada_rachel_heath_1868 hasRelation gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation sarah_jacobs_1834" ], [ "hasMother SubPropertyOf hasParent", "ada_rachel_heath_1868 hasMother sarah_jacobs_1834" ], [ "hasParent", "ada_rachel_heath_1868 isChildOf sarah_jacobs_1834" ], [ "ada_rachel_heath_1868 isSiblingOf gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation sarah_jacobs_1834" ] ],
+    "size" : {
+      "min" : 2,
+      "max" : 3
+    },
+    "explanationCount" : 15,
+    "sparql_queries" : [ "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasParent> <http://www.example.com/genealogy.owl#sarah_jacobs_1834> }", "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasParent> <http://www.example.com/genealogy.owl#sarah_jacobs_1834> }", "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasParent> ?object }" ]
+  },
+  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#gwendoline_heath_1878> }" : {
+    "inferred" : {
+      "subject" : "sarah_jacobs_1834",
+      "predicate" : "hasRelation",
+      "object" : "gwendoline_heath_1878"
+    },
+    "explanations" : [ [ "hasChild SubPropertyOf hasRelation", "isBloodrelationOf SubPropertyOf hasRelation", "isAncestorOf SubPropertyOf hasRelation", "isSiblingOf SubPropertyOf hasRelation", "isMotherOf SubPropertyOf hasRelation", "isSiblingOf SubPropertyOf hasRelation", "isParentOf SubPropertyOf hasRelation", "isBloodrelationOf SubPropertyOf hasRelation", "hasChild SubPropertyOf hasRelation", "isSisterOf SubPropertyOf hasRelation", "isMotherOf SubPropertyOf hasRelation", "isBloodrelationOf SubPropertyOf hasRelation", "isAncestorOf SubPropertyOf hasRelation", "isBloodrelationOf SubPropertyOf hasRelation", "isParentOf SubPropertyOf hasRelation", "isSiblingOf SubPropertyOf hasRelation", "hasChild SubPropertyOf hasRelation", "isSiblingOf SubPropertyOf hasRelation", "isParentOf SubPropertyOf hasRelation", "isSisterOf SubPropertyOf hasRelation", "isAncestorOf SubPropertyOf hasRelation", "isSisterOf SubPropertyOf hasRelation", "isMotherOf SubPropertyOf hasRelation", "isSisterOf SubPropertyOf hasRelation" ] ],
+    "size" : {
+      "min" : 24,
+      "max" : 24
+    },
+    "explanationCount" : 1,
+    "sparql_queries" : [ "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#gwendoline_heath_1878> }", "ASK WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#gwendoline_heath_1878> }", "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> <http://www.example.com/genealogy.owl#hasRelation> ?object }" ]
+  },
+  "ASK { <http://www.example.com/genealogy.owl#Man> rdfs:subClassOf <http://www.example.com/genealogy.owl#DomainEntity> }" : {
+    "inferred" : {
+      "subject" : "Man",
+      "predicate" : "subClassOf",
+      "object" : "DomainEntity"
+    },
+    "explanations" : [ [ "Man subClassOf Person", "Person subClassOf DomainEntity" ] ],
+    "size" : {
+      "min" : 2,
+      "max" : 2
+    },
+    "explanationCount" : 1
+  },
+  "ASK { <http://www.example.com/genealogy.owl#Male> rdfs:subClassOf <http://www.example.com/genealogy.owl#DomainEntity> }" : {
+    "inferred" : {
+      "subject" : "Male",
+      "predicate" : "subClassOf",
+      "object" : "DomainEntity"
+    },
+    "explanations" : [ [ "Male subClassOf Sex", "Sex subClassOf DomainEntity" ] ],
+    "size" : {
+      "min" : 2,
+      "max" : 2
+    },
+    "explanationCount" : 1
+  },
+  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasAncestor> <http://www.example.com/genealogy.owl#john_heath> }" : {
     "inferred" : {
       "subject" : "ada_rachel_heath_1868",
       "predicate" : "hasAncestor",
       "object" : "john_heath"
     },
-    "explanations" : [ [ "hasAncestor InverseOf isAncestorOf", "john_heath isAncestorOf ada_rachel_heath_1868" ] ],
+    "explanations" : [ [ "ada_rachel_heath_1868 isChildOf sarah_jacobs_1834", "sarah_jacobs_1834 hasRelation john_heath", "isChildOf SubPropertyOf hasAncestor" ], [ "hasFather SubPropertyOf hasAncestor", "ada_rachel_heath_1868 hasFather john_heath" ], [ "ada_rachel_heath_1868 hasRelation gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation john_heath" ], [ "ada_rachel_heath_1868 isBloodrelationOf gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation john_heath" ], [ "hasParent SubPropertyOf hasAncestor", "ada_rachel_heath_1868 hasParent john_heath" ], [ "hasAncestor InverseOf isAncestorOf", "john_heath isAncestorOf ada_rachel_heath_1868" ], [ "isChildOf SubPropertyOf hasAncestor", "ada_rachel_heath_1868 isChildOf john_heath" ], [ "hasParent SubPropertyOf hasAncestor", "ada_rachel_heath_1868 hasParent john_heath" ], [ "ada_rachel_heath_1868 isSiblingOf gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation john_heath" ], [ "ada_rachel_heath_1868 hasParent sarah_jacobs_1834", "sarah_jacobs_1834 hasRelation john_heath", "hasParent SubPropertyOf hasAncestor" ], [ "ada_rachel_heath_1868 hasRelation sarah_jacobs_1834", "sarah_jacobs_1834 hasRelation john_heath" ], [ "ada_rachel_heath_1868 hasMother sarah_jacobs_1834", "sarah_jacobs_1834 hasRelation john_heath", "hasMother SubPropertyOf hasAncestor" ], [ "ada_rachel_heath_1868 isSisterOf gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation john_heath" ], [ "hasAncestor InverseOf isAncestorOf", "john_heath isAncestorOf ada_rachel_heath_1868" ] ],
     "size" : {
       "min" : 2,
-      "max" : 2
-    }
+      "max" : 3
+    },
+    "explanationCount" : 14,
+    "sparql_queries" : [ "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasAncestor> <http://www.example.com/genealogy.owl#john_heath> }", "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasAncestor> <http://www.example.com/genealogy.owl#john_heath> }", "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasAncestor> ?object }" ]
   },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> <http://www.example.com/genealogy.owl#hasChild> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
+  "ASK WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> <http://www.example.com/genealogy.owl#isAncestorOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
     "inferred" : {
       "subject" : "sarah_jacobs_1834",
-      "predicate" : "hasChild",
+      "predicate" : "isAncestorOf",
       "object" : "ada_rachel_heath_1868"
     },
-    "explanations" : [ [ "hasChild InverseOf isChildOf", "ada_rachel_heath_1868 isChildOf sarah_jacobs_1834" ] ],
+    "explanations" : [ [ "sarah_jacobs_1834 hasRelation gwendoline_heath_1878", "gwendoline_heath_1878 hasSister ada_rachel_heath_1868" ], [ "sarah_jacobs_1834 hasRelation gwendoline_heath_1878", "gwendoline_heath_1878 isBloodrelationOf ada_rachel_heath_1868" ], [ "isMotherOf SubPropertyOf isAncestorOf", "sarah_jacobs_1834 isMotherOf ada_rachel_heath_1868" ], [ "hasChild SubPropertyOf isAncestorOf", "sarah_jacobs_1834 hasChild ada_rachel_heath_1868" ], [ "isParentOf SubPropertyOf isAncestorOf", "sarah_jacobs_1834 isParentOf ada_rachel_heath_1868" ], [ "sarah_jacobs_1834 hasRelation gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation ada_rachel_heath_1868" ], [ "hasAncestor InverseOf isAncestorOf", "ada_rachel_heath_1868 hasAncestor sarah_jacobs_1834" ], [ "isParentOf SubPropertyOf isAncestorOf", "sarah_jacobs_1834 isParentOf ada_rachel_heath_1868" ], [ "hasAncestor InverseOf isAncestorOf", "ada_rachel_heath_1868 hasAncestor sarah_jacobs_1834" ], [ "sarah_jacobs_1834 hasRelation gwendoline_heath_1878", "gwendoline_heath_1878 isSiblingOf ada_rachel_heath_1868" ] ],
     "size" : {
       "min" : 2,
       "max" : 2
-    }
+    },
+    "explanationCount" : 10,
+    "sparql_queries" : [ "ASK WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> <http://www.example.com/genealogy.owl#isAncestorOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }", "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#isAncestorOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }", "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> <http://www.example.com/genealogy.owl#isAncestorOf> ?object }" ]
   },
-  "ASK WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> <http://www.example.com/genealogy.owl#isMotherOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
+  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#sarah_jacobs_1834> }" : {
+    "inferred" : {
+      "subject" : "ada_rachel_heath_1868",
+      "predicate" : "hasRelation",
+      "object" : "sarah_jacobs_1834"
+    },
+    "explanations" : [ [ "hasParent SubPropertyOf hasRelation", "ada_rachel_heath_1868 hasParent sarah_jacobs_1834" ], [ "hasMother SubPropertyOf hasRelation", "ada_rachel_heath_1868 hasMother sarah_jacobs_1834" ], [ "isChildOf SubPropertyOf hasRelation", "ada_rachel_heath_1868 isChildOf sarah_jacobs_1834" ], [ "hasAncestor SubPropertyOf hasRelation", "ada_rachel_heath_1868 hasAncestor sarah_jacobs_1834" ], [ "hasMother SubPropertyOf hasRelation", "ada_rachel_heath_1868 hasMother sarah_jacobs_1834" ] ],
+    "size" : {
+      "min" : 2,
+      "max" : 2
+    },
+    "explanationCount" : 5,
+    "sparql_queries" : [ "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#sarah_jacobs_1834> }", "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#sarah_jacobs_1834> }", "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasRelation> ?object }" ]
+  },
+  "SELECT ?class WHERE { <http://www.example.com/genealogy.owl#john_heath> rdf:type ?class }" : {
+    "inferred" : {
+      "subject" : "john_heath",
+      "predicate" : "type",
+      "object" : "Man"
+    },
+    "explanations" : [ [ "Range(hasFather) = Man", "ada_rachel_heath_1868 hasFather john_heath" ], [ "Range(hasFather) = Man" ], [ "Domain(isFatherOf) = Man", "john_heath isFatherOf ada_rachel_heath_1868" ] ],
+    "size" : {
+      "min" : 1,
+      "max" : 2
+    },
+    "explanationCount" : 3,
+    "sparql_queries" : [ "SELECT ?class WHERE { <http://www.example.com/genealogy.owl#john_heath> rdf:type ?class }", "ASK WHERE { <http://www.example.com/genealogy.owl#john_heath> rdf:type <http://www.example.com/genealogy.owl#Man> }" ]
+  },
+  "SELECT ?class WHERE { <http://www.example.com/genealogy.owl#m135> rdf:type ?class }" : {
+    "inferred" : {
+      "subject" : "m135",
+      "predicate" : "type",
+      "object" : "DomainEntity"
+    },
+    "explanations" : [ [ "Marriage subClassOf DomainEntity", "m135 type Marriage" ], [ "Range(isPartnerIn) = DomainEntity", "ada_rachel_heath_1868 isPartnerIn m135" ], [ "Domain(hasFemalePartner) = Marriage" ], [ "Range(isFemalePartnerIn) = DomainEntity", "ada_rachel_heath_1868 isFemalePartnerIn m135" ], [ "Domain(hasPartner) = DomainEntity", "m135 hasPartner ada_rachel_heath_1868" ], [ "Domain(hasFemalePartner) = DomainEntity", "m135 hasFemalePartner ada_rachel_heath_1868" ] ],
+    "size" : {
+      "min" : 1,
+      "max" : 2
+    },
+    "explanationCount" : 6,
+    "sparql_queries" : [ "SELECT ?class WHERE { <http://www.example.com/genealogy.owl#m135> rdf:type ?class }", "ASK WHERE { <http://www.example.com/genealogy.owl#m135> rdf:type <http://www.example.com/genealogy.owl#DomainEntity> }" ]
+  },
+  "ASK { <http://www.example.com/genealogy.owl#Marriage> rdfs:subClassOf <http://www.example.com/genealogy.owl#DomainEntity> }" : {
+    "inferred" : {
+      "subject" : "Marriage",
+      "predicate" : "subClassOf",
+      "object" : "DomainEntity"
+    },
+    "explanations" : [ [ "Directly asserted" ] ],
+    "size" : {
+      "min" : 1,
+      "max" : 1
+    },
+    "explanationCount" : 1
+  },
+  "ASK WHERE { <http://www.example.com/genealogy.owl#m135> rdf:type <http://www.example.com/genealogy.owl#Marriage> }" : {
+    "inferred" : {
+      "subject" : "m135",
+      "predicate" : "type",
+      "object" : "Marriage"
+    },
+    "explanations" : [ [ "Range(isPartnerIn) = Marriage", "ada_rachel_heath_1868 isPartnerIn m135" ], [ "Domain(hasFemalePartner) = Marriage" ], [ "Domain(hasPartner) = Marriage", "m135 hasPartner ada_rachel_heath_1868" ], [ "Domain(hasFemalePartner) = Marriage", "m135 hasFemalePartner ada_rachel_heath_1868" ], [ "Range(isFemalePartnerIn) = Marriage", "ada_rachel_heath_1868 isFemalePartnerIn m135" ] ],
+    "size" : {
+      "min" : 1,
+      "max" : 2
+    },
+    "explanationCount" : 5,
+    "sparql_queries" : [ "ASK WHERE { <http://www.example.com/genealogy.owl#m135> rdf:type <http://www.example.com/genealogy.owl#Marriage> }", "SELECT ?class WHERE { <http://www.example.com/genealogy.owl#m135> rdf:type ?class }" ]
+  },
+  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
+    "inferred" : {
+      "subject" : "john_heath",
+      "predicate" : "hasRelation",
+      "object" : "ada_rachel_heath_1868"
+    },
+    "explanations" : [ [ "hasChild SubPropertyOf hasRelation", "john_heath hasChild ada_rachel_heath_1868" ], [ "isParentOf SubPropertyOf hasRelation", "john_heath isParentOf ada_rachel_heath_1868" ], [ "isFatherOf SubPropertyOf hasRelation", "john_heath isFatherOf ada_rachel_heath_1868" ], [ "isAncestorOf SubPropertyOf hasRelation", "john_heath isAncestorOf ada_rachel_heath_1868" ], [ "isParentOf SubPropertyOf hasRelation", "john_heath isParentOf ada_rachel_heath_1868" ] ],
+    "size" : {
+      "min" : 2,
+      "max" : 2
+    },
+    "explanationCount" : 5,
+    "sparql_queries" : [ "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }", "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#john_heath> <http://www.example.com/genealogy.owl#hasRelation> ?object }", "ASK WHERE { <http://www.example.com/genealogy.owl#john_heath> <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" ]
+  },
+  "ASK WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> rdf:type <http://www.example.com/genealogy.owl#Ancestor> }" : {
+    "inferred" : {
+      "subject" : "sarah_jacobs_1834",
+      "predicate" : "type",
+      "object" : "Ancestor"
+    },
+    "explanations" : [ [ "Domain(isParentOf) = Ancestor", "sarah_jacobs_1834 isParentOf ada_rachel_heath_1868" ], [ "Range(isChildOf) = Ancestor", "ada_rachel_heath_1868 isChildOf sarah_jacobs_1834" ], [ "Range(hasParent) = Ancestor", "ada_rachel_heath_1868 hasParent sarah_jacobs_1834" ], [ "Domain(isAncestorOf) = Ancestor", "sarah_jacobs_1834 isAncestorOf ada_rachel_heath_1868" ], [ "Range(hasAncestor) = Ancestor", "ada_rachel_heath_1868 hasAncestor sarah_jacobs_1834" ], [ "Range(hasRelation) = Person" ], [ "Domain(isMotherOf) = Ancestor", "sarah_jacobs_1834 isMotherOf ada_rachel_heath_1868" ], [ "Domain(hasChild) = Ancestor", "sarah_jacobs_1834 hasChild ada_rachel_heath_1868" ], [ "Range(hasMother) = Ancestor", "ada_rachel_heath_1868 hasMother sarah_jacobs_1834" ] ],
+    "size" : {
+      "min" : 1,
+      "max" : 2
+    },
+    "explanationCount" : 9,
+    "sparql_queries" : [ "ASK WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> rdf:type <http://www.example.com/genealogy.owl#Ancestor> }", "SELECT ?class WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> rdf:type ?class }" ]
+  },
+  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#isSiblingOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
+    "inferred" : {
+      "subject" : "gwendoline_heath_1878",
+      "predicate" : "isSiblingOf",
+      "object" : "ada_rachel_heath_1868"
+    },
+    "explanations" : [ [ "gwendoline_heath_1878 hasRelation john_heath", "john_heath hasChild ada_rachel_heath_1868" ], [ "gwendoline_heath_1878 hasRelation sarah_jacobs_1834", "sarah_jacobs_1834 isParentOf ada_rachel_heath_1868" ], [ "hasSister SubPropertyOf isSiblingOf", "gwendoline_heath_1878 hasSister ada_rachel_heath_1868" ], [ "gwendoline_heath_1878 hasRelation sarah_jacobs_1834", "sarah_jacobs_1834 isAncestorOf ada_rachel_heath_1868" ], [ "hasSister SubPropertyOf isSiblingOf", "gwendoline_heath_1878 hasSister ada_rachel_heath_1868" ], [ "gwendoline_heath_1878 hasRelation sarah_jacobs_1834", "sarah_jacobs_1834 hasRelation ada_rachel_heath_1868" ], [ "gwendoline_heath_1878 hasRelation john_heath", "john_heath isAncestorOf ada_rachel_heath_1868" ], [ "gwendoline_heath_1878 hasRelation john_heath", "john_heath isParentOf ada_rachel_heath_1868" ], [ "gwendoline_heath_1878 hasRelation john_heath", "john_heath hasRelation ada_rachel_heath_1868" ], [ "gwendoline_heath_1878 hasRelation sarah_jacobs_1834", "sarah_jacobs_1834 isMotherOf ada_rachel_heath_1868" ], [ "gwendoline_heath_1878 hasRelation sarah_jacobs_1834", "sarah_jacobs_1834 hasChild ada_rachel_heath_1868" ], [ "gwendoline_heath_1878 hasRelation john_heath", "john_heath isFatherOf ada_rachel_heath_1868" ] ],
+    "size" : {
+      "min" : 2,
+      "max" : 2
+    },
+    "explanationCount" : 12,
+    "sparql_queries" : [ "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#isSiblingOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }", "ASK WHERE { <http://www.example.com/genealogy.owl#gwendoline_heath_1878> <http://www.example.com/genealogy.owl#isSiblingOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }", "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#gwendoline_heath_1878> <http://www.example.com/genealogy.owl#isSiblingOf> ?object }" ]
+  },
+  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#john_heath> <http://www.example.com/genealogy.owl#hasRelation> ?object }" : {
+    "inferred" : {
+      "subject" : "john_heath",
+      "predicate" : "hasRelation",
+      "object" : "gwendoline_heath_1878"
+    },
+    "explanations" : [ [ "hasChild SubPropertyOf hasRelation", "isSisterOf SubPropertyOf hasRelation", "isAncestorOf SubPropertyOf hasRelation", "isBloodrelationOf SubPropertyOf hasRelation", "hasChild SubPropertyOf hasRelation", "isSiblingOf SubPropertyOf hasRelation", "isFatherOf SubPropertyOf hasRelation", "isBloodrelationOf SubPropertyOf hasRelation", "isParentOf SubPropertyOf hasRelation", "isSiblingOf SubPropertyOf hasRelation", "isAncestorOf SubPropertyOf hasRelation", "isSisterOf SubPropertyOf hasRelation", "isFatherOf SubPropertyOf hasRelation", "isSisterOf SubPropertyOf hasRelation", "isFatherOf SubPropertyOf hasRelation", "isSiblingOf SubPropertyOf hasRelation", "isParentOf SubPropertyOf hasRelation", "isSisterOf SubPropertyOf hasRelation", "hasChild SubPropertyOf hasRelation", "isBloodrelationOf SubPropertyOf hasRelation", "isAncestorOf SubPropertyOf hasRelation", "isSiblingOf SubPropertyOf hasRelation", "isParentOf SubPropertyOf hasRelation", "isBloodrelationOf SubPropertyOf hasRelation" ] ],
+    "size" : {
+      "min" : 24,
+      "max" : 24
+    },
+    "explanationCount" : 1,
+    "sparql_queries" : [ "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#john_heath> <http://www.example.com/genealogy.owl#hasRelation> ?object }", "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#gwendoline_heath_1878> }", "ASK WHERE { <http://www.example.com/genealogy.owl#john_heath> <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#gwendoline_heath_1878> }" ]
+  },
+  "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasAncestor> <http://www.example.com/genealogy.owl#sarah_jacobs_1834> }" : {
+    "inferred" : {
+      "subject" : "ada_rachel_heath_1868",
+      "predicate" : "hasAncestor",
+      "object" : "sarah_jacobs_1834"
+    },
+    "explanations" : [ [ "ada_rachel_heath_1868 hasParent john_heath", "john_heath hasRelation sarah_jacobs_1834", "hasParent SubPropertyOf hasAncestor" ], [ "ada_rachel_heath_1868 hasRelation gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation sarah_jacobs_1834" ], [ "ada_rachel_heath_1868 hasFather john_heath", "john_heath hasRelation sarah_jacobs_1834", "hasFather SubPropertyOf hasAncestor" ], [ "ada_rachel_heath_1868 isSisterOf gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation sarah_jacobs_1834" ], [ "hasMother SubPropertyOf hasAncestor", "ada_rachel_heath_1868 hasMother sarah_jacobs_1834" ], [ "hasParent SubPropertyOf hasAncestor", "ada_rachel_heath_1868 hasParent sarah_jacobs_1834" ], [ "ada_rachel_heath_1868 isSiblingOf gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation sarah_jacobs_1834" ], [ "ada_rachel_heath_1868 hasRelation john_heath", "john_heath hasRelation sarah_jacobs_1834" ], [ "hasAncestor InverseOf isAncestorOf", "sarah_jacobs_1834 isAncestorOf ada_rachel_heath_1868" ], [ "ada_rachel_heath_1868 isChildOf john_heath", "john_heath hasRelation sarah_jacobs_1834", "isChildOf SubPropertyOf hasAncestor" ], [ "isChildOf SubPropertyOf hasAncestor", "ada_rachel_heath_1868 isChildOf sarah_jacobs_1834" ], [ "hasMother SubPropertyOf hasAncestor", "ada_rachel_heath_1868 hasMother sarah_jacobs_1834" ], [ "ada_rachel_heath_1868 isBloodrelationOf gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation sarah_jacobs_1834" ], [ "hasAncestor InverseOf isAncestorOf", "sarah_jacobs_1834 isAncestorOf ada_rachel_heath_1868" ] ],
+    "size" : {
+      "min" : 2,
+      "max" : 3
+    },
+    "explanationCount" : 14,
+    "sparql_queries" : [ "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasAncestor> <http://www.example.com/genealogy.owl#sarah_jacobs_1834> }", "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasAncestor> <http://www.example.com/genealogy.owl#sarah_jacobs_1834> }", "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasAncestor> ?object }" ]
+  },
+  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#isChildOf> ?object }" : {
+    "inferred" : {
+      "subject" : "ada_rachel_heath_1868",
+      "predicate" : "isChildOf",
+      "object" : "john_heath"
+    },
+    "explanations" : [ [ "ada_rachel_heath_1868 isBloodrelationOf gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation john_heath" ], [ "ada_rachel_heath_1868 isSiblingOf gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation john_heath" ], [ "hasFather SubPropertyOf isChildOf", "ada_rachel_heath_1868 hasFather john_heath" ], [ "ada_rachel_heath_1868 isSisterOf gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation john_heath" ], [ "ada_rachel_heath_1868 hasMother sarah_jacobs_1834", "sarah_jacobs_1834 hasRelation john_heath", "hasMother SubPropertyOf isChildOf" ], [ "ada_rachel_heath_1868 hasRelation sarah_jacobs_1834", "sarah_jacobs_1834 hasRelation john_heath" ], [ "hasParent", "ada_rachel_heath_1868 hasParent john_heath" ], [ "hasFather SubPropertyOf isChildOf", "ada_rachel_heath_1868 hasFather john_heath" ], [ "ada_rachel_heath_1868 hasAncestor sarah_jacobs_1834", "sarah_jacobs_1834 hasRelation john_heath" ], [ "ada_rachel_heath_1868 hasRelation gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation john_heath" ], [ "hasChild InverseOf isChildOf", "john_heath hasChild ada_rachel_heath_1868" ], [ "hasParent", "hasFather SubPropertyOf isChildOf", "ada_rachel_heath_1868 hasFather john_heath" ], [ "hasChild InverseOf isChildOf", "john_heath hasChild ada_rachel_heath_1868" ], [ "hasParent", "ada_rachel_heath_1868 hasParent john_heath" ], [ "ada_rachel_heath_1868 hasParent sarah_jacobs_1834", "sarah_jacobs_1834 hasRelation john_heath", "hasParent SubPropertyOf isChildOf" ] ],
+    "size" : {
+      "min" : 2,
+      "max" : 3
+    },
+    "explanationCount" : 15,
+    "sparql_queries" : [ "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#isChildOf> ?object }", "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#isChildOf> <http://www.example.com/genealogy.owl#john_heath> }", "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#isChildOf> <http://www.example.com/genealogy.owl#john_heath> }" ]
+  },
+  "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#isSisterOf> <http://www.example.com/genealogy.owl#gwendoline_heath_1878> }" : {
+    "inferred" : {
+      "subject" : "ada_rachel_heath_1868",
+      "predicate" : "isSisterOf",
+      "object" : "gwendoline_heath_1878"
+    },
+    "explanations" : [ [ "Directly asserted" ] ],
+    "size" : {
+      "min" : 1,
+      "max" : 1
+    },
+    "explanationCount" : 1,
+    "sparql_queries" : [ "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#isSisterOf> <http://www.example.com/genealogy.owl#gwendoline_heath_1878> }", "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#isSisterOf> <http://www.example.com/genealogy.owl#gwendoline_heath_1878> }", "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#isSisterOf> ?object }" ]
+  },
+  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> <http://www.example.com/genealogy.owl#isMotherOf> ?object }" : {
     "inferred" : {
       "subject" : "sarah_jacobs_1834",
       "predicate" : "isMotherOf",
@@ -1449,54 +506,324 @@
     "size" : {
       "min" : 1,
       "max" : 1
-    }
-  },
-  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#isChildOf> <http://www.example.com/genealogy.owl#john_heath> }" : {
-    "inferred" : {
-      "subject" : "ada_rachel_heath_1868",
-      "predicate" : "isChildOf",
-      "object" : "john_heath"
     },
-    "explanations" : [ [ "isChildOf InverseOf hasChild", "john_heath hasChild ada_rachel_heath_1868" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
+    "explanationCount" : 1,
+    "sparql_queries" : [ "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> <http://www.example.com/genealogy.owl#isMotherOf> ?object }", "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#isMotherOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }", "ASK WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> <http://www.example.com/genealogy.owl#isMotherOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" ]
   },
-  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#isAncestorOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
+  "ASK { <http://www.example.com/genealogy.owl#Person> rdfs:subClassOf <http://www.example.com/genealogy.owl#DomainEntity> }" : {
     "inferred" : {
-      "subject" : "sarah_jacobs_1834",
-      "predicate" : "isAncestorOf",
-      "object" : "ada_rachel_heath_1868"
+      "subject" : "Person",
+      "predicate" : "subClassOf",
+      "object" : "DomainEntity"
     },
-    "explanations" : [ [ "isAncestorOf InverseOf hasAncestor", "ada_rachel_heath_1868 hasAncestor sarah_jacobs_1834" ] ],
-    "size" : {
-      "min" : 2,
-      "max" : 2
-    }
-  },
-  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#sarah_jacobs_1834> }" : {
-    "inferred" : {
-      "subject" : "john_heath",
-      "predicate" : "hasRelation",
-      "object" : "sarah_jacobs_1834"
-    },
-    "explanations" : [ [ "john_heath hasRelation sarah_jacobs_1834" ] ],
+    "explanations" : [ [ "Directly asserted" ] ],
     "size" : {
       "min" : 1,
       "max" : 1
-    }
+    },
+    "explanationCount" : 1
   },
-  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> <http://www.example.com/genealogy.owl#isAncestorOf> ?object }" : {
+  "ASK WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> rdf:type <http://www.example.com/genealogy.owl#Person> }" : {
     "inferred" : {
       "subject" : "sarah_jacobs_1834",
-      "predicate" : "isAncestorOf",
-      "object" : "ada_rachel_heath_1868"
+      "predicate" : "type",
+      "object" : "Person"
     },
-    "explanations" : [ [ "isAncestorOf InverseOf hasAncestor", "ada_rachel_heath_1868 hasAncestor sarah_jacobs_1834" ] ],
+    "explanations" : [ [ "Range(hasRelation) = Person", "gwendoline_heath_1878 hasRelation sarah_jacobs_1834" ], [ "Range(hasRelation) = Person", "john_heath hasRelation sarah_jacobs_1834" ], [ "Range(isChildOf) = Person", "ada_rachel_heath_1868 isChildOf sarah_jacobs_1834" ], [ "Range(hasRelation) = Person" ], [ "Domain(isMotherOf) = Person", "sarah_jacobs_1834 isMotherOf ada_rachel_heath_1868" ], [ "Range(isBloodrelationOf) = Person", "sarah_jacobs_1834 isBloodrelationOf sarah_jacobs_1834" ], [ "Range(hasRelation) = Person", "ada_rachel_heath_1868 hasRelation sarah_jacobs_1834" ], [ "Domain(isParentOf) = Person", "sarah_jacobs_1834 isParentOf ada_rachel_heath_1868" ], [ "Domain(isSiblingOf) = Person", "sarah_jacobs_1834 isSiblingOf sarah_jacobs_1834" ], [ "Woman subClassOf Person", "sarah_jacobs_1834 type Woman" ], [ "Domain(isBloodrelationOf) = Person", "sarah_jacobs_1834 isBloodrelationOf sarah_jacobs_1834" ], [ "Range(hasRelation) = Person", "sarah_jacobs_1834 hasRelation sarah_jacobs_1834" ], [ "Domain(hasRelation) = Person", "sarah_jacobs_1834 hasRelation gwendoline_heath_1878" ], [ "Range(hasMother) = Person", "ada_rachel_heath_1868 hasMother sarah_jacobs_1834" ], [ "Range(hasAncestor) = Person", "ada_rachel_heath_1868 hasAncestor sarah_jacobs_1834" ], [ "Domain(hasRelation) = Person", "sarah_jacobs_1834 hasRelation ada_rachel_heath_1868" ], [ "Range(hasParent) = Person", "ada_rachel_heath_1868 hasParent sarah_jacobs_1834" ], [ "Domain(hasChild) = Person", "sarah_jacobs_1834 hasChild ada_rachel_heath_1868" ], [ "Domain(isAncestorOf) = Person", "sarah_jacobs_1834 isAncestorOf ada_rachel_heath_1868" ], [ "Range(isSiblingOf) = Person", "sarah_jacobs_1834 isSiblingOf sarah_jacobs_1834" ], [ "Ancestor subClassOf Person", "sarah_jacobs_1834 type Ancestor" ], [ "Domain(hasRelation) = Person", "sarah_jacobs_1834 hasRelation john_heath" ], [ "Domain(hasRelation) = Person", "sarah_jacobs_1834 hasRelation sarah_jacobs_1834" ] ],
+    "size" : {
+      "min" : 1,
+      "max" : 2
+    },
+    "explanationCount" : 23,
+    "sparql_queries" : [ "ASK WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> rdf:type <http://www.example.com/genealogy.owl#Person> }", "SELECT ?class WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> rdf:type ?class }" ]
+  },
+  "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> rdf:type <http://www.example.com/genealogy.owl#Woman> }" : {
+    "inferred" : {
+      "subject" : "ada_rachel_heath_1868",
+      "predicate" : "type",
+      "object" : "Woman"
+    },
+    "explanations" : [ [ "Range(hasSister) = Woman", "gwendoline_heath_1878 hasSister ada_rachel_heath_1868" ], [ "Domain(isFemalePartnerIn) = Woman", "ada_rachel_heath_1868 isFemalePartnerIn m135" ], [ "Domain(isSisterOf) = Woman", "ada_rachel_heath_1868 isSisterOf gwendoline_heath_1878" ], [ "Range(hasFemalePartner) = Woman", "m135 hasFemalePartner ada_rachel_heath_1868" ] ],
     "size" : {
       "min" : 2,
       "max" : 2
-    }
+    },
+    "explanationCount" : 4,
+    "sparql_queries" : [ "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> rdf:type <http://www.example.com/genealogy.owl#Woman> }", "SELECT ?class WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> rdf:type ?class }" ]
+  },
+  "ASK { <http://www.example.com/genealogy.owl#Woman> rdfs:subClassOf <http://www.example.com/genealogy.owl#Person> }" : {
+    "inferred" : {
+      "subject" : "Woman",
+      "predicate" : "subClassOf",
+      "object" : "Person"
+    },
+    "explanations" : [ ],
+    "size" : {
+      "min" : 0,
+      "max" : 0
+    },
+    "explanationCount" : 0
+  },
+  "ASK { <http://www.example.com/genealogy.owl#Ancestor> rdfs:subClassOf <http://www.example.com/genealogy.owl#DomainEntity> }" : {
+    "inferred" : {
+      "subject" : "Ancestor",
+      "predicate" : "subClassOf",
+      "object" : "DomainEntity"
+    },
+    "explanations" : [ [ "Ancestor subClassOf Person", "Person subClassOf DomainEntity" ] ],
+    "size" : {
+      "min" : 2,
+      "max" : 2
+    },
+    "explanationCount" : 1
+  },
+  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#john_heath> <http://www.example.com/genealogy.owl#isParentOf> ?object }" : {
+    "inferred" : {
+      "subject" : "john_heath",
+      "predicate" : "isParentOf",
+      "object" : "ada_rachel_heath_1868"
+    },
+    "explanations" : [ [ "john_heath hasRelation sarah_jacobs_1834", "sarah_jacobs_1834 hasChild ada_rachel_heath_1868", "hasChild SubPropertyOf isParentOf" ], [ "john_heath hasRelation sarah_jacobs_1834", "sarah_jacobs_1834 isAncestorOf ada_rachel_heath_1868" ], [ "hasChild", "isFatherOf SubPropertyOf isParentOf", "john_heath isFatherOf ada_rachel_heath_1868" ], [ "hasParent InverseOf isParentOf", "ada_rachel_heath_1868 hasParent john_heath" ], [ "isFatherOf SubPropertyOf isParentOf", "john_heath isFatherOf ada_rachel_heath_1868" ], [ "john_heath hasRelation sarah_jacobs_1834", "sarah_jacobs_1834 isMotherOf ada_rachel_heath_1868", "isMotherOf SubPropertyOf isParentOf" ], [ "john_heath hasRelation gwendoline_heath_1878", "gwendoline_heath_1878 isSiblingOf ada_rachel_heath_1868" ], [ "isFatherOf SubPropertyOf isParentOf", "john_heath isFatherOf ada_rachel_heath_1868" ], [ "john_heath hasRelation gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation ada_rachel_heath_1868" ], [ "hasChild", "john_heath hasChild ada_rachel_heath_1868" ], [ "hasParent InverseOf isParentOf", "ada_rachel_heath_1868 hasParent john_heath" ], [ "john_heath hasRelation gwendoline_heath_1878", "gwendoline_heath_1878 isBloodrelationOf ada_rachel_heath_1868" ], [ "john_heath hasRelation gwendoline_heath_1878", "gwendoline_heath_1878 hasSister ada_rachel_heath_1868" ], [ "hasChild", "john_heath hasChild ada_rachel_heath_1868" ], [ "john_heath hasRelation sarah_jacobs_1834", "sarah_jacobs_1834 hasRelation ada_rachel_heath_1868" ] ],
+    "size" : {
+      "min" : 2,
+      "max" : 3
+    },
+    "explanationCount" : 15,
+    "sparql_queries" : [ "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#john_heath> <http://www.example.com/genealogy.owl#isParentOf> ?object }", "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#isParentOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }", "ASK WHERE { <http://www.example.com/genealogy.owl#john_heath> <http://www.example.com/genealogy.owl#isParentOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" ]
+  },
+  "ASK { <http://www.example.com/genealogy.owl#Woman> rdfs:subClassOf <http://www.example.com/genealogy.owl#DomainEntity> }" : {
+    "inferred" : {
+      "subject" : "Woman",
+      "predicate" : "subClassOf",
+      "object" : "DomainEntity"
+    },
+    "explanations" : [ [ "Woman subClassOf Person", "Person subClassOf DomainEntity" ] ],
+    "size" : {
+      "min" : 2,
+      "max" : 2
+    },
+    "explanationCount" : 1
+  },
+  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#john_heath> }" : {
+    "inferred" : {
+      "subject" : "gwendoline_heath_1878",
+      "predicate" : "hasRelation",
+      "object" : "john_heath"
+    },
+    "explanations" : [ [ "isSiblingOf SubPropertyOf hasRelation", "hasAncestor SubPropertyOf hasRelation", "hasSister SubPropertyOf hasRelation", "hasParent SubPropertyOf hasRelation", "hasSister SubPropertyOf hasRelation", "hasAncestor SubPropertyOf hasRelation", "hasSister SubPropertyOf hasRelation", "hasFather SubPropertyOf hasRelation", "isBloodrelationOf SubPropertyOf hasRelation", "isChildOf SubPropertyOf hasRelation", "isSiblingOf SubPropertyOf hasRelation", "hasFather SubPropertyOf hasRelation", "isSiblingOf SubPropertyOf hasRelation", "isChildOf SubPropertyOf hasRelation", "isBloodrelationOf SubPropertyOf hasRelation", "hasParent SubPropertyOf hasRelation", "hasSister SubPropertyOf hasRelation", "isChildOf SubPropertyOf hasRelation", "isBloodrelationOf SubPropertyOf hasRelation", "hasAncestor SubPropertyOf hasRelation", "isBloodrelationOf SubPropertyOf hasRelation", "hasFather SubPropertyOf hasRelation", "isSiblingOf SubPropertyOf hasRelation", "hasParent SubPropertyOf hasRelation" ] ],
+    "size" : {
+      "min" : 24,
+      "max" : 24
+    },
+    "explanationCount" : 1,
+    "sparql_queries" : [ "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#john_heath> }", "ASK WHERE { <http://www.example.com/genealogy.owl#gwendoline_heath_1878> <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#john_heath> }", "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#gwendoline_heath_1878> <http://www.example.com/genealogy.owl#hasRelation> ?object }" ]
+  },
+  "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasParent> <http://www.example.com/genealogy.owl#john_heath> }" : {
+    "inferred" : {
+      "subject" : "ada_rachel_heath_1868",
+      "predicate" : "hasParent",
+      "object" : "john_heath"
+    },
+    "explanations" : [ [ "ada_rachel_heath_1868 isBloodrelationOf gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation john_heath" ], [ "ada_rachel_heath_1868 isSiblingOf gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation john_heath" ], [ "hasParent InverseOf isParentOf", "john_heath isParentOf ada_rachel_heath_1868" ], [ "ada_rachel_heath_1868 isSisterOf gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation john_heath" ], [ "ada_rachel_heath_1868 isChildOf sarah_jacobs_1834", "sarah_jacobs_1834 hasRelation john_heath", "isChildOf SubPropertyOf hasParent" ], [ "ada_rachel_heath_1868 hasRelation sarah_jacobs_1834", "sarah_jacobs_1834 hasRelation john_heath" ], [ "hasParent", "ada_rachel_heath_1868 isChildOf john_heath" ], [ "hasFather SubPropertyOf hasParent", "ada_rachel_heath_1868 hasFather john_heath" ], [ "hasParent", "hasFather SubPropertyOf hasParent", "ada_rachel_heath_1868 hasFather john_heath" ], [ "ada_rachel_heath_1868 hasMother sarah_jacobs_1834", "sarah_jacobs_1834 hasRelation john_heath", "hasMother SubPropertyOf hasParent" ], [ "hasParent InverseOf isParentOf", "john_heath isParentOf ada_rachel_heath_1868" ], [ "ada_rachel_heath_1868 hasAncestor sarah_jacobs_1834", "sarah_jacobs_1834 hasRelation john_heath" ], [ "ada_rachel_heath_1868 hasRelation gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation john_heath" ], [ "hasParent", "ada_rachel_heath_1868 isChildOf john_heath" ], [ "hasFather SubPropertyOf hasParent", "ada_rachel_heath_1868 hasFather john_heath" ] ],
+    "size" : {
+      "min" : 2,
+      "max" : 3
+    },
+    "explanationCount" : 15,
+    "sparql_queries" : [ "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasParent> <http://www.example.com/genealogy.owl#john_heath> }", "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasParent> ?object }", "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasParent> <http://www.example.com/genealogy.owl#john_heath> }" ]
+  },
+  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasFemalePartner> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
+    "inferred" : {
+      "subject" : "m135",
+      "predicate" : "hasFemalePartner",
+      "object" : "ada_rachel_heath_1868"
+    },
+    "explanations" : [ [ "Directly asserted" ] ],
+    "size" : {
+      "min" : 1,
+      "max" : 1
+    },
+    "explanationCount" : 1,
+    "sparql_queries" : [ "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasFemalePartner> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }", "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#m135> <http://www.example.com/genealogy.owl#hasFemalePartner> ?object }", "ASK WHERE { <http://www.example.com/genealogy.owl#m135> <http://www.example.com/genealogy.owl#hasFemalePartner> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" ]
+  },
+  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#isSiblingOf> <http://www.example.com/genealogy.owl#gwendoline_heath_1878> }" : {
+    "inferred" : {
+      "subject" : "ada_rachel_heath_1868",
+      "predicate" : "isSiblingOf",
+      "object" : "gwendoline_heath_1878"
+    },
+    "explanations" : [ [ "ada_rachel_heath_1868 hasRelation john_heath", "john_heath hasRelation gwendoline_heath_1878" ], [ "ada_rachel_heath_1868 hasMother sarah_jacobs_1834", "sarah_jacobs_1834 hasRelation gwendoline_heath_1878" ], [ "ada_rachel_heath_1868 isChildOf sarah_jacobs_1834", "sarah_jacobs_1834 hasRelation gwendoline_heath_1878" ], [ "ada_rachel_heath_1868 hasParent john_heath", "john_heath hasRelation gwendoline_heath_1878" ], [ "isSisterOf SubPropertyOf isSiblingOf", "ada_rachel_heath_1868 isSisterOf gwendoline_heath_1878" ], [ "ada_rachel_heath_1868 hasAncestor sarah_jacobs_1834", "sarah_jacobs_1834 hasRelation gwendoline_heath_1878" ], [ "isSisterOf SubPropertyOf isSiblingOf", "ada_rachel_heath_1868 isSisterOf gwendoline_heath_1878" ], [ "ada_rachel_heath_1868 isChildOf john_heath", "john_heath hasRelation gwendoline_heath_1878" ], [ "ada_rachel_heath_1868 hasFather john_heath", "john_heath hasRelation gwendoline_heath_1878" ], [ "ada_rachel_heath_1868 hasAncestor john_heath", "john_heath hasRelation gwendoline_heath_1878" ], [ "ada_rachel_heath_1868 hasRelation sarah_jacobs_1834", "sarah_jacobs_1834 hasRelation gwendoline_heath_1878" ], [ "ada_rachel_heath_1868 hasParent sarah_jacobs_1834", "sarah_jacobs_1834 hasRelation gwendoline_heath_1878" ] ],
+    "size" : {
+      "min" : 2,
+      "max" : 2
+    },
+    "explanationCount" : 12,
+    "sparql_queries" : [ "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#isSiblingOf> <http://www.example.com/genealogy.owl#gwendoline_heath_1878> }", "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#isSiblingOf> ?object }", "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#isSiblingOf> <http://www.example.com/genealogy.owl#gwendoline_heath_1878> }" ]
+  },
+  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> <http://www.example.com/genealogy.owl#hasRelation> ?object }" : {
+    "inferred" : {
+      "subject" : "sarah_jacobs_1834",
+      "predicate" : "hasRelation",
+      "object" : "john_heath"
+    },
+    "explanations" : [ [ "hasChild SubPropertyOf hasRelation", "hasParent SubPropertyOf hasRelation", "hasChild SubPropertyOf hasRelation", "hasFather SubPropertyOf hasRelation", "isAncestorOf SubPropertyOf hasRelation", "hasParent SubPropertyOf hasRelation", "isMotherOf SubPropertyOf hasRelation", "hasAncestor SubPropertyOf hasRelation", "isAncestorOf SubPropertyOf hasRelation", "hasAncestor SubPropertyOf hasRelation", "isMotherOf SubPropertyOf hasRelation", "hasParent SubPropertyOf hasRelation", "isParentOf SubPropertyOf hasRelation", "isChildOf SubPropertyOf hasRelation", "isAncestorOf SubPropertyOf hasRelation", "isChildOf SubPropertyOf hasRelation", "isParentOf SubPropertyOf hasRelation", "hasAncestor SubPropertyOf hasRelation", "hasChild SubPropertyOf hasRelation", "isChildOf SubPropertyOf hasRelation", "isParentOf SubPropertyOf hasRelation", "hasParent SubPropertyOf hasRelation", "isMotherOf SubPropertyOf hasRelation", "isChildOf SubPropertyOf hasRelation", "isParentOf SubPropertyOf hasRelation", "hasFather SubPropertyOf hasRelation", "hasChild SubPropertyOf hasRelation", "hasAncestor SubPropertyOf hasRelation", "isAncestorOf SubPropertyOf hasRelation", "hasFather SubPropertyOf hasRelation", "isMotherOf SubPropertyOf hasRelation", "hasFather SubPropertyOf hasRelation" ] ],
+    "size" : {
+      "min" : 32,
+      "max" : 32
+    },
+    "explanationCount" : 1,
+    "sparql_queries" : [ "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> <http://www.example.com/genealogy.owl#hasRelation> ?object }", "ASK WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#john_heath> }", "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#john_heath> }" ]
+  },
+  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#isPartnerIn> <http://www.example.com/genealogy.owl#m135> }" : {
+    "inferred" : {
+      "subject" : "ada_rachel_heath_1868",
+      "predicate" : "isPartnerIn",
+      "object" : "m135"
+    },
+    "explanations" : [ [ "isFemalePartnerIn SubPropertyOf isPartnerIn", "ada_rachel_heath_1868 isFemalePartnerIn m135" ], [ "hasPartner InverseOf isPartnerIn", "m135 hasPartner ada_rachel_heath_1868" ], [ "isFemalePartnerIn SubPropertyOf isPartnerIn", "ada_rachel_heath_1868 isFemalePartnerIn m135" ], [ "hasPartner InverseOf isPartnerIn", "m135 hasPartner ada_rachel_heath_1868" ] ],
+    "size" : {
+      "min" : 2,
+      "max" : 2
+    },
+    "explanationCount" : 4,
+    "sparql_queries" : [ "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#isPartnerIn> <http://www.example.com/genealogy.owl#m135> }", "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#isPartnerIn> <http://www.example.com/genealogy.owl#m135> }", "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#isPartnerIn> ?object }" ]
+  },
+  "ASK WHERE { <http://www.example.com/genealogy.owl#john_heath> rdf:type <http://www.example.com/genealogy.owl#Ancestor> }" : {
+    "inferred" : {
+      "subject" : "john_heath",
+      "predicate" : "type",
+      "object" : "Ancestor"
+    },
+    "explanations" : [ [ "Domain(hasChild) = Ancestor", "john_heath hasChild ada_rachel_heath_1868" ], [ "Range(isChildOf) = Ancestor", "ada_rachel_heath_1868 isChildOf john_heath" ], [ "Range(hasParent) = Ancestor", "ada_rachel_heath_1868 hasParent john_heath" ], [ "Range(hasAncestor) = Ancestor", "ada_rachel_heath_1868 hasAncestor john_heath" ], [ "Range(hasFather) = Ancestor", "ada_rachel_heath_1868 hasFather john_heath" ], [ "Range(hasRelation) = Person" ], [ "Domain(isFatherOf) = Ancestor", "john_heath isFatherOf ada_rachel_heath_1868" ], [ "Domain(isAncestorOf) = Ancestor", "john_heath isAncestorOf ada_rachel_heath_1868" ], [ "Domain(isParentOf) = Ancestor", "john_heath isParentOf ada_rachel_heath_1868" ] ],
+    "size" : {
+      "min" : 1,
+      "max" : 2
+    },
+    "explanationCount" : 9,
+    "sparql_queries" : [ "ASK WHERE { <http://www.example.com/genealogy.owl#john_heath> rdf:type <http://www.example.com/genealogy.owl#Ancestor> }", "SELECT ?class WHERE { <http://www.example.com/genealogy.owl#john_heath> rdf:type ?class }" ]
+  },
+  "ASK { <http://www.example.com/genealogy.owl#Sex> rdfs:subClassOf <http://www.example.com/genealogy.owl#DomainEntity> }" : {
+    "inferred" : {
+      "subject" : "Sex",
+      "predicate" : "subClassOf",
+      "object" : "DomainEntity"
+    },
+    "explanations" : [ [ "Directly asserted" ] ],
+    "size" : {
+      "min" : 1,
+      "max" : 1
+    },
+    "explanationCount" : 1
+  },
+  "ASK WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
+    "inferred" : {
+      "subject" : "sarah_jacobs_1834",
+      "predicate" : "hasRelation",
+      "object" : "ada_rachel_heath_1868"
+    },
+    "explanations" : [ [ "isParentOf SubPropertyOf hasRelation", "sarah_jacobs_1834 isParentOf ada_rachel_heath_1868" ], [ "isAncestorOf SubPropertyOf hasRelation", "sarah_jacobs_1834 isAncestorOf ada_rachel_heath_1868" ], [ "isMotherOf SubPropertyOf hasRelation", "sarah_jacobs_1834 isMotherOf ada_rachel_heath_1868" ], [ "hasChild SubPropertyOf hasRelation", "sarah_jacobs_1834 hasChild ada_rachel_heath_1868" ], [ "isAncestorOf SubPropertyOf hasRelation", "sarah_jacobs_1834 isAncestorOf ada_rachel_heath_1868" ] ],
+    "size" : {
+      "min" : 2,
+      "max" : 2
+    },
+    "explanationCount" : 5,
+    "sparql_queries" : [ "ASK WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }", "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> <http://www.example.com/genealogy.owl#hasRelation> ?object }", "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" ]
+  },
+  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#gwendoline_heath_1878> <http://www.example.com/genealogy.owl#hasRelation> ?object }" : {
+    "inferred" : {
+      "subject" : "gwendoline_heath_1878",
+      "predicate" : "hasRelation",
+      "object" : "ada_rachel_heath_1868"
+    },
+    "explanations" : [ [ "isSiblingOf SubPropertyOf hasRelation", "gwendoline_heath_1878 isSiblingOf ada_rachel_heath_1868" ], [ "isBloodrelationOf SubPropertyOf hasRelation", "gwendoline_heath_1878 isBloodrelationOf ada_rachel_heath_1868" ], [ "hasSister SubPropertyOf hasRelation", "gwendoline_heath_1878 hasSister ada_rachel_heath_1868" ], [ "isSiblingOf SubPropertyOf hasRelation", "gwendoline_heath_1878 isSiblingOf ada_rachel_heath_1868" ] ],
+    "size" : {
+      "min" : 2,
+      "max" : 2
+    },
+    "explanationCount" : 4,
+    "sparql_queries" : [ "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#gwendoline_heath_1878> <http://www.example.com/genealogy.owl#hasRelation> ?object }", "ASK WHERE { <http://www.example.com/genealogy.owl#gwendoline_heath_1878> <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }", "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" ]
+  },
+  "ASK { <http://www.example.com/genealogy.owl#Man> rdfs:subClassOf <http://www.example.com/genealogy.owl#Person> }" : {
+    "inferred" : {
+      "subject" : "Man",
+      "predicate" : "subClassOf",
+      "object" : "Person"
+    },
+    "explanations" : [ ],
+    "size" : {
+      "min" : 0,
+      "max" : 0
+    },
+    "explanationCount" : 0
+  },
+  "ASK WHERE { <http://www.example.com/genealogy.owl#john_heath> <http://www.example.com/genealogy.owl#isFatherOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
+    "inferred" : {
+      "subject" : "john_heath",
+      "predicate" : "isFatherOf",
+      "object" : "ada_rachel_heath_1868"
+    },
+    "explanations" : [ [ "Directly asserted" ] ],
+    "size" : {
+      "min" : 1,
+      "max" : 1
+    },
+    "explanationCount" : 1,
+    "sparql_queries" : [ "ASK WHERE { <http://www.example.com/genealogy.owl#john_heath> <http://www.example.com/genealogy.owl#isFatherOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }", "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#john_heath> <http://www.example.com/genealogy.owl#isFatherOf> ?object }", "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#isFatherOf> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" ]
+  },
+  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#gwendoline_heath_1878> <http://www.example.com/genealogy.owl#hasSister> ?object }" : {
+    "inferred" : {
+      "subject" : "gwendoline_heath_1878",
+      "predicate" : "hasSister",
+      "object" : "ada_rachel_heath_1868"
+    },
+    "explanations" : [ [ "gwendoline_heath_1878 hasRelation sarah_jacobs_1834", "sarah_jacobs_1834 isAncestorOf ada_rachel_heath_1868" ], [ "gwendoline_heath_1878 hasRelation sarah_jacobs_1834", "sarah_jacobs_1834 isParentOf ada_rachel_heath_1868" ], [ "gwendoline_heath_1878 hasRelation sarah_jacobs_1834", "sarah_jacobs_1834 isMotherOf ada_rachel_heath_1868" ], [ "gwendoline_heath_1878 hasRelation john_heath", "john_heath hasRelation ada_rachel_heath_1868" ], [ "gwendoline_heath_1878 hasRelation john_heath", "john_heath isFatherOf ada_rachel_heath_1868" ], [ "hasSister InverseOf isSisterOf", "ada_rachel_heath_1868 isSisterOf gwendoline_heath_1878" ], [ "gwendoline_heath_1878 hasRelation john_heath", "john_heath isParentOf ada_rachel_heath_1868" ], [ "gwendoline_heath_1878 hasRelation sarah_jacobs_1834", "sarah_jacobs_1834 hasChild ada_rachel_heath_1868" ], [ "gwendoline_heath_1878 hasRelation sarah_jacobs_1834", "sarah_jacobs_1834 hasRelation ada_rachel_heath_1868" ], [ "hasSister InverseOf isSisterOf", "ada_rachel_heath_1868 isSisterOf gwendoline_heath_1878" ], [ "gwendoline_heath_1878 hasRelation john_heath", "john_heath hasChild ada_rachel_heath_1868" ], [ "gwendoline_heath_1878 hasRelation john_heath", "john_heath isAncestorOf ada_rachel_heath_1868" ] ],
+    "size" : {
+      "min" : 2,
+      "max" : 2
+    },
+    "explanationCount" : 12,
+    "sparql_queries" : [ "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#gwendoline_heath_1878> <http://www.example.com/genealogy.owl#hasSister> ?object }", "ASK WHERE { <http://www.example.com/genealogy.owl#gwendoline_heath_1878> <http://www.example.com/genealogy.owl#hasSister> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }", "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasSister> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" ]
+  },
+  "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasMother> ?object }" : {
+    "inferred" : {
+      "subject" : "ada_rachel_heath_1868",
+      "predicate" : "hasMother",
+      "object" : "sarah_jacobs_1834"
+    },
+    "explanations" : [ [ "ada_rachel_heath_1868 hasRelation john_heath", "john_heath hasRelation sarah_jacobs_1834" ], [ "ada_rachel_heath_1868 hasParent john_heath", "john_heath hasRelation sarah_jacobs_1834" ], [ "ada_rachel_heath_1868 isBloodrelationOf gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation sarah_jacobs_1834" ], [ "ada_rachel_heath_1868 isChildOf john_heath", "john_heath hasRelation sarah_jacobs_1834" ], [ "hasMother InverseOf isMotherOf", "sarah_jacobs_1834 isMotherOf ada_rachel_heath_1868" ], [ "hasMother InverseOf isMotherOf", "sarah_jacobs_1834 isMotherOf ada_rachel_heath_1868" ], [ "ada_rachel_heath_1868 hasRelation gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation sarah_jacobs_1834" ], [ "ada_rachel_heath_1868 isSiblingOf gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation sarah_jacobs_1834" ], [ "ada_rachel_heath_1868 hasAncestor john_heath", "john_heath hasRelation sarah_jacobs_1834" ], [ "ada_rachel_heath_1868 isSisterOf gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation sarah_jacobs_1834" ] ],
+    "size" : {
+      "min" : 2,
+      "max" : 2
+    },
+    "explanationCount" : 10,
+    "sparql_queries" : [ "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasMother> ?object }", "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasMother> <http://www.example.com/genealogy.owl#sarah_jacobs_1834> }", "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasMother> <http://www.example.com/genealogy.owl#sarah_jacobs_1834> }" ]
+  },
+  "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasChild> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }" : {
+    "inferred" : {
+      "subject" : "sarah_jacobs_1834",
+      "predicate" : "hasChild",
+      "object" : "ada_rachel_heath_1868"
+    },
+    "explanations" : [ [ "sarah_jacobs_1834 hasRelation gwendoline_heath_1878", "gwendoline_heath_1878 isBloodrelationOf ada_rachel_heath_1868" ], [ "sarah_jacobs_1834 hasRelation john_heath", "john_heath isParentOf ada_rachel_heath_1868", "isParentOf SubPropertyOf hasChild" ], [ "sarah_jacobs_1834 hasRelation gwendoline_heath_1878", "gwendoline_heath_1878 isSiblingOf ada_rachel_heath_1868" ], [ "sarah_jacobs_1834 hasRelation john_heath", "john_heath isFatherOf ada_rachel_heath_1868", "isFatherOf SubPropertyOf hasChild" ], [ "hasChild", "isMotherOf SubPropertyOf hasChild", "sarah_jacobs_1834 isMotherOf ada_rachel_heath_1868" ], [ "sarah_jacobs_1834 hasRelation john_heath", "john_heath hasRelation ada_rachel_heath_1868" ], [ "sarah_jacobs_1834 hasRelation john_heath", "john_heath isAncestorOf ada_rachel_heath_1868" ], [ "isMotherOf SubPropertyOf hasChild", "sarah_jacobs_1834 isMotherOf ada_rachel_heath_1868" ], [ "sarah_jacobs_1834 hasRelation gwendoline_heath_1878", "gwendoline_heath_1878 hasRelation ada_rachel_heath_1868" ], [ "hasChild InverseOf isChildOf", "ada_rachel_heath_1868 isChildOf sarah_jacobs_1834" ], [ "hasChild InverseOf isChildOf", "ada_rachel_heath_1868 isChildOf sarah_jacobs_1834" ], [ "isMotherOf SubPropertyOf hasChild", "sarah_jacobs_1834 isMotherOf ada_rachel_heath_1868" ], [ "sarah_jacobs_1834 hasRelation gwendoline_heath_1878", "gwendoline_heath_1878 hasSister ada_rachel_heath_1868" ], [ "hasChild", "sarah_jacobs_1834 isParentOf ada_rachel_heath_1868" ], [ "hasChild", "sarah_jacobs_1834 isParentOf ada_rachel_heath_1868" ] ],
+    "size" : {
+      "min" : 2,
+      "max" : 3
+    },
+    "explanationCount" : 15,
+    "sparql_queries" : [ "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasChild> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }", "ASK WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> <http://www.example.com/genealogy.owl#hasChild> <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> }", "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#sarah_jacobs_1834> <http://www.example.com/genealogy.owl#hasChild> ?object }" ]
+  },
+  "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#john_heath> }" : {
+    "inferred" : {
+      "subject" : "ada_rachel_heath_1868",
+      "predicate" : "hasRelation",
+      "object" : "john_heath"
+    },
+    "explanations" : [ [ "isChildOf SubPropertyOf hasRelation", "ada_rachel_heath_1868 isChildOf john_heath" ], [ "hasAncestor SubPropertyOf hasRelation", "ada_rachel_heath_1868 hasAncestor john_heath" ], [ "hasParent SubPropertyOf hasRelation", "ada_rachel_heath_1868 hasParent john_heath" ], [ "hasFather SubPropertyOf hasRelation", "ada_rachel_heath_1868 hasFather john_heath" ], [ "hasAncestor SubPropertyOf hasRelation", "ada_rachel_heath_1868 hasAncestor john_heath" ] ],
+    "size" : {
+      "min" : 2,
+      "max" : 2
+    },
+    "explanationCount" : 5,
+    "sparql_queries" : [ "ASK WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#john_heath> }", "SELECT ?subject WHERE { ?subject <http://www.example.com/genealogy.owl#hasRelation> <http://www.example.com/genealogy.owl#john_heath> }", "SELECT ?object WHERE { <http://www.example.com/genealogy.owl#ada_rachel_heath_1868> <http://www.example.com/genealogy.owl#hasRelation> ?object }" ]
   }
 }

@@ -40,6 +40,11 @@ public class HybridOutputService implements OutputService {
     private String jsonFilePath;
 
     private final Map<String, ObjectNode> explanationsMap;
+
+    // Triple-based mapping to group identical explanations
+    private final Map<String, Set<String>> tripleToSparqlQueries;
+    private final Map<String, ObjectNode> tripleExplanationsMap;
+
     private boolean initialized = false;
     private boolean closed = false;
 
@@ -52,6 +57,8 @@ public class HybridOutputService implements OutputService {
     public HybridOutputService() {
         this.jsonMapper = new ObjectMapper();
         this.explanationsMap = new HashMap<>();
+        this.tripleToSparqlQueries = new HashMap<>();
+        this.tripleExplanationsMap = new HashMap<>();
         LOGGER.info("Hybrid output service created");
     }
 
@@ -116,8 +123,44 @@ public class HybridOutputService implements OutputService {
             // Mark as processed
             processedQueries.add(sparql);
 
+            // Extract triple components based on task type
+            String subject = "";
+            String object = "";
+
+            if (taskType.equals("Subsumption")) {
+                if (sparql.contains("subClassOf")) {
+                    String[] parts = sparql.split("subClassOf");
+                    if (parts.length >= 2) {
+                        subject = extractEntity(parts[0]);
+                        object = extractEntity(parts[1]);
+                    }
+                }
+            } else if (taskType.equals("Property Assertion")) {
+                if (sparql.contains("{") && sparql.contains("}")) {
+                    String[] parts = sparql.split("\\{|\\}")[1].split("\\s+");
+                    if (parts.length >= 4) {
+                        subject = cleanEntity(parts[1]);
+                        object = cleanEntity(parts[3]);
+                    }
+                }
+            } else if (taskType.equals("Membership")) {
+                if (sparql.contains("{") && sparql.contains("}")) {
+                    String[] parts = sparql.split("\\{|\\}")[1].split("\\s+");
+                    if (parts.length >= 4 && parts[2].contains("type")) {
+                        subject = cleanEntity(parts[1]);
+                        object = cleanEntity(parts[3]);
+                    }
+                }
+            }
+
+            // Create a unique triple key for grouping
+            String tripleKey = subject + "|" + predicate + "|" + object;
+
+            // Add this query to the set of queries for this triple
+            tripleToSparqlQueries.computeIfAbsent(tripleKey, k -> new HashSet<>()).add(sparql);
+
             // Process and store explanation for JSON
-            processExplanation(sparql, taskType, predicate, answer, explanation, size);
+            processExplanation(sparql, tripleKey, taskType, predicate, subject, object, answer, explanation, size);
         } catch (IOException e) {
             LOGGER.error("Failed to write binary query: " + sparql, e);
             throw e;
@@ -151,8 +194,46 @@ public class HybridOutputService implements OutputService {
             // Mark as processed
             processedQueries.add(sparql);
 
+            // Extract subject and object based on the query type
+            String subject = "";
+            String object = "";
+
+            if (sparql.startsWith("SELECT")) {
+                if (sparql.contains("SELECT ?subject")) {
+                    subject = simplifiedAnswer;
+                    // Extract object from the WHERE clause
+                    Pattern wherePattern = Pattern.compile("\\?subject\\s+<[^>]+>\\s+<([^>]+)>");
+                    Matcher m = wherePattern.matcher(sparql);
+                    if (m.find()) {
+                        object = cleanEntity(m.group(1));
+                    }
+                } else if (sparql.contains("SELECT ?object")) {
+                    object = simplifiedAnswer;
+                    // Extract subject from the WHERE clause
+                    Pattern wherePattern = Pattern.compile("<([^>]+)>\\s+<[^>]+>\\s+\\?object");
+                    Matcher m = wherePattern.matcher(sparql);
+                    if (m.find()) {
+                        subject = cleanEntity(m.group(1));
+                    }
+                } else if (sparql.contains("SELECT ?class")) {
+                    object = simplifiedAnswer;
+                    // Extract individual from the WHERE clause
+                    Pattern wherePattern = Pattern.compile("<([^>]+)>\\s+rdf:type\\s+\\?class");
+                    Matcher m = wherePattern.matcher(sparql);
+                    if (m.find()) {
+                        subject = cleanEntity(m.group(1));
+                    }
+                }
+            }
+
+            // Create a unique triple key for grouping
+            String tripleKey = subject + "|" + predicate + "|" + object;
+
+            // Add this query to the set of queries for this triple
+            tripleToSparqlQueries.computeIfAbsent(tripleKey, k -> new HashSet<>()).add(sparql);
+
             // Process and store explanation for JSON
-            processExplanation(sparql, taskType, predicate, simplifiedAnswer, explanation, size);
+            processExplanation(sparql, tripleKey, taskType, predicate, subject, object, simplifiedAnswer, explanation, size);
         } catch (IOException e) {
             LOGGER.error("Failed to write multi-choice query: " + sparql, e);
             throw e;
@@ -194,11 +275,49 @@ public class HybridOutputService implements OutputService {
                 String explanation = explanationMap.get(answer);
                 int size = sizeMap.getOrDefault(answer, 1);
 
-                // Create a unique key for JSON (append answer to query)
+                // Determine subject and object based on the query structure
+                String subject = "";
+                String object = "";
+
+                if (sparql.startsWith("SELECT")) {
+                    if (sparql.contains("SELECT ?subject")) {
+                        subject = simplifiedAnswer;
+                        // Extract object from the WHERE clause
+                        Pattern wherePattern = Pattern.compile("\\?subject\\s+<[^>]+>\\s+<([^>]+)>");
+                        Matcher m = wherePattern.matcher(sparql);
+                        if (m.find()) {
+                            object = cleanEntity(m.group(1));
+                        }
+                    } else if (sparql.contains("SELECT ?object")) {
+                        object = simplifiedAnswer;
+                        // Extract subject from the WHERE clause
+                        Pattern wherePattern = Pattern.compile("<([^>]+)>\\s+<[^>]+>\\s+\\?object");
+                        Matcher m = wherePattern.matcher(sparql);
+                        if (m.find()) {
+                            subject = cleanEntity(m.group(1));
+                        }
+                    } else if (sparql.contains("SELECT ?class")) {
+                        object = simplifiedAnswer;
+                        // Extract individual from the WHERE clause
+                        Pattern wherePattern = Pattern.compile("<([^>]+)>\\s+rdf:type\\s+\\?class");
+                        Matcher m = wherePattern.matcher(sparql);
+                        if (m.find()) {
+                            subject = cleanEntity(m.group(1));
+                        }
+                    }
+                }
+
+                // Create a unique triple key for grouping
+                String tripleKey = subject + "|" + predicate + "|" + object;
+
+                // Create a unique key for JSON (to avoid conflicts with multiple answers)
                 String jsonKey = sparql + "|" + simplifiedAnswer;
 
+                // Add this query to the set of queries for this triple
+                tripleToSparqlQueries.computeIfAbsent(tripleKey, k -> new HashSet<>()).add(jsonKey);
+
                 // Process and store explanation for JSON
-                processExplanation(jsonKey, taskType, predicate, simplifiedAnswer, explanation, size);
+                processExplanation(jsonKey, tripleKey, taskType, predicate, subject, object, simplifiedAnswer, explanation, size);
             }
         } catch (IOException e) {
             LOGGER.error("Failed to write grouped multi-choice query: " + sparql, e);
@@ -207,63 +326,16 @@ public class HybridOutputService implements OutputService {
     }
 
     private void processExplanation(String sparql,
+                                    String tripleKey,
                                     String taskType,
                                     String predicate,
+                                    String subject,
+                                    String object,
                                     String answer,
                                     String explanation,
                                     int size) {
         // Create JSON structure for this explanation
         ObjectNode explanationNode = jsonMapper.createObjectNode();
-
-        // Extract subject and object from the sparql query
-        String subject = "";
-        String object = "";
-
-        try {
-            if (taskType.equals("Subsumption")) {
-                // For Subsumption: ASK { <subClass> rdfs:subClassOf <superClass> }
-                if (sparql.contains("subClassOf")) {
-                    String[] parts = sparql.split("subClassOf");
-                    if (parts.length >= 2) {
-                        subject = extractEntity(parts[0]);
-                        object = extractEntity(parts[1]);
-                    }
-                }
-            } else if (taskType.equals("Property Assertion")) {
-                // For Property Assertion: ASK WHERE { <subject> <property> <object> }
-                if (sparql.contains("{") && sparql.contains("}")) {
-                    String[] parts = sparql.split("\\{|\\}")[1].split("\\s+");
-                    if (parts.length >= 4) {
-                        subject = cleanEntity(parts[1]);
-                        object = cleanEntity(parts[3]);
-                    }
-                }
-            } else if (taskType.equals("Membership")) {
-                // For Membership: ASK WHERE { <individual> rdf:type <class> }
-                if (sparql.contains("{") && sparql.contains("}")) {
-                    String[] parts = sparql.split("\\{|\\}")[1].split("\\s+");
-                    if (parts.length >= 4 && parts[2].contains("type")) {
-                        subject = cleanEntity(parts[1]);
-                        object = cleanEntity(parts[3]);
-                    }
-                }
-            }
-
-            // For Multi Choice queries with "SELECT ?subject" or "SELECT ?object",
-            // the answer may contain multiple entity names
-            if (sparql.startsWith("SELECT")) {
-                // Check if we're dealing with a multi-choice query
-                if (sparql.contains("SELECT ?subject")) {
-                    subject = answer; // Answer already contains short names
-                } else if (sparql.contains("SELECT ?object")) {
-                    object = answer;  // Answer already contains short names
-                } else if (sparql.contains("SELECT ?class")) {
-                    object = answer;  // For membership queries, the answer is the class (object)
-                }
-            }
-        } catch (Exception e) {
-            LOGGER.warn("Error parsing SPARQL query: " + sparql, e);
-        }
 
         // Create the "inferred" object exactly as specified in requirements
         ObjectNode inferredNode = jsonMapper.createObjectNode();
@@ -330,10 +402,14 @@ public class HybridOutputService implements OutputService {
         // Create the outer structure exactly as specified in requirements
         explanationNode.set("explanations", explanationsArray);
         explanationNode.set("size", sizeNode); // Store size as object with min and max
+        explanationNode.put("explanationCount", explanationsArray.size()); // Add count of explanations
 
         // Store with SPARQL query as key
         synchronized (explanationsMap) {
             explanationsMap.put(sparql, explanationNode);
+
+            // Also store in our triple-based mapping for later consolidation
+            tripleExplanationsMap.put(tripleKey, explanationNode);
         }
     }
 
@@ -418,7 +494,15 @@ public class HybridOutputService implements OutputService {
                     line.equals("Equivalent property:") ||
                     line.equals("Further explanation of super-property relation:") ||
                     line.equals("Further explanation of inverse relation:") ||
-                    line.equals("Further explanation of equivalent relation:")) {
+                    line.equals("Further explanation of equivalent relation:") ||
+                    line.startsWith("Inverse-of paths:") ||
+                    line.startsWith("Sub-property paths:") ||
+                    line.startsWith("Property chain paths:") ||
+                    line.startsWith("Equivalent property paths:") ||
+                    line.startsWith("Equivalent class paths:") ||
+                    line.startsWith("Subclass paths:") ||
+                    line.startsWith("Property domain/range paths:") ||
+                    line.startsWith("Intermediate class paths:")) {
 
                 // Save previous section if any
                 if (currentSection != null && !currentAxioms.isEmpty()) {
@@ -428,6 +512,12 @@ public class HybridOutputService implements OutputService {
 
                 currentSection = line;
 
+            } else if (line.startsWith("Path ")) {
+                // For multi-path explanations, treat each path as a separate section
+                if (currentSection != null && !currentAxioms.isEmpty()) {
+                    sectionAxioms.put(currentSection + " " + line, new ArrayList<>(currentAxioms));
+                    currentAxioms.clear();
+                }
             } else if (line.startsWith("-")) {
                 // Extract axiom
                 String axiom = line.substring(1).trim();
@@ -458,10 +548,10 @@ public class HybridOutputService implements OutputService {
             List<String> completePath = new ArrayList<>();
 
             // Create a readable path based on section type
-            if (section.equals("Explanations from Pellet:")) {
-                // Add all axioms from Pellet
+            if (section.contains("Pellet") || section.contains("Path")) {
+                // Add all axioms from Pellet or a specific path
                 completePath.addAll(axioms);
-            } else if (section.equals("Inverse-of:") || section.equals("Inverse property:")) {
+            } else if (section.contains("Inverse-of") || section.contains("Inverse property")) {
                 // For inverse relationships, we need a complete path
                 String invProp = null;
                 for (String axiom : axioms) {
@@ -488,7 +578,7 @@ public class HybridOutputService implements OutputService {
                 if (invProp != null && !axioms.toString().contains(object + " " + invProp)) {
                     completePath.add(object + " " + invProp + " " + subject);
                 }
-            } else if (section.equals("Sub-property:") || section.equals("Sub-property path:")) {
+            } else if (section.contains("Sub-property")) {
                 // For subproperty relationships
                 String subProp = null;
                 for (String axiom : axioms) {
@@ -507,8 +597,8 @@ public class HybridOutputService implements OutputService {
                 if (subProp != null && !axioms.toString().contains(subject)) {
                     completePath.add(subject + " " + subProp + " " + object);
                 }
-            } else if (section.equals("Equivalent class:") || section.equals("Subclass:") ||
-                    section.equals("Equivalent property:")) {
+            } else if (section.contains("Equivalent class") || section.contains("Subclass") ||
+                    section.contains("Equivalent property")) {
                 // Add all axioms from class/property hierarchy
                 completePath.addAll(axioms);
             } else if (section.startsWith("Further explanation")) {
@@ -582,26 +672,58 @@ public class HybridOutputService implements OutputService {
                 LOGGER.info("CSV file closed: {}", csvFilePath);
             }
 
-            // Write JSON file
-            Map<String, ObjectNode> uniqueJsonEntries = new HashMap<>();
-            synchronized (explanationsMap) {
-                // Consolidate JSON entries by base SPARQL query
-                for (Map.Entry<String, ObjectNode> entry : explanationsMap.entrySet()) {
-                    String key = entry.getKey();
-                    // Extract base SPARQL query if it contains pipe separator
-                    if (key.contains("|")) {
-                        key = key.substring(0, key.indexOf("|"));
+            // Create a consolidated JSON with grouped queries
+            ObjectNode rootNode = jsonMapper.createObjectNode();
+
+            // First, add all triple-based explanations with their SPARQL queries
+            for (Map.Entry<String, Set<String>> entry : tripleToSparqlQueries.entrySet()) {
+                String tripleKey = entry.getKey();
+                Set<String> sparqlQueries = entry.getValue();
+
+                if (sparqlQueries.size() > 1) {
+                    // Multiple queries for the same triple - merge them
+                    ObjectNode tripleNode = tripleExplanationsMap.get(tripleKey);
+                    if (tripleNode != null) {
+                        // Create an array of all SPARQL queries for this triple
+                        ArrayNode queriesArray = jsonMapper.createArrayNode();
+                        for (String query : sparqlQueries) {
+                            // If the query has an answer suffix, remove it
+                            if (query.contains("|")) {
+                                query = query.substring(0, query.indexOf("|"));
+                            }
+                            queriesArray.add(query);
+                        }
+
+                        // Add the queries array to the triple node
+                        tripleNode.set("sparql_queries", queriesArray);
+
+                        // Use the first query as the key in the output
+                        String firstQuery = sparqlQueries.iterator().next();
+                        if (firstQuery.contains("|")) {
+                            firstQuery = firstQuery.substring(0, firstQuery.indexOf("|"));
+                        }
+                        rootNode.set(firstQuery, tripleNode);
                     }
-                    // Use the most recent entry for each unique SPARQL query
-                    uniqueJsonEntries.put(key, entry.getValue());
+                } else if (!sparqlQueries.isEmpty()) {
+                    // Single query for this triple - use it directly
+                    String query = sparqlQueries.iterator().next();
+                    ObjectNode explanationNode = null;
+
+                    if (query.contains("|")) {
+                        // Handle queries with answer suffixes
+                        explanationNode = explanationsMap.get(query);
+                        query = query.substring(0, query.indexOf("|"));
+                    } else {
+                        explanationNode = explanationsMap.get(query);
+                    }
+
+                    if (explanationNode != null) {
+                        rootNode.set(query, explanationNode);
+                    }
                 }
             }
 
-            ObjectNode rootNode = jsonMapper.createObjectNode();
-            for (Map.Entry<String, ObjectNode> entry : uniqueJsonEntries.entrySet()) {
-                rootNode.set(entry.getKey(), entry.getValue());
-            }
-
+            // Write the consolidated JSON to file
             jsonMapper.writerWithDefaultPrettyPrinter()
                     .writeValue(
                             Files.newBufferedWriter(

@@ -18,7 +18,8 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <!-- use a single source for Java version -->
+        <!-- centralise your OWLAPI version -->
+        <owlapi.version>5.1.20</owlapi.version>
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -67,21 +68,26 @@
             <artifactId>micrometer-registry-prometheus</artifactId>
         </dependency>
 
-        <!-- OWL API -->
+        <!-- OWL API (all modules, including parser & renderer) -->
         <dependency>
             <groupId>net.sourceforge.owlapi</groupId>
             <artifactId>owlapi-distribution</artifactId>
-            <version>5.1.20</version>
+            <version>${owlapi.version}</version>
         </dependency>
 
-        <!-- HermiT reasoner (optional alternative) -->
+        <!-- Optional: HermiT reasoner (alternative to Pellet/Openllet) -->
         <dependency>
             <groupId>net.sourceforge.owlapi</groupId>
             <artifactId>org.semanticweb.hermit</artifactId>
             <version>1.4.5.519</version>
         </dependency>
 
-        <!-- Openllet (Pellet) -->
+        <!-- Openllet (Pellet) reasoner + explanation support -->
+        <dependency>
+            <groupId>com.github.galigator.openllet</groupId>
+            <artifactId>openllet-core</artifactId>
+            <version>2.6.5</version>
+        </dependency>
         <dependency>
             <groupId>com.github.galigator.openllet</groupId>
             <artifactId>openllet-owlapi</artifactId>
@@ -111,6 +117,7 @@
             <version>4.4.0</version>
         </dependency>
 
+        <!-- JSON binding -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
