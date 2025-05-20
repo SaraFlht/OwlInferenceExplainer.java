@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -21,35 +20,27 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.JsonNode;
 
-/**
- * A hybrid implementation of OutputService that writes query metadata to CSV
- * and explanations to JSON in the specified format.
- */
 @Component
 public class HybridOutputService implements OutputService {
     private static final Logger LOGGER = LoggerFactory.getLogger(HybridOutputService.class);
 
     private CSVPrinter csvPrinter;
     private final ObjectMapper jsonMapper;
-
-    @Value("${output.csv.path:SPARQL_questions.csv}")
-    private String csvFilePath;
-
-    @Value("${output.json.path:explanations.json}")
-    private String jsonFilePath;
-
     private final Map<String, ObjectNode> explanationsMap;
-
-    // Triple-based mapping to group identical explanations
     private final Map<String, Set<String>> tripleToSparqlQueries;
     private final Map<String, ObjectNode> tripleExplanationsMap;
 
+    // track which root entity each triple came from
+    private final Map<String, String> tripleKeyToRoot = new HashMap<>();
+
+    // current file base-name
+    private String currentRootEntity;
+
+    private final Set<String> processedQueries = ConcurrentHashMap.newKeySet();
     private boolean initialized = false;
     private boolean closed = false;
-
-    // Use ConcurrentHashMap for thread safety
-    private final Set<String> processedQueries = ConcurrentHashMap.newKeySet();
 
     // Pattern to extract subject-predicate-object from explanations
     private static final Pattern TRIPLE_PATTERN = Pattern.compile("([\\w\\s]+)\\s+(\\w+)\\s+([\\w\\s]+)");
@@ -62,41 +53,104 @@ public class HybridOutputService implements OutputService {
         LOGGER.info("Hybrid output service created");
     }
 
+    /**
+     * Called by the runner before each ontology to set the “root entity” name.
+     */
+    public synchronized void setCurrentRootEntity(String rootEntity) {
+        this.currentRootEntity = rootEntity;
+    }
+
+    @Value("${output.csv.path:SPARQL_questions.csv}")
+    private String csvFilePath;
+
+    @Value("${output.json.path:explanations.json}")
+    private String jsonFilePath;
+
     @Override
     public synchronized void initialize() throws IOException {
-        if (initialized || closed) {
-            return;
-        }
+        if (initialized || closed) return;
 
         LOGGER.info("Initializing Hybrid output service with CSV: {}, JSON: {}", csvFilePath, jsonFilePath);
 
-        try {
-            // Create parent directories if they don't exist
-            Path csvPath = Path.of(csvFilePath);
-            Path jsonPath = Path.of(jsonFilePath);
+        Path csvPath = Path.of(csvFilePath);
+        Path jsonPath = Path.of(jsonFilePath);
+        Files.createDirectories(csvPath.getParent() != null ? csvPath.getParent() : Path.of("."));
+        Files.createDirectories(jsonPath.getParent() != null ? jsonPath.getParent() : Path.of("."));
 
-            Files.createDirectories(csvPath.getParent() != null ? csvPath.getParent() : Path.of("."));
-            Files.createDirectories(jsonPath.getParent() != null ? jsonPath.getParent() : Path.of("."));
+        boolean fileExists = Files.exists(csvPath) && Files.size(csvPath) > 0;
 
-            // Initialize CSV printer
-            BufferedWriter csvWriter = Files.newBufferedWriter(
-                    csvPath,
-                    StandardOpenOption.CREATE,
-                    StandardOpenOption.TRUNCATE_EXISTING
+        BufferedWriter csvWriter = Files.newBufferedWriter(
+                csvPath,
+                StandardOpenOption.CREATE,
+                StandardOpenOption.APPEND
+        );
+
+        CSVFormat csvFormat = CSVFormat.DEFAULT
+                .withQuoteMode(QuoteMode.ALL)
+                .withEscape('\\')
+                .withRecordSeparator("\n");
+
+        // Only include header if the file is new or empty
+        if (!fileExists) {
+            csvFormat = csvFormat.withHeader(
+                    "Task ID",
+                    "Root Entity",
+                    "Size of ontology TBox",
+                    "Size of ontology ABox",
+                    "Task Type",
+                    "Answer Type",
+                    "SPARQL Query",
+                    "Predicate",
+                    "Answer"
             );
-
-            this.csvPrinter = new CSVPrinter(csvWriter, CSVFormat.DEFAULT
-                    .withHeader("Task Type", "Answer Type", "SPARQL Query", "Predicate", "Answer")
-                    .withQuoteMode(QuoteMode.ALL)
-                    .withEscape('\\')
-                    .withRecordSeparator("\n"));
-
-            initialized = true;
-            LOGGER.info("Hybrid output service initialized");
-        } catch (IOException e) {
-            LOGGER.error("Failed to initialize output service", e);
-            throw e;
         }
+
+        this.csvPrinter = new CSVPrinter(csvWriter, csvFormat);
+
+        initialized = true;
+        LOGGER.info("Hybrid output service initialized");
+    }
+
+    private int tboxSize = 0;
+    private int aboxSize = 0;
+
+    /**
+     * Set the TBox and ABox sizes for the current ontology
+     */
+    public synchronized void setOntologySizes(int tboxSize, int aboxSize) {
+        this.tboxSize = tboxSize;
+        this.aboxSize = aboxSize;
+        LOGGER.info("Set ontology sizes - TBox: {}, ABox: {}", tboxSize, aboxSize);
+    }
+
+    /**
+     * Reset processed queries tracking to start fresh with a new ontology
+     */
+    public synchronized void resetProcessedQueries() {
+        LOGGER.info("Resetting processed queries tracking");
+        processedQueries.clear();
+    }
+
+    /**
+     * Generate a task ID based on the specified format
+     */
+    private String generateTaskId(String subject, String predicate, String answerType) {
+        // Abbreviate the subject to first part (before first underscore if present)
+        String shortSubject = subject;
+        int underscoreIndex = subject.indexOf('_');
+        if (underscoreIndex > 0) {
+            shortSubject = subject.substring(0, underscoreIndex);
+        }
+
+        // Abbreviate the answer type
+        String shortAnswerType = answerType.equals("Binary") ? "BIN" : "MC";
+
+        // Create the task ID: 1hop-rootEntity-subject-predicate-answerType
+        return String.format("1hop-%s-%s-%s-%s",
+                currentRootEntity,
+                shortSubject,
+                predicate,
+                shortAnswerType);
     }
 
     @Override
@@ -106,65 +160,63 @@ public class HybridOutputService implements OutputService {
                                               String answer,
                                               String explanation,
                                               int size) throws IOException {
-        if (!initialized || closed) {
-            initialize();
+        if (!initialized || closed) initialize();
+
+        if (processedQueries.contains(sparql)) return;
+
+        // extract subject/object, build tripleKey...
+        String subject = "", object = "";
+        if (taskType.equals("Subsumption") && sparql.contains("subClassOf")) {
+            String[] parts = sparql.split("subClassOf");
+            subject = extractEntity(parts[0]);
+            object = extractEntity(parts[1]);
+        } else if (taskType.equals("Property Assertion")) {
+            String[] parts = sparql.split("\\{|\\}")[1].split("\\s+");
+            subject = cleanEntity(parts[1]);
+            object = cleanEntity(parts[3]);
+        } else if (taskType.equals("Membership")) {
+            String[] parts = sparql.split("\\{|\\}")[1].split("\\s+");
+            subject = cleanEntity(parts[1]);
+            object = cleanEntity(parts[3]);
         }
 
-        // Skip if we've already processed this SPARQL query
-        if (processedQueries.contains(sparql)) {
-            return;
+        // Convert to object-only query if necessary
+        String objectOnlyQuery = sparql;
+        if (taskType.equals("Property Assertion") && !sparql.contains("?object")) {
+            objectOnlyQuery = "SELECT ?object WHERE { <" + subject + "> <" + predicate + "> ?object }";
         }
 
-        try {
-            // Write basic info to CSV
-            csvPrinter.printRecord(taskType, "Binary", sparql, predicate, answer);
-            csvPrinter.flush();
+        // Generate task ID
+        String taskId = generateTaskId(subject, predicate, "Binary");
 
-            // Mark as processed
-            processedQueries.add(sparql);
+        // Write to CSV with new columns
+        csvPrinter.printRecord(
+                taskId,
+                currentRootEntity,
+                tboxSize,
+                aboxSize,
+                taskType,
+                "Binary",
+                objectOnlyQuery,
+                predicate,
+                answer
+        );
+        csvPrinter.flush();
+        processedQueries.add(sparql);
 
-            // Extract triple components based on task type
-            String subject = "";
-            String object = "";
+        String tripleKey = subject + "|" + predicate + "|" + object;
+        tripleToSparqlQueries
+                .computeIfAbsent(tripleKey, k -> new HashSet<>())
+                .add(sparql);
 
-            if (taskType.equals("Subsumption")) {
-                if (sparql.contains("subClassOf")) {
-                    String[] parts = sparql.split("subClassOf");
-                    if (parts.length >= 2) {
-                        subject = extractEntity(parts[0]);
-                        object = extractEntity(parts[1]);
-                    }
-                }
-            } else if (taskType.equals("Property Assertion")) {
-                if (sparql.contains("{") && sparql.contains("}")) {
-                    String[] parts = sparql.split("\\{|\\}")[1].split("\\s+");
-                    if (parts.length >= 4) {
-                        subject = cleanEntity(parts[1]);
-                        object = cleanEntity(parts[3]);
-                    }
-                }
-            } else if (taskType.equals("Membership")) {
-                if (sparql.contains("{") && sparql.contains("}")) {
-                    String[] parts = sparql.split("\\{|\\}")[1].split("\\s+");
-                    if (parts.length >= 4 && parts[2].contains("type")) {
-                        subject = cleanEntity(parts[1]);
-                        object = cleanEntity(parts[3]);
-                    }
-                }
-            }
+        // Record which file this triple belongs to
+        tripleKeyToRoot.put(tripleKey, currentRootEntity);
 
-            // Create a unique triple key for grouping
-            String tripleKey = subject + "|" + predicate + "|" + object;
-
-            // Add this query to the set of queries for this triple
-            tripleToSparqlQueries.computeIfAbsent(tripleKey, k -> new HashSet<>()).add(sparql);
-
-            // Process and store explanation for JSON
-            processExplanation(sparql, tripleKey, taskType, predicate, subject, object, answer, explanation, size);
-        } catch (IOException e) {
-            LOGGER.error("Failed to write binary query: " + sparql, e);
-            throw e;
-        }
+        processExplanation(
+                sparql, tripleKey, taskType,
+                predicate, subject, object,
+                answer, explanation, size
+        );
     }
 
     @Override
@@ -174,70 +226,65 @@ public class HybridOutputService implements OutputService {
                                                    String answer,
                                                    String explanation,
                                                    int size) throws IOException {
-        if (!initialized || closed) {
-            initialize();
-        }
+        if (!initialized || closed) initialize();
+        if (processedQueries.contains(sparql)) return;
 
-        // Skip if we've already processed this SPARQL query
-        if (processedQueries.contains(sparql)) {
-            return;
-        }
+        String simplifiedAnswer = cleanEntity(answer);
 
-        try {
-            // Extract the local name from the answer which is typically a URI
-            String simplifiedAnswer = cleanEntity(answer);
+        // extract subject/object similarly...
+        String subject = "", object = "";
+        if (sparql.startsWith("SELECT")) {
+            if (sparql.contains("SELECT ?subject")) {
+                subject = simplifiedAnswer;
+                Matcher m = Pattern.compile("\\?subject\\s+<[^>]+>\\s+<([^>]+)>")
+                        .matcher(sparql);
+                if (m.find()) object = cleanEntity(m.group(1));
 
-            // Write basic info to CSV with simplified answer
-            csvPrinter.printRecord(taskType, "Multi Choice", sparql, predicate, simplifiedAnswer);
-            csvPrinter.flush();
-
-            // Mark as processed
-            processedQueries.add(sparql);
-
-            // Extract subject and object based on the query type
-            String subject = "";
-            String object = "";
-
-            if (sparql.startsWith("SELECT")) {
-                if (sparql.contains("SELECT ?subject")) {
-                    subject = simplifiedAnswer;
-                    // Extract object from the WHERE clause
-                    Pattern wherePattern = Pattern.compile("\\?subject\\s+<[^>]+>\\s+<([^>]+)>");
-                    Matcher m = wherePattern.matcher(sparql);
-                    if (m.find()) {
-                        object = cleanEntity(m.group(1));
-                    }
-                } else if (sparql.contains("SELECT ?object")) {
-                    object = simplifiedAnswer;
-                    // Extract subject from the WHERE clause
-                    Pattern wherePattern = Pattern.compile("<([^>]+)>\\s+<[^>]+>\\s+\\?object");
-                    Matcher m = wherePattern.matcher(sparql);
-                    if (m.find()) {
-                        subject = cleanEntity(m.group(1));
-                    }
-                } else if (sparql.contains("SELECT ?class")) {
-                    object = simplifiedAnswer;
-                    // Extract individual from the WHERE clause
-                    Pattern wherePattern = Pattern.compile("<([^>]+)>\\s+rdf:type\\s+\\?class");
-                    Matcher m = wherePattern.matcher(sparql);
-                    if (m.find()) {
-                        subject = cleanEntity(m.group(1));
-                    }
-                }
+                // Convert to object-only query
+                sparql = "SELECT ?object WHERE { <" + subject + "> <" + predicate + "> ?object }";
+            } else if (sparql.contains("SELECT ?object")) {
+                object = simplifiedAnswer;
+                Matcher m = Pattern.compile("<([^>]+)>\\s+<[^>]+>\\s+\\?object")
+                        .matcher(sparql);
+                if (m.find()) subject = cleanEntity(m.group(1));
+            } else if (sparql.contains("SELECT ?class")) {
+                object = simplifiedAnswer;
+                Matcher m = Pattern.compile("<([^>]+)>\\s+rdf:type\\s+\\?class")
+                        .matcher(sparql);
+                if (m.find()) subject = cleanEntity(m.group(1));
             }
-
-            // Create a unique triple key for grouping
-            String tripleKey = subject + "|" + predicate + "|" + object;
-
-            // Add this query to the set of queries for this triple
-            tripleToSparqlQueries.computeIfAbsent(tripleKey, k -> new HashSet<>()).add(sparql);
-
-            // Process and store explanation for JSON
-            processExplanation(sparql, tripleKey, taskType, predicate, subject, object, simplifiedAnswer, explanation, size);
-        } catch (IOException e) {
-            LOGGER.error("Failed to write multi-choice query: " + sparql, e);
-            throw e;
         }
+
+        // Generate task ID
+        String taskId = generateTaskId(subject, predicate, "Multi Choice");
+
+        csvPrinter.printRecord(
+                taskId,
+                currentRootEntity,
+                tboxSize,
+                aboxSize,
+                taskType,
+                "Multi Choice",
+                sparql,
+                predicate,
+                simplifiedAnswer
+        );
+        csvPrinter.flush();
+        processedQueries.add(sparql);
+
+        String tripleKey = subject + "|" + predicate + "|" + object;
+        tripleToSparqlQueries
+                .computeIfAbsent(tripleKey, k -> new HashSet<>())
+                .add(sparql);
+
+        // NEW
+        tripleKeyToRoot.put(tripleKey, currentRootEntity);
+
+        processExplanation(
+                sparql, tripleKey, taskType,
+                predicate, subject, object,
+                simplifiedAnswer, explanation, size
+        );
     }
 
     @Override
@@ -247,81 +294,93 @@ public class HybridOutputService implements OutputService {
                                                           List<String> answers,
                                                           Map<String, String> explanationMap,
                                                           Map<String, Integer> sizeMap) throws IOException {
-        if (!initialized || closed) {
-            initialize();
-        }
+        if (!initialized || closed) initialize();
+        if (processedQueries.contains(sparql)) return;
 
-        // Skip if we've already processed this SPARQL query
-        if (processedQueries.contains(sparql)) {
-            return;
-        }
+        String combined = answers.stream()
+                .map(this::cleanEntity)
+                .collect(Collectors.joining(", "));
 
-        try {
-            // Join all answers with commas for the CSV file
-            String combinedAnswers = answers.stream()
-                    .map(this::cleanEntity)
-                    .collect(Collectors.joining(", "));
-
-            // Write a single row to CSV with all answers combined
-            csvPrinter.printRecord(taskType, "Multi Choice", sparql, predicate, combinedAnswers);
-            csvPrinter.flush();
-
-            // Mark as processed
-            processedQueries.add(sparql);
-
-            // Process each individual answer separately for the JSON output
-            for (String answer : answers) {
-                String simplifiedAnswer = cleanEntity(answer);
-                String explanation = explanationMap.get(answer);
-                int size = sizeMap.getOrDefault(answer, 1);
-
-                // Determine subject and object based on the query structure
-                String subject = "";
-                String object = "";
-
-                if (sparql.startsWith("SELECT")) {
-                    if (sparql.contains("SELECT ?subject")) {
-                        subject = simplifiedAnswer;
-                        // Extract object from the WHERE clause
-                        Pattern wherePattern = Pattern.compile("\\?subject\\s+<[^>]+>\\s+<([^>]+)>");
-                        Matcher m = wherePattern.matcher(sparql);
-                        if (m.find()) {
-                            object = cleanEntity(m.group(1));
-                        }
-                    } else if (sparql.contains("SELECT ?object")) {
-                        object = simplifiedAnswer;
-                        // Extract subject from the WHERE clause
-                        Pattern wherePattern = Pattern.compile("<([^>]+)>\\s+<[^>]+>\\s+\\?object");
-                        Matcher m = wherePattern.matcher(sparql);
-                        if (m.find()) {
-                            subject = cleanEntity(m.group(1));
-                        }
-                    } else if (sparql.contains("SELECT ?class")) {
-                        object = simplifiedAnswer;
-                        // Extract individual from the WHERE clause
-                        Pattern wherePattern = Pattern.compile("<([^>]+)>\\s+rdf:type\\s+\\?class");
-                        Matcher m = wherePattern.matcher(sparql);
-                        if (m.find()) {
-                            subject = cleanEntity(m.group(1));
-                        }
-                    }
+        // Extract subject for task ID
+        String subject = "";
+        if (sparql.startsWith("SELECT")) {
+            if (sparql.contains("SELECT ?subject")) {
+                // Need to get any of the answers as a subject
+                if (!answers.isEmpty()) {
+                    subject = cleanEntity(answers.get(0));
                 }
 
-                // Create a unique triple key for grouping
-                String tripleKey = subject + "|" + predicate + "|" + object;
-
-                // Create a unique key for JSON (to avoid conflicts with multiple answers)
-                String jsonKey = sparql + "|" + simplifiedAnswer;
-
-                // Add this query to the set of queries for this triple
-                tripleToSparqlQueries.computeIfAbsent(tripleKey, k -> new HashSet<>()).add(jsonKey);
-
-                // Process and store explanation for JSON
-                processExplanation(jsonKey, tripleKey, taskType, predicate, subject, object, simplifiedAnswer, explanation, size);
+                // Convert to object-only query
+                if (!subject.isEmpty()) {
+                    sparql = "SELECT ?object WHERE { <" + subject + "> <" + predicate + "> ?object }";
+                }
+            } else if (sparql.contains("SELECT ?object")) {
+                Matcher m = Pattern.compile("<([^>]+)>\\s+<[^>]+>\\s+\\?object")
+                        .matcher(sparql);
+                if (m.find()) subject = cleanEntity(m.group(1));
+            } else if (sparql.contains("SELECT ?class")) {
+                Matcher m = Pattern.compile("<([^>]+)>\\s+rdf:type\\s+\\?class")
+                        .matcher(sparql);
+                if (m.find()) subject = cleanEntity(m.group(1));
             }
-        } catch (IOException e) {
-            LOGGER.error("Failed to write grouped multi-choice query: " + sparql, e);
-            throw e;
+        }
+
+        // Generate task ID
+        String taskId = generateTaskId(subject, predicate, "Multi Choice");
+
+        csvPrinter.printRecord(
+                taskId,
+                currentRootEntity,
+                tboxSize,
+                aboxSize,
+                taskType,
+                "Multi Choice",
+                sparql,
+                predicate,
+                combined
+        );
+        csvPrinter.flush();
+        processedQueries.add(sparql);
+
+        for (String answer : answers) {
+            String simp = cleanEntity(answer);
+            int sz = sizeMap.getOrDefault(answer, 1);
+            String expl = explanationMap.get(answer);
+
+            String object = "";
+            if (sparql.startsWith("SELECT")) {
+                if (sparql.contains("SELECT ?subject")) {
+                    subject = simp;
+                    Matcher m = Pattern.compile("\\?subject\\s+<[^>]+>\\s+<([^>]+)>")
+                            .matcher(sparql);
+                    if (m.find()) object = cleanEntity(m.group(1));
+                } else if (sparql.contains("SELECT ?object")) {
+                    object = simp;
+                    Matcher m = Pattern.compile("<([^>]+)>\\s+<[^>]+>\\s+\\?object")
+                            .matcher(sparql);
+                    if (m.find()) subject = cleanEntity(m.group(1));
+                } else if (sparql.contains("SELECT ?class")) {
+                    object = simp;
+                    Matcher m = Pattern.compile("<([^>]+)>\\s+rdf:type\\s+\\?class")
+                            .matcher(sparql);
+                    if (m.find()) subject = cleanEntity(m.group(1));
+                }
+            }
+
+            String tripleKey = subject + "|" + predicate + "|" + object;
+            String jsonKey = sparql + "|" + simp;
+
+            tripleToSparqlQueries
+                    .computeIfAbsent(tripleKey, k -> new HashSet<>())
+                    .add(jsonKey);
+
+            tripleKeyToRoot.put(tripleKey, currentRootEntity);
+
+            processExplanation(
+                    jsonKey, tripleKey, taskType,
+                    predicate, subject, object,
+                    simp, expl, sz
+            );
         }
     }
 
@@ -334,87 +393,55 @@ public class HybridOutputService implements OutputService {
                                     String answer,
                                     String explanation,
                                     int size) {
-        // Create JSON structure for this explanation
         ObjectNode explanationNode = jsonMapper.createObjectNode();
 
-        // Create the "inferred" object exactly as specified in requirements
         ObjectNode inferredNode = jsonMapper.createObjectNode();
         inferredNode.put("subject", subject);
         inferredNode.put("predicate", predicate);
         inferredNode.put("object", object);
         explanationNode.set("inferred", inferredNode);
 
-        // Parse explanation text to extract axioms
         ArrayNode explanationsArray = jsonMapper.createArrayNode();
-
         if (explanation != null && explanation.contains("Directly asserted")) {
-            // For directly asserted, create a simple explanation
-            ArrayNode axiomArray = jsonMapper.createArrayNode();
-            axiomArray.add("Directly asserted");
-
-            // Add to explanations array as a single item
+            ArrayNode axiomArray = jsonMapper.createArrayNode().add("Directly asserted");
             explanationsArray.add(axiomArray);
         } else {
-            // Parse the explanation to extract individual axioms
-            List<List<String>> axiomSets = parseExplanationAxioms(explanation, subject, object, predicate);
-            if (!axiomSets.isEmpty()) {
-                // Filter out empty sets
-                axiomSets = axiomSets.stream()
-                        .filter(set -> !set.isEmpty())
-                        .collect(Collectors.toList());
-
-                // Create explanations array with each set of axioms
-                for (List<String> axiomSet : axiomSets) {
-                    ArrayNode axiomArray = jsonMapper.createArrayNode();
-                    for (String axiom : axiomSet) {
-                        axiomArray.add(axiom.trim());
-                    }
-
-                    // Only add non-empty arrays
-                    if (axiomArray.size() > 0) {
-                        explanationsArray.add(axiomArray);
-                    }
-                }
+            List<List<String>> axSets = parseExplanationAxioms(explanation, subject, object, predicate);
+            for (List<String> set : axSets) {
+                ArrayNode arr = jsonMapper.createArrayNode();
+                set.forEach(arr::add);
+                if (arr.size() > 0) explanationsArray.add(arr);
             }
         }
 
-        // Calculate min and max size from multiple explanations if present
         ObjectNode sizeNode = jsonMapper.createObjectNode();
         if (explanationsArray.size() > 0) {
-            int minSize = Integer.MAX_VALUE;
-            int maxSize = 0;
-
+            int min = Integer.MAX_VALUE, max = 0;
             for (int i = 0; i < explanationsArray.size(); i++) {
-                int currentSize = explanationsArray.get(i).size();
-                minSize = Math.min(minSize, currentSize);
-                maxSize = Math.max(maxSize, currentSize);
+                int c = explanationsArray.get(i).size();
+                min = Math.min(min, c);
+                max = Math.max(max, c);
             }
-
-            if (minSize == Integer.MAX_VALUE) minSize = 0;
-
-            sizeNode.put("min", minSize);
-            sizeNode.put("max", maxSize);
+            if (min == Integer.MAX_VALUE) min = 0;
+            sizeNode.put("min", min);
+            sizeNode.put("max", max);
         } else {
             sizeNode.put("min", 0);
             sizeNode.put("max", 0);
         }
 
-        // Create the outer structure exactly as specified in requirements
         explanationNode.set("explanations", explanationsArray);
-        explanationNode.set("size", sizeNode); // Store size as object with min and max
-        explanationNode.put("explanationCount", explanationsArray.size()); // Add count of explanations
+        explanationNode.set("size", sizeNode);
+        explanationNode.put("explanationCount", explanationsArray.size());
 
-        // Store with SPARQL query as key
         synchronized (explanationsMap) {
             explanationsMap.put(sparql, explanationNode);
-
-            // Also store in our triple-based mapping for later consolidation
             tripleExplanationsMap.put(tripleKey, explanationNode);
         }
     }
 
     private String extractEntity(String text) {
-        // Extract entity from text like " <http://example.org/entity> "
+        // Extract entity from text
         if (text.contains("<") && text.contains(">")) {
             String entity = text.substring(text.indexOf("<") + 1, text.indexOf(">"));
             // Extract the local name from the IRI
@@ -428,9 +455,6 @@ public class HybridOutputService implements OutputService {
 
     private String cleanEntity(String entity) {
         if (entity == null) return "";
-
-        // Clean entity from "<http://example.org/entity>" to "entity"
-        // Also handles cases like "http://www.example.com/genealogy.owl#ada_rachel_heath_1868" to "ada_rachel_heath_1868"
 
         // First, handle full URIs wrapped in angle brackets
         if (entity.startsWith("<") && entity.endsWith(">")) {
@@ -659,88 +683,105 @@ public class HybridOutputService implements OutputService {
         return results;
     }
 
+
     @Override
     public synchronized void close() throws IOException {
-        if (closed) {
-            return;
+        if (closed) return;
+
+        if (csvPrinter != null) {
+            csvPrinter.close();
+            LOGGER.info("CSV file closed: {}", csvFilePath);
         }
 
-        try {
-            // Close CSV file
-            if (csvPrinter != null) {
-                csvPrinter.close();
-                LOGGER.info("CSV file closed: {}", csvFilePath);
+        // Build JSON from current session
+        ObjectNode newRootNode = jsonMapper.createObjectNode();
+        for (Map.Entry<String, Set<String>> entry : tripleToSparqlQueries.entrySet()) {
+            String tripleKey = entry.getKey();
+            String root = tripleKeyToRoot.getOrDefault(tripleKey, "UNKNOWN");
+
+            ObjectNode fileNode = newRootNode.has(root)
+                    ? (ObjectNode) newRootNode.get(root)
+                    : jsonMapper.createObjectNode();
+            newRootNode.set(root, fileNode);
+
+            String firstQuery = entry.getValue().iterator().next();
+            if (firstQuery.contains("|")) {
+                firstQuery = firstQuery.substring(0, firstQuery.indexOf("|"));
             }
+            ObjectNode explanationNode = tripleExplanationsMap.get(tripleKey);
+            fileNode.set(firstQuery, explanationNode);
+        }
 
-            // Create a consolidated JSON with grouped queries
-            ObjectNode rootNode = jsonMapper.createObjectNode();
+        // Debug output to track what's happening with the JSON merging
+        LOGGER.info("New root node has {} root entities", newRootNode.size());
+        StringBuilder newRootEntities = new StringBuilder("New root entities: ");
+        Iterator<String> fieldNames = newRootNode.fieldNames();
+        while (fieldNames.hasNext()) {
+            newRootEntities.append(fieldNames.next()).append(", ");
+        }
+        LOGGER.info(newRootEntities.toString());
 
-            // First, add all triple-based explanations with their SPARQL queries
-            for (Map.Entry<String, Set<String>> entry : tripleToSparqlQueries.entrySet()) {
-                String tripleKey = entry.getKey();
-                Set<String> sparqlQueries = entry.getValue();
+        // Read existing JSON file if it exists
+        Path jsonPath = Path.of(jsonFilePath);
+        ObjectNode existingRootNode = jsonMapper.createObjectNode();
+        if (Files.exists(jsonPath) && Files.size(jsonPath) > 0) {
+            try {
+                existingRootNode = (ObjectNode) jsonMapper.readTree(jsonPath.toFile());
+                LOGGER.info("Existing JSON file loaded with {} root entities", existingRootNode.size());
 
-                if (sparqlQueries.size() > 1) {
-                    // Multiple queries for the same triple - merge them
-                    ObjectNode tripleNode = tripleExplanationsMap.get(tripleKey);
-                    if (tripleNode != null) {
-                        // Create an array of all SPARQL queries for this triple
-                        ArrayNode queriesArray = jsonMapper.createArrayNode();
-                        for (String query : sparqlQueries) {
-                            // If the query has an answer suffix, remove it
-                            if (query.contains("|")) {
-                                query = query.substring(0, query.indexOf("|"));
-                            }
-                            queriesArray.add(query);
-                        }
-
-                        // Add the queries array to the triple node
-                        tripleNode.set("sparql_queries", queriesArray);
-
-                        // Use the first query as the key in the output
-                        String firstQuery = sparqlQueries.iterator().next();
-                        if (firstQuery.contains("|")) {
-                            firstQuery = firstQuery.substring(0, firstQuery.indexOf("|"));
-                        }
-                        rootNode.set(firstQuery, tripleNode);
-                    }
-                } else if (!sparqlQueries.isEmpty()) {
-                    // Single query for this triple - use it directly
-                    String query = sparqlQueries.iterator().next();
-                    ObjectNode explanationNode = null;
-
-                    if (query.contains("|")) {
-                        // Handle queries with answer suffixes
-                        explanationNode = explanationsMap.get(query);
-                        query = query.substring(0, query.indexOf("|"));
-                    } else {
-                        explanationNode = explanationsMap.get(query);
-                    }
-
-                    if (explanationNode != null) {
-                        rootNode.set(query, explanationNode);
-                    }
+                StringBuilder existingRootEntities = new StringBuilder("Existing root entities: ");
+                Iterator<String> existingFields = existingRootNode.fieldNames();
+                while (existingFields.hasNext()) {
+                    existingRootEntities.append(existingFields.next()).append(", ");
                 }
+                LOGGER.info(existingRootEntities.toString());
+            } catch (IOException e) {
+                LOGGER.warn("Failed to read existing JSON file, will create a new one", e);
             }
-
-            // Write the consolidated JSON to file
-            jsonMapper.writerWithDefaultPrettyPrinter()
-                    .writeValue(
-                            Files.newBufferedWriter(
-                                    Path.of(jsonFilePath),
-                                    StandardOpenOption.CREATE,
-                                    StandardOpenOption.TRUNCATE_EXISTING
-                            ),
-                            rootNode
-                    );
-
-            LOGGER.info("JSON explanations written: {}", jsonFilePath);
-            LOGGER.info("Output service closed successfully");
-
-            closed = true;
-        } catch (IOException e) {
-            LOGGER.error("Error closing output service", e);
-            throw e;
+        } else {
+            LOGGER.info("No existing JSON file found or file is empty");
         }
+
+        // Merge existing and new data - fixing the lambda issues
+        LOGGER.info("Starting merge of JSON data");
+        Iterator<Map.Entry<String, JsonNode>> fields = newRootNode.fields();
+        while (fields.hasNext()) {
+            Map.Entry<String, JsonNode> entry = fields.next();
+            String rootEntity = entry.getKey();
+            ObjectNode rootContent = (ObjectNode) entry.getValue();
+
+            LOGGER.info("Processing root entity: {}", rootEntity);
+
+            if (existingRootNode.has(rootEntity)) {
+                LOGGER.info("Found existing data for entity {}", rootEntity);
+                // Merge with existing entity data
+                final ObjectNode existingContent = (ObjectNode) existingRootNode.get(rootEntity);
+                Iterator<Map.Entry<String, JsonNode>> contentFields = rootContent.fields();
+
+                while (contentFields.hasNext()) {
+                    Map.Entry<String, JsonNode> field = contentFields.next();
+                    LOGGER.info("  Adding query: {}", field.getKey());
+                    existingContent.set(field.getKey(), field.getValue());
+                }
+            } else {
+                LOGGER.info("Adding new entity: {}", rootEntity);
+                // Add new entity data
+                existingRootNode.set(rootEntity, rootContent);
+            }
+        }
+
+        LOGGER.info("Final merged JSON has {} root entities", existingRootNode.size());
+
+        // Write the merged JSON
+        try (BufferedWriter writer = Files.newBufferedWriter(
+                jsonPath,
+                StandardOpenOption.CREATE,
+                StandardOpenOption.TRUNCATE_EXISTING)) {
+            jsonMapper.writerWithDefaultPrettyPrinter()
+                    .writeValue(writer, existingRootNode);
+        }
+
+        LOGGER.info("JSON explanations written: {}", jsonFilePath);
+        closed = true;
     }
 }
