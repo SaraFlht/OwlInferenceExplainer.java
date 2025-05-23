@@ -31,6 +31,14 @@ public class HybridOutputService implements OutputService {
     private final Map<String, ObjectNode> explanationsMap;
     private final Map<String, Set<String>> tripleToSparqlQueries;
     private final Map<String, ObjectNode> tripleExplanationsMap;
+    private final Map<String, Set<String>> tripleToTaskIds = new HashMap<>();
+
+    // NEW: Memory optimization constants
+    private static final int MAX_CROSS_REFERENCES = 1000;
+    private static final int MAX_TASK_IDS_PER_TRIPLE = 50;
+    private static final int MAX_EXPLANATION_PATHS = 10;
+    private static final int MAX_AXIOMS_PER_PATH = 20;
+    private static final int MAX_SPARQL_QUERIES_PER_TRIPLE = 20;
 
     // track which root entity each triple came from
     private final Map<String, String> tripleKeyToRoot = new HashMap<>();
@@ -54,7 +62,7 @@ public class HybridOutputService implements OutputService {
     }
 
     /**
-     * Called by the runner before each ontology to set the “root entity” name.
+     * Called by the runner before each ontology to set the "root entity" name.
      */
     public synchronized void setCurrentRootEntity(String rootEntity) {
         this.currentRootEntity = rootEntity;
@@ -71,6 +79,11 @@ public class HybridOutputService implements OutputService {
         if (initialized || closed) return;
 
         LOGGER.info("Initializing Hybrid output service with CSV: {}, JSON: {}", csvFilePath, jsonFilePath);
+
+        // Log memory info
+        Runtime runtime = Runtime.getRuntime();
+        LOGGER.info("Max memory: {} MB", runtime.maxMemory() / 1024 / 1024);
+        LOGGER.info("Total memory: {} MB", runtime.totalMemory() / 1024 / 1024);
 
         Path csvPath = Path.of(csvFilePath);
         Path jsonPath = Path.of(jsonFilePath);
@@ -90,7 +103,7 @@ public class HybridOutputService implements OutputService {
                 .withEscape('\\')
                 .withRecordSeparator("\n");
 
-        // Only include header if the file is new or empty
+        // Updated header with explanation statistics
         if (!fileExists) {
             csvFormat = csvFormat.withHeader(
                     "Task ID",
@@ -101,7 +114,10 @@ public class HybridOutputService implements OutputService {
                     "Answer Type",
                     "SPARQL Query",
                     "Predicate",
-                    "Answer"
+                    "Answer",
+                    "Avg Min Explanation Size",
+                    "Avg Max Explanation Size",
+                    "Avg Explanation Count"
             );
         }
 
@@ -189,7 +205,28 @@ public class HybridOutputService implements OutputService {
         // Generate task ID
         String taskId = generateTaskId(subject, predicate, "Binary");
 
-        // Write to CSV with new columns
+        // Store task ID for this triple
+        String tripleKey = subject + "|" + predicate + "|" + object;
+        tripleToTaskIds.computeIfAbsent(tripleKey, k -> new HashSet<>()).add(taskId);
+
+        tripleToSparqlQueries
+                .computeIfAbsent(tripleKey, k -> new HashSet<>())
+                .add(sparql);
+
+        // Record which file this triple belongs to
+        tripleKeyToRoot.put(tripleKey, currentRootEntity);
+
+        // Process explanation first to populate explanationsMap
+        processExplanation(
+                sparql, tripleKey, taskType,
+                predicate, subject, object,
+                answer, explanation, size
+        );
+
+        // Calculate explanation statistics
+        ExplanationStats stats = calculateExplanationStats(sparql, tripleKey);
+
+        // Write to CSV with rounded integer values
         csvPrinter.printRecord(
                 taskId,
                 currentRootEntity,
@@ -199,24 +236,13 @@ public class HybridOutputService implements OutputService {
                 "Binary",
                 objectOnlyQuery,
                 predicate,
-                answer
+                answer,
+                Math.round(stats.avgMin),
+                Math.round(stats.avgMax),
+                Math.round(stats.avgCount)
         );
         csvPrinter.flush();
         processedQueries.add(sparql);
-
-        String tripleKey = subject + "|" + predicate + "|" + object;
-        tripleToSparqlQueries
-                .computeIfAbsent(tripleKey, k -> new HashSet<>())
-                .add(sparql);
-
-        // Record which file this triple belongs to
-        tripleKeyToRoot.put(tripleKey, currentRootEntity);
-
-        processExplanation(
-                sparql, tripleKey, taskType,
-                predicate, subject, object,
-                answer, explanation, size
-        );
     }
 
     @Override
@@ -258,6 +284,26 @@ public class HybridOutputService implements OutputService {
         // Generate task ID
         String taskId = generateTaskId(subject, predicate, "Multi Choice");
 
+        // Store task ID for this triple
+        String tripleKey = subject + "|" + predicate + "|" + object;
+        tripleToTaskIds.computeIfAbsent(tripleKey, k -> new HashSet<>()).add(taskId);
+
+        tripleToSparqlQueries
+                .computeIfAbsent(tripleKey, k -> new HashSet<>())
+                .add(sparql);
+
+        tripleKeyToRoot.put(tripleKey, currentRootEntity);
+
+        // Process explanation first
+        processExplanation(
+                sparql, tripleKey, taskType,
+                predicate, subject, object,
+                simplifiedAnswer, explanation, size
+        );
+
+        // Calculate explanation statistics
+        ExplanationStats stats = calculateExplanationStats(sparql, tripleKey);
+
         csvPrinter.printRecord(
                 taskId,
                 currentRootEntity,
@@ -267,24 +313,13 @@ public class HybridOutputService implements OutputService {
                 "Multi Choice",
                 sparql,
                 predicate,
-                simplifiedAnswer
+                simplifiedAnswer,
+                Math.round(stats.avgMin),
+                Math.round(stats.avgMax),
+                Math.round(stats.avgCount)
         );
         csvPrinter.flush();
         processedQueries.add(sparql);
-
-        String tripleKey = subject + "|" + predicate + "|" + object;
-        tripleToSparqlQueries
-                .computeIfAbsent(tripleKey, k -> new HashSet<>())
-                .add(sparql);
-
-        // NEW
-        tripleKeyToRoot.put(tripleKey, currentRootEntity);
-
-        processExplanation(
-                sparql, tripleKey, taskType,
-                predicate, subject, object,
-                simplifiedAnswer, explanation, size
-        );
     }
 
     @Override
@@ -302,52 +337,39 @@ public class HybridOutputService implements OutputService {
                 .collect(Collectors.joining(", "));
 
         // Extract subject for task ID
-        String subject = "";
+        String baseSubject = "";
         if (sparql.startsWith("SELECT")) {
             if (sparql.contains("SELECT ?subject")) {
-                // Need to get any of the answers as a subject
                 if (!answers.isEmpty()) {
-                    subject = cleanEntity(answers.get(0));
+                    baseSubject = cleanEntity(answers.get(0));
                 }
-
-                // Convert to object-only query
-                if (!subject.isEmpty()) {
-                    sparql = "SELECT ?object WHERE { <" + subject + "> <" + predicate + "> ?object }";
+                if (!baseSubject.isEmpty()) {
+                    sparql = "SELECT ?object WHERE { <" + baseSubject + "> <" + predicate + "> ?object }";
                 }
             } else if (sparql.contains("SELECT ?object")) {
                 Matcher m = Pattern.compile("<([^>]+)>\\s+<[^>]+>\\s+\\?object")
                         .matcher(sparql);
-                if (m.find()) subject = cleanEntity(m.group(1));
+                if (m.find()) baseSubject = cleanEntity(m.group(1));
             } else if (sparql.contains("SELECT ?class")) {
                 Matcher m = Pattern.compile("<([^>]+)>\\s+rdf:type\\s+\\?class")
                         .matcher(sparql);
-                if (m.find()) subject = cleanEntity(m.group(1));
+                if (m.find()) baseSubject = cleanEntity(m.group(1));
             }
         }
 
         // Generate task ID
-        String taskId = generateTaskId(subject, predicate, "Multi Choice");
+        String taskId = generateTaskId(baseSubject, predicate, "Multi Choice");
 
-        csvPrinter.printRecord(
-                taskId,
-                currentRootEntity,
-                tboxSize,
-                aboxSize,
-                taskType,
-                "Multi Choice",
-                sparql,
-                predicate,
-                combined
-        );
-        csvPrinter.flush();
-        processedQueries.add(sparql);
-
+        // Process all explanations first
+        List<String> allTripleKeys = new ArrayList<>();
         for (String answer : answers) {
             String simp = cleanEntity(answer);
             int sz = sizeMap.getOrDefault(answer, 1);
             String expl = explanationMap.get(answer);
 
+            String subject = baseSubject;
             String object = "";
+
             if (sparql.startsWith("SELECT")) {
                 if (sparql.contains("SELECT ?subject")) {
                     subject = simp;
@@ -369,11 +391,12 @@ public class HybridOutputService implements OutputService {
 
             String tripleKey = subject + "|" + predicate + "|" + object;
             String jsonKey = sparql + "|" + simp;
+            allTripleKeys.add(tripleKey);
 
+            tripleToTaskIds.computeIfAbsent(tripleKey, k -> new HashSet<>()).add(taskId);
             tripleToSparqlQueries
                     .computeIfAbsent(tripleKey, k -> new HashSet<>())
                     .add(jsonKey);
-
             tripleKeyToRoot.put(tripleKey, currentRootEntity);
 
             processExplanation(
@@ -382,8 +405,78 @@ public class HybridOutputService implements OutputService {
                     simp, expl, sz
             );
         }
+
+        // Calculate average explanation statistics across all related triples
+        List<Double> allMinSizes = new ArrayList<>();
+        List<Double> allMaxSizes = new ArrayList<>();
+        List<Double> allCounts = new ArrayList<>();
+
+        for (String tripleKey : allTripleKeys) {
+            ExplanationStats stats = calculateExplanationStats(sparql, tripleKey);
+            allMinSizes.add(stats.avgMin);
+            allMaxSizes.add(stats.avgMax);
+            allCounts.add(stats.avgCount);
+        }
+
+        double overallAvgMin = allMinSizes.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
+        double overallAvgMax = allMaxSizes.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
+        double overallAvgCount = allCounts.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
+
+        csvPrinter.printRecord(
+                taskId,
+                currentRootEntity,
+                tboxSize,
+                aboxSize,
+                taskType,
+                "Multi Choice",
+                sparql,
+                predicate,
+                combined,
+                Math.round(overallAvgMin),
+                Math.round(overallAvgMax),
+                Math.round(overallAvgCount)
+        );
+        csvPrinter.flush();
+        processedQueries.add(sparql);
     }
 
+    // OPTIMIZED: Memory-efficient cross-referencing
+    private void updateExplanationsWithCrossReferences() {
+        LOGGER.info("Updating explanations with cross-referenced task IDs (memory-optimized)");
+
+        int processedCount = 0;
+        for (Map.Entry<String, ObjectNode> entry : tripleExplanationsMap.entrySet()) {
+            String tripleKey = entry.getKey();
+            ObjectNode explanationNode = entry.getValue();
+
+            // Get task IDs for this specific triple only (simplified cross-referencing)
+            Set<String> taskIds = tripleToTaskIds.getOrDefault(tripleKey, new HashSet<>());
+
+            // Limit task IDs to prevent memory issues
+            if (taskIds.size() > MAX_TASK_IDS_PER_TRIPLE) {
+                taskIds = taskIds.stream()
+                        .limit(MAX_TASK_IDS_PER_TRIPLE)
+                        .collect(Collectors.toSet());
+                LOGGER.warn("Limited task IDs for triple {} to {} entries", tripleKey, MAX_TASK_IDS_PER_TRIPLE);
+            }
+
+            // Update the explanation with task IDs
+            ArrayNode taskIdsArray = jsonMapper.createArrayNode();
+            taskIds.stream()
+                    .sorted()
+                    .forEach(taskIdsArray::add);
+            explanationNode.set("taskIds", taskIdsArray);
+
+            processedCount++;
+            if (processedCount % 100 == 0) {
+                LOGGER.info("Processed {} explanations", processedCount);
+            }
+        }
+
+        LOGGER.info("Completed updating {} explanations", processedCount);
+    }
+
+    // OPTIMIZED: Memory-efficient explanation processing
     private void processExplanation(String sparql,
                                     String tripleKey,
                                     String taskType,
@@ -407,9 +500,16 @@ public class HybridOutputService implements OutputService {
             explanationsArray.add(axiomArray);
         } else {
             List<List<String>> axSets = parseExplanationAxioms(explanation, subject, object, predicate);
-            for (List<String> set : axSets) {
+            // OPTIMIZED: Limit number of explanation paths to prevent memory explosion
+            int maxPaths = Math.min(axSets.size(), MAX_EXPLANATION_PATHS);
+            for (int i = 0; i < maxPaths; i++) {
+                List<String> set = axSets.get(i);
                 ArrayNode arr = jsonMapper.createArrayNode();
-                set.forEach(arr::add);
+                // OPTIMIZED: Limit axioms per path
+                int maxAxioms = Math.min(set.size(), MAX_AXIOMS_PER_PATH);
+                for (int j = 0; j < maxAxioms; j++) {
+                    arr.add(set.get(j));
+                }
                 if (arr.size() > 0) explanationsArray.add(arr);
             }
         }
@@ -683,6 +783,57 @@ public class HybridOutputService implements OutputService {
         return results;
     }
 
+    /**
+     * OPTIMIZED: Simplified explanation stats calculation
+     */
+    private ExplanationStats calculateExplanationStats(String sparql, String tripleKey) {
+        // Only look at explanations directly related to this query and triple
+        ObjectNode explanationNode = explanationsMap.get(sparql);
+        if (explanationNode == null) {
+            // Try alternative key formats
+            String cleanSparql = sparql.contains("|") ? sparql.substring(0, sparql.indexOf("|")) : sparql;
+            explanationNode = explanationsMap.get(cleanSparql);
+        }
+
+        if (explanationNode != null) {
+            double minSize = 0.0;
+            double maxSize = 0.0;
+            double count = 0.0;
+
+            // Extract size information
+            if (explanationNode.has("size")) {
+                JsonNode sizeNode = explanationNode.get("size");
+                if (sizeNode.has("min") && sizeNode.has("max")) {
+                    minSize = sizeNode.get("min").asDouble();
+                    maxSize = sizeNode.get("max").asDouble();
+                }
+            }
+
+            // Extract explanation count
+            if (explanationNode.has("explanationCount")) {
+                count = explanationNode.get("explanationCount").asDouble();
+            }
+
+            return new ExplanationStats(minSize, maxSize, count);
+        }
+
+        return new ExplanationStats(0.0, 0.0, 0.0);
+    }
+
+    /**
+     * Helper class to hold explanation statistics
+     */
+    private static class ExplanationStats {
+        final double avgMin;
+        final double avgMax;
+        final double avgCount;
+
+        ExplanationStats(double avgMin, double avgMax, double avgCount) {
+            this.avgMin = avgMin;
+            this.avgMax = avgMax;
+            this.avgCount = avgCount;
+        }
+    }
 
     @Override
     public synchronized void close() throws IOException {
@@ -693,8 +844,17 @@ public class HybridOutputService implements OutputService {
             LOGGER.info("CSV file closed: {}", csvFilePath);
         }
 
-        // Build JSON from current session
+        // Clear some maps to free memory before processing
+        LOGGER.info("Freeing memory before JSON processing...");
+        System.gc(); // Suggest garbage collection
+
+        // Update explanations with cross-referenced task IDs
+        updateExplanationsWithCrossReferences();
+
+        // Build JSON from current session with memory optimization
         ObjectNode newRootNode = jsonMapper.createObjectNode();
+        int processedTriples = 0;
+
         for (Map.Entry<String, Set<String>> entry : tripleToSparqlQueries.entrySet()) {
             String tripleKey = entry.getKey();
             String root = tripleKeyToRoot.getOrDefault(tripleKey, "UNKNOWN");
@@ -704,12 +864,36 @@ public class HybridOutputService implements OutputService {
                     : jsonMapper.createObjectNode();
             newRootNode.set(root, fileNode);
 
-            String firstQuery = entry.getValue().iterator().next();
-            if (firstQuery.contains("|")) {
-                firstQuery = firstQuery.substring(0, firstQuery.indexOf("|"));
+            // Collect and limit SPARQL queries
+            Set<String> allQueries = entry.getValue();
+            if (allQueries.size() > MAX_SPARQL_QUERIES_PER_TRIPLE) {
+                allQueries = allQueries.stream()
+                        .limit(MAX_SPARQL_QUERIES_PER_TRIPLE)
+                        .collect(Collectors.toSet());
+                LOGGER.warn("Limited SPARQL queries for triple {} to {} entries", tripleKey, MAX_SPARQL_QUERIES_PER_TRIPLE);
             }
+
             ObjectNode explanationNode = tripleExplanationsMap.get(tripleKey);
-            fileNode.set(firstQuery, explanationNode);
+
+            if (explanationNode != null) {
+                // Add all related SPARQL queries as an array
+                ArrayNode sparqlQueriesArray = jsonMapper.createArrayNode();
+                for (String query : allQueries) {
+                    // Clean up query if it has the "|answer" suffix from grouped queries
+                    String cleanQuery = query.contains("|") ? query.substring(0, query.indexOf("|")) : query;
+                    sparqlQueriesArray.add(cleanQuery);
+                }
+                explanationNode.set("sparqlQueries", sparqlQueriesArray);
+            }
+
+            // Use tripleKey (Ada|sibling|Bob) as the JSON key
+            fileNode.set(tripleKey, explanationNode);
+
+            processedTriples++;
+            if (processedTriples % 50 == 0) {
+                LOGGER.info("Processed {} triples for JSON", processedTriples);
+                System.gc(); // Periodic garbage collection
+            }
         }
 
         // Debug output to track what's happening with the JSON merging
@@ -742,7 +926,7 @@ public class HybridOutputService implements OutputService {
             LOGGER.info("No existing JSON file found or file is empty");
         }
 
-        // Merge existing and new data - fixing the lambda issues
+        // Merge existing and new data - with enhanced task ID and SPARQL query merging
         LOGGER.info("Starting merge of JSON data");
         Iterator<Map.Entry<String, JsonNode>> fields = newRootNode.fields();
         while (fields.hasNext()) {
@@ -754,18 +938,84 @@ public class HybridOutputService implements OutputService {
 
             if (existingRootNode.has(rootEntity)) {
                 LOGGER.info("Found existing data for entity {}", rootEntity);
-                // Merge with existing entity data
                 final ObjectNode existingContent = (ObjectNode) existingRootNode.get(rootEntity);
                 Iterator<Map.Entry<String, JsonNode>> contentFields = rootContent.fields();
 
                 while (contentFields.hasNext()) {
                     Map.Entry<String, JsonNode> field = contentFields.next();
-                    LOGGER.info("  Adding query: {}", field.getKey());
-                    existingContent.set(field.getKey(), field.getValue());
+                    String tripleKey = field.getKey(); // Now this is Ada|sibling|Bob format
+                    ObjectNode newExplanation = (ObjectNode) field.getValue();
+
+                    // Merge both task IDs and SPARQL queries if explanation already exists
+                    if (existingContent.has(tripleKey)) {
+                        ObjectNode existingExplanation = (ObjectNode) existingContent.get(tripleKey);
+
+                        LOGGER.info("  Merging data for existing triple: {}", tripleKey);
+
+                        // Merge task IDs
+                        Set<String> mergedTaskIds = new HashSet<>();
+                        if (existingExplanation.has("taskIds")) {
+                            JsonNode existingTaskIds = existingExplanation.get("taskIds");
+                            if (existingTaskIds.isArray()) {
+                                for (JsonNode taskId : existingTaskIds) {
+                                    mergedTaskIds.add(taskId.asText());
+                                }
+                            }
+                        }
+                        if (newExplanation.has("taskIds")) {
+                            JsonNode newTaskIds = newExplanation.get("taskIds");
+                            if (newTaskIds.isArray()) {
+                                for (JsonNode taskId : newTaskIds) {
+                                    mergedTaskIds.add(taskId.asText());
+                                }
+                            }
+                        }
+
+                        // Merge SPARQL queries
+                        Set<String> mergedQueries = new HashSet<>();
+                        if (existingExplanation.has("sparqlQueries")) {
+                            JsonNode existingQueries = existingExplanation.get("sparqlQueries");
+                            if (existingQueries.isArray()) {
+                                for (JsonNode query : existingQueries) {
+                                    mergedQueries.add(query.asText());
+                                }
+                            }
+                        }
+                        if (newExplanation.has("sparqlQueries")) {
+                            JsonNode newQueries = newExplanation.get("sparqlQueries");
+                            if (newQueries.isArray()) {
+                                for (JsonNode query : newQueries) {
+                                    mergedQueries.add(query.asText());
+                                }
+                            }
+                        }
+
+                        // Create merged arrays
+                        ArrayNode mergedTaskIdsArray = jsonMapper.createArrayNode();
+                        mergedTaskIds.stream()
+                                .sorted()
+                                .forEach(mergedTaskIdsArray::add);
+
+                        ArrayNode mergedQueriesArray = jsonMapper.createArrayNode();
+                        mergedQueries.stream()
+                                .sorted()
+                                .forEach(mergedQueriesArray::add);
+
+                        // Update the new explanation with merged data
+                        newExplanation.set("taskIds", mergedTaskIdsArray);
+                        newExplanation.set("sparqlQueries", mergedQueriesArray);
+
+                        LOGGER.info("    Merged {} task IDs and {} SPARQL queries for triple {}",
+                                mergedTaskIds.size(), mergedQueries.size(), tripleKey);
+                    } else {
+                        LOGGER.info("  Adding new triple: {}", tripleKey);
+                    }
+
+                    // Set the updated explanation
+                    existingContent.set(tripleKey, newExplanation);
                 }
             } else {
                 LOGGER.info("Adding new entity: {}", rootEntity);
-                // Add new entity data
                 existingRootNode.set(rootEntity, rootContent);
             }
         }
@@ -782,6 +1032,13 @@ public class HybridOutputService implements OutputService {
         }
 
         LOGGER.info("JSON explanations written: {}", jsonFilePath);
+
+        // Clear maps to free memory
+        explanationsMap.clear();
+        tripleExplanationsMap.clear();
+        tripleToSparqlQueries.clear();
+        tripleToTaskIds.clear();
+
         closed = true;
     }
 }
