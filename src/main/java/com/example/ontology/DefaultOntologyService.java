@@ -18,7 +18,6 @@ public class DefaultOntologyService implements OntologyService {
     private ShortFormProvider shortFormProvider;
 
     public DefaultOntologyService() {
-        // Create the manager and data factory up front
         this.manager = OWLManager.createOWLOntologyManager();
         this.dataFactory = manager.getOWLDataFactory();
         this.shortFormProvider = new SimpleShortFormProvider();
@@ -28,35 +27,68 @@ public class DefaultOntologyService implements OntologyService {
     public void loadOntology(String filePath) throws Exception {
         LOGGER.info("Loading ontology from {}", filePath);
 
-        // First, remove any existing ontologies to avoid ID conflicts
         if (ontology != null) {
             manager.removeOntology(ontology);
             ontology = null;
         }
 
         try {
-            // Load the ontology document (TTL, RDF/XML, etc.) from disk
             this.ontology = manager.loadOntologyFromOntologyDocument(new File(filePath));
-
             LOGGER.info("Loaded ontology: {} classes, {} individuals, {} object properties",
                     ontology.getClassesInSignature().size(),
                     ontology.getIndividualsInSignature().size(),
                     ontology.getObjectPropertiesInSignature().size());
         } catch (OWLOntologyAlreadyExistsException e) {
-            // Handle the case where the ontology ID already exists
             LOGGER.warn("Ontology with same ID already exists, removing it and trying again");
             OWLOntologyID id = e.getOntologyID();
             if (manager.contains(id)) {
                 manager.removeOntology(manager.getOntology(id));
             }
-
-            // Try loading again
             this.ontology = manager.loadOntologyFromOntologyDocument(new File(filePath));
-            LOGGER.info("Loaded ontology (second attempt): {} classes, {} individuals, {} object properties",
-                    ontology.getClassesInSignature().size(),
-                    ontology.getIndividualsInSignature().size(),
-                    ontology.getObjectPropertiesInSignature().size());
         }
+    }
+
+    // ADD THESE NEW METHODS
+    /**
+     * Always returns the full IRI in angle brackets, ready for SPARQL
+     */
+    public String getFullIRI(OWLEntity entity) {
+        return "<" + entity.getIRI().toString() + ">";
+    }
+
+    /**
+     * Gets the short form (for display purposes only)
+     */
+    public String getDisplayName(OWLEntity entity) {
+        return shortFormProvider.getShortForm(entity);
+    }
+
+    /**
+     * Normalizes any IRI string to full format with angle brackets
+     */
+    public String normalizeIRI(String iri) {
+        if (iri == null || iri.isEmpty()) return "";
+
+        String cleaned = iri.trim();
+        if (cleaned.startsWith("<") && cleaned.endsWith(">")) {
+            cleaned = cleaned.substring(1, cleaned.length() - 1);
+        }
+
+        if (cleaned.startsWith("http://") || cleaned.startsWith("https://")) {
+            return "<" + cleaned + ">";
+        }
+
+        // Get base IRI from ontology
+        IRI ontologyIRI = ontology.getOntologyID().getOntologyIRI().orElse(null);
+        if (ontologyIRI != null) {
+            String baseIRI = ontologyIRI.toString();
+            if (!baseIRI.endsWith("#") && !baseIRI.endsWith("/")) {
+                baseIRI += "#";
+            }
+            return "<" + baseIRI + cleaned + ">";
+        }
+
+        return "<" + cleaned + ">";
     }
 
     @Override

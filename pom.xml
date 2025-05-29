@@ -99,6 +99,13 @@
             <version>2.6.5</version>
         </dependency>
 
+        <!-- ADD THIS DEPENDENCY for @PostConstruct -->
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>1.3.2</version>
+        </dependency>
+
         <!-- Apache Jena (SPARQL support) -->
         <dependency>
             <groupId>org.apache.jena</groupId>

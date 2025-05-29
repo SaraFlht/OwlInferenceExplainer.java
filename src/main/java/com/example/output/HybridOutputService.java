@@ -21,6 +21,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.example.tracking.GlobalQueryTracker;
 
 @Component
 public class HybridOutputService implements OutputService {
@@ -46,7 +47,6 @@ public class HybridOutputService implements OutputService {
     // current file base-name
     private String currentRootEntity;
 
-    private final Set<String> processedQueries = ConcurrentHashMap.newKeySet();
     private boolean initialized = false;
     private boolean closed = false;
 
@@ -59,6 +59,13 @@ public class HybridOutputService implements OutputService {
         this.tripleToSparqlQueries = new HashMap<>();
         this.tripleExplanationsMap = new HashMap<>();
         LOGGER.info("Hybrid output service created");
+    }
+
+    private void logMemoryStats() {
+        Runtime runtime = Runtime.getRuntime();
+        long usedMemory = runtime.totalMemory() - runtime.freeMemory();
+        LOGGER.info("Memory usage: {} MB used, {} MB max",
+                usedMemory / 1024 / 1024, runtime.maxMemory() / 1024 / 1024);
     }
 
     /**
@@ -139,35 +146,54 @@ public class HybridOutputService implements OutputService {
         LOGGER.info("Set ontology sizes - TBox: {}, ABox: {}", tboxSize, aboxSize);
     }
 
-    /**
-     * Reset processed queries tracking to start fresh with a new ontology
-     */
-    public synchronized void resetProcessedQueries() {
-        LOGGER.info("Resetting processed queries tracking");
-        processedQueries.clear();
-    }
 
     /**
      * Generate a task ID based on the specified format
      */
     private String generateTaskId(String subject, String predicate, String answerType) {
+        // Use short names consistently - fix the extraction
+        String shortSubject = extractShortName(subject);
+        String shortPredicate = extractShortName(predicate);
+
         // Abbreviate the subject to first part (before first underscore if present)
-        String shortSubject = subject;
-        int underscoreIndex = subject.indexOf('_');
+        int underscoreIndex = shortSubject.indexOf('_');
         if (underscoreIndex > 0) {
-            shortSubject = subject.substring(0, underscoreIndex);
+            shortSubject = shortSubject.substring(0, underscoreIndex);
         }
 
         // Abbreviate the answer type
         String shortAnswerType = answerType.equals("Binary") ? "BIN" : "MC";
 
-        // Create the task ID: 1hop-rootEntity-subject-predicate-answerType
         return String.format("1hop-%s-%s-%s-%s",
-                currentRootEntity,
-                shortSubject,
-                predicate,
-                shortAnswerType);
+                currentRootEntity, shortSubject, shortPredicate, shortAnswerType);
     }
+
+    private String extractFullIRI(String sparql, String pattern) {
+        Pattern p = Pattern.compile("<([^>]+)>");
+        Matcher m = p.matcher(sparql);
+        if (m.find()) {
+            return "<" + m.group(1) + ">";
+        }
+        return sparql;
+    }
+
+    private String createNormalizedTripleKey(String subject, String predicate, String object) {
+        return extractShortName(subject) + "|" +
+                extractShortName(predicate) + "|" +
+                extractShortName(object);
+    }
+
+    private String normalizeIRIForKey(String iri) {
+        if (iri == null || iri.isEmpty()) return "";
+
+        // Ensure consistent format with angle brackets
+        if (!iri.startsWith("<") && (iri.startsWith("http://") || iri.startsWith("https://"))) {
+            return "<" + iri + ">";
+        }
+
+        return iri;
+    }
+
 
     @Override
     public synchronized void writeBinaryQuery(String taskType,
@@ -178,71 +204,84 @@ public class HybridOutputService implements OutputService {
                                               int size) throws IOException {
         if (!initialized || closed) initialize();
 
-        if (processedQueries.contains(sparql)) return;
+        // Extract entities from normalized SPARQL (much simpler now)
+        String subject = extractSubjectFromSparql(sparql);
+        String object = extractObjectFromSparql(sparql);
 
-        // extract subject/object, build tripleKey...
-        String subject = "", object = "";
-        if (taskType.equals("Subsumption") && sparql.contains("subClassOf")) {
-            String[] parts = sparql.split("subClassOf");
-            subject = extractEntity(parts[0]);
-            object = extractEntity(parts[1]);
-        } else if (taskType.equals("Property Assertion")) {
-            String[] parts = sparql.split("\\{|\\}")[1].split("\\s+");
-            subject = cleanEntity(parts[1]);
-            object = cleanEntity(parts[3]);
-        } else if (taskType.equals("Membership")) {
-            String[] parts = sparql.split("\\{|\\}")[1].split("\\s+");
-            subject = cleanEntity(parts[1]);
-            object = cleanEntity(parts[3]);
-        }
+        // Generate task ID using short names for readability
+        String taskId = generateTaskId(
+                extractShortName(subject),
+                predicate,
+                "Binary"
+        );
 
-        // Convert to object-only query if necessary
-        String objectOnlyQuery = sparql;
-        if (taskType.equals("Property Assertion") && !sparql.contains("?object")) {
-            objectOnlyQuery = "SELECT ?object WHERE { <" + subject + "> <" + predicate + "> ?object }";
-        }
+        // Create triple key using full IRIs for consistency
+        String tripleKey = createNormalizedTripleKey(subject, predicate, object);
 
-        // Generate task ID
-        String taskId = generateTaskId(subject, predicate, "Binary");
-
-        // Store task ID for this triple
-        String tripleKey = subject + "|" + predicate + "|" + object;
+        // Store task ID
         tripleToTaskIds.computeIfAbsent(tripleKey, k -> new HashSet<>()).add(taskId);
-
-        tripleToSparqlQueries
-                .computeIfAbsent(tripleKey, k -> new HashSet<>())
-                .add(sparql);
-
-        // Record which file this triple belongs to
+        tripleToSparqlQueries.computeIfAbsent(tripleKey, k -> new HashSet<>()).add(sparql);
         tripleKeyToRoot.put(tripleKey, currentRootEntity);
 
-        // Process explanation first to populate explanationsMap
-        processExplanation(
-                sparql, tripleKey, taskType,
-                predicate, subject, object,
-                answer, explanation, size
-        );
+        // Process explanation
+        processExplanation(sparql, tripleKey, taskType, predicate,
+                extractShortName(subject), extractShortName(object),
+                answer, explanation, size);
 
-        // Calculate explanation statistics
+        // Calculate stats and write to CSV
         ExplanationStats stats = calculateExplanationStats(sparql, tripleKey);
 
-        // Write to CSV with rounded integer values
         csvPrinter.printRecord(
-                taskId,
-                currentRootEntity,
-                tboxSize,
-                aboxSize,
-                taskType,
-                "Binary",
-                objectOnlyQuery,
-                predicate,
-                answer,
-                Math.round(stats.avgMin),
-                Math.round(stats.avgMax),
-                Math.round(stats.avgCount)
+                taskId, currentRootEntity, tboxSize, aboxSize,
+                taskType, "Binary", sparql, predicate, answer,
+                Math.round(stats.avgMin), Math.round(stats.avgMax), Math.round(stats.avgCount)
         );
         csvPrinter.flush();
-        processedQueries.add(sparql);
+    }
+
+    // ADD these helper methods:
+    private String extractSubjectFromSparql(String sparql) {
+        Pattern pattern = Pattern.compile("\\{\\s*(<[^>]+>)");
+        Matcher matcher = pattern.matcher(sparql);
+        return matcher.find() ? matcher.group(1) : "";
+    }
+
+    private String extractObjectFromSparql(String sparql) {
+        Pattern pattern = Pattern.compile("(<[^>]+>)\\s*\\}");
+        Matcher matcher = pattern.matcher(sparql);
+        return matcher.find() ? matcher.group(1) : "";
+    }
+
+    private String extractShortName(String fullIRI) {
+        if (fullIRI == null || fullIRI.isEmpty()) {
+            return fullIRI;
+        }
+
+        // Handle angle bracket IRIs
+        if (fullIRI.startsWith("<") && fullIRI.endsWith(">")) {
+            String iri = fullIRI.substring(1, fullIRI.length() - 1);
+            if (iri.contains("#")) {
+                return iri.substring(iri.lastIndexOf("#") + 1);
+            } else if (iri.contains("/")) {
+                return iri.substring(iri.lastIndexOf("/") + 1);
+            }
+            return iri;
+        }
+
+        // Handle non-bracketed IRIs
+        if (fullIRI.startsWith("http://") || fullIRI.startsWith("https://")) {
+            if (fullIRI.contains("#")) {
+                return fullIRI.substring(fullIRI.lastIndexOf("#") + 1);
+            } else if (fullIRI.contains("/")) {
+                return fullIRI.substring(fullIRI.lastIndexOf("/") + 1);
+            }
+        }
+
+        return fullIRI;
+    }
+
+    private String normalizeSparqlQuery(String sparql) {
+        return sparql;
     }
 
     @Override
@@ -253,9 +292,7 @@ public class HybridOutputService implements OutputService {
                                                    String explanation,
                                                    int size) throws IOException {
         if (!initialized || closed) initialize();
-        if (processedQueries.contains(sparql)) return;
-
-        String simplifiedAnswer = cleanEntity(answer);
+        String simplifiedAnswer = extractShortName(answer);
 
         // extract subject/object similarly...
         String subject = "", object = "";
@@ -264,7 +301,7 @@ public class HybridOutputService implements OutputService {
                 subject = simplifiedAnswer;
                 Matcher m = Pattern.compile("\\?subject\\s+<[^>]+>\\s+<([^>]+)>")
                         .matcher(sparql);
-                if (m.find()) object = cleanEntity(m.group(1));
+                if (m.find()) object = extractShortName(m.group(1));
 
                 // Convert to object-only query
                 sparql = "SELECT ?object WHERE { <" + subject + "> <" + predicate + "> ?object }";
@@ -272,12 +309,12 @@ public class HybridOutputService implements OutputService {
                 object = simplifiedAnswer;
                 Matcher m = Pattern.compile("<([^>]+)>\\s+<[^>]+>\\s+\\?object")
                         .matcher(sparql);
-                if (m.find()) subject = cleanEntity(m.group(1));
+                if (m.find()) subject = extractShortName(m.group(1));
             } else if (sparql.contains("SELECT ?class")) {
                 object = simplifiedAnswer;
                 Matcher m = Pattern.compile("<([^>]+)>\\s+rdf:type\\s+\\?class")
                         .matcher(sparql);
-                if (m.find()) subject = cleanEntity(m.group(1));
+                if (m.find()) subject = extractShortName(m.group(1));
             }
         }
 
@@ -285,7 +322,7 @@ public class HybridOutputService implements OutputService {
         String taskId = generateTaskId(subject, predicate, "Multi Choice");
 
         // Store task ID for this triple
-        String tripleKey = subject + "|" + predicate + "|" + object;
+        String tripleKey = createNormalizedTripleKey(subject, predicate, object);
         tripleToTaskIds.computeIfAbsent(tripleKey, k -> new HashSet<>()).add(taskId);
 
         tripleToSparqlQueries
@@ -319,7 +356,6 @@ public class HybridOutputService implements OutputService {
                 Math.round(stats.avgCount)
         );
         csvPrinter.flush();
-        processedQueries.add(sparql);
     }
 
     @Override
@@ -330,10 +366,9 @@ public class HybridOutputService implements OutputService {
                                                           Map<String, String> explanationMap,
                                                           Map<String, Integer> sizeMap) throws IOException {
         if (!initialized || closed) initialize();
-        if (processedQueries.contains(sparql)) return;
 
         String combined = answers.stream()
-                .map(this::cleanEntity)
+                .map(this::extractShortName)
                 .collect(Collectors.joining(", "));
 
         // Extract subject for task ID
@@ -341,7 +376,7 @@ public class HybridOutputService implements OutputService {
         if (sparql.startsWith("SELECT")) {
             if (sparql.contains("SELECT ?subject")) {
                 if (!answers.isEmpty()) {
-                    baseSubject = cleanEntity(answers.get(0));
+                    baseSubject = extractShortName(answers.get(0));
                 }
                 if (!baseSubject.isEmpty()) {
                     sparql = "SELECT ?object WHERE { <" + baseSubject + "> <" + predicate + "> ?object }";
@@ -349,11 +384,11 @@ public class HybridOutputService implements OutputService {
             } else if (sparql.contains("SELECT ?object")) {
                 Matcher m = Pattern.compile("<([^>]+)>\\s+<[^>]+>\\s+\\?object")
                         .matcher(sparql);
-                if (m.find()) baseSubject = cleanEntity(m.group(1));
+                if (m.find()) baseSubject = extractShortName(m.group(1));
             } else if (sparql.contains("SELECT ?class")) {
                 Matcher m = Pattern.compile("<([^>]+)>\\s+rdf:type\\s+\\?class")
                         .matcher(sparql);
-                if (m.find()) baseSubject = cleanEntity(m.group(1));
+                if (m.find()) baseSubject = extractShortName(m.group(1));
             }
         }
 
@@ -363,7 +398,7 @@ public class HybridOutputService implements OutputService {
         // Process all explanations first
         List<String> allTripleKeys = new ArrayList<>();
         for (String answer : answers) {
-            String simp = cleanEntity(answer);
+            String simp = extractShortName(answer);
             int sz = sizeMap.getOrDefault(answer, 1);
             String expl = explanationMap.get(answer);
 
@@ -375,21 +410,21 @@ public class HybridOutputService implements OutputService {
                     subject = simp;
                     Matcher m = Pattern.compile("\\?subject\\s+<[^>]+>\\s+<([^>]+)>")
                             .matcher(sparql);
-                    if (m.find()) object = cleanEntity(m.group(1));
+                    if (m.find()) object = extractShortName(m.group(1));
                 } else if (sparql.contains("SELECT ?object")) {
                     object = simp;
                     Matcher m = Pattern.compile("<([^>]+)>\\s+<[^>]+>\\s+\\?object")
                             .matcher(sparql);
-                    if (m.find()) subject = cleanEntity(m.group(1));
+                    if (m.find()) subject = extractShortName(m.group(1));
                 } else if (sparql.contains("SELECT ?class")) {
                     object = simp;
                     Matcher m = Pattern.compile("<([^>]+)>\\s+rdf:type\\s+\\?class")
                             .matcher(sparql);
-                    if (m.find()) subject = cleanEntity(m.group(1));
+                    if (m.find()) subject = extractShortName(m.group(1));
                 }
             }
 
-            String tripleKey = subject + "|" + predicate + "|" + object;
+            String tripleKey = createNormalizedTripleKey(subject, predicate, object);
             String jsonKey = sparql + "|" + simp;
             allTripleKeys.add(tripleKey);
 
@@ -437,7 +472,6 @@ public class HybridOutputService implements OutputService {
                 Math.round(overallAvgCount)
         );
         csvPrinter.flush();
-        processedQueries.add(sparql);
     }
 
     // OPTIMIZED: Memory-efficient cross-referencing
@@ -551,26 +585,6 @@ public class HybridOutputService implements OutputService {
             return entity;
         }
         return text.trim();
-    }
-
-    private String cleanEntity(String entity) {
-        if (entity == null) return "";
-
-        // First, handle full URIs wrapped in angle brackets
-        if (entity.startsWith("<") && entity.endsWith(">")) {
-            entity = entity.substring(1, entity.length() - 1);
-        }
-
-        // Extract local name from URI
-        if (entity.contains("#")) {
-            // Handle URIs with hash fragments
-            return entity.substring(entity.lastIndexOf("#") + 1);
-        } else if (entity.contains("/")) {
-            // Handle URIs with path segments
-            return entity.substring(entity.lastIndexOf("/") + 1);
-        }
-
-        return entity;
     }
 
     private List<List<String>> parseExplanationAxioms(String explanation,
@@ -787,10 +801,16 @@ public class HybridOutputService implements OutputService {
      * OPTIMIZED: Simplified explanation stats calculation
      */
     private ExplanationStats calculateExplanationStats(String sparql, String tripleKey) {
-        // Only look at explanations directly related to this query and triple
+        // First try the direct sparql key
         ObjectNode explanationNode = explanationsMap.get(sparql);
+
+        // If not found, try the triple key in tripleExplanationsMap
         if (explanationNode == null) {
-            // Try alternative key formats
+            explanationNode = tripleExplanationsMap.get(tripleKey);
+        }
+
+        // If still not found, try alternative formats
+        if (explanationNode == null) {
             String cleanSparql = sparql.contains("|") ? sparql.substring(0, sparql.indexOf("|")) : sparql;
             explanationNode = explanationsMap.get(cleanSparql);
         }
@@ -817,6 +837,8 @@ public class HybridOutputService implements OutputService {
             return new ExplanationStats(minSize, maxSize, count);
         }
 
+        // Log when we can't find explanations for debugging
+        LOGGER.warn("No explanation found for sparql: {} or triple: {}", sparql, tripleKey);
         return new ExplanationStats(0.0, 0.0, 0.0);
     }
 
@@ -838,6 +860,10 @@ public class HybridOutputService implements OutputService {
     @Override
     public synchronized void close() throws IOException {
         if (closed) return;
+
+        logMemoryStats();
+        LOGGER.info("Starting close process with {} explanations, {} triples",
+                explanationsMap.size(), tripleExplanationsMap.size());
 
         if (csvPrinter != null) {
             csvPrinter.close();
