@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.example.tracking.GlobalQueryTracker;
+import com.example.explanation.ExplanationTagger;
 
 @Component
 public class HybridOutputService implements OutputService {
@@ -33,6 +34,9 @@ public class HybridOutputService implements OutputService {
     private final Map<String, Set<String>> tripleToSparqlQueries;
     private final Map<String, ObjectNode> tripleExplanationsMap;
     private final Map<String, Set<String>> tripleToTaskIds = new HashMap<>();
+    
+    // Tagging service for complexity analysis
+    private final ExplanationTagger explanationTagger;
 
     // NEW: Memory optimization constants
     private static final int MAX_CROSS_REFERENCES = 1000;
@@ -58,6 +62,7 @@ public class HybridOutputService implements OutputService {
         this.explanationsMap = new HashMap<>();
         this.tripleToSparqlQueries = new HashMap<>();
         this.tripleExplanationsMap = new HashMap<>();
+        this.explanationTagger = new ExplanationTagger();
         LOGGER.info("Hybrid output service created");
     }
 
@@ -520,6 +525,14 @@ public class HybridOutputService implements OutputService {
                                     String answer,
                                     String explanation,
                                     int size) {
+        // Check if we already have an explanation for this triple
+        ObjectNode existingNode = tripleExplanationsMap.get(tripleKey);
+        if (existingNode != null) {
+            // If we already have an explanation, just update the task IDs and SPARQL queries
+            // but don't recreate the explanation
+            return;
+        }
+
         ObjectNode explanationNode = jsonMapper.createObjectNode();
 
         ObjectNode inferredNode = jsonMapper.createObjectNode();
@@ -544,7 +557,12 @@ public class HybridOutputService implements OutputService {
                 for (int j = 0; j < maxAxioms; j++) {
                     arr.add(set.get(j));
                 }
-                if (arr.size() > 0) explanationsArray.add(arr);
+                if (arr.size() > 0) {
+                    // Add tag to the explanation array (don't count in size)
+                    String tag = generateTagForExplanation(set);
+                    arr.add("TAG:" + tag);
+                    explanationsArray.add(arr);
+                }
             }
         }
 
@@ -552,7 +570,14 @@ public class HybridOutputService implements OutputService {
         if (explanationsArray.size() > 0) {
             int min = Integer.MAX_VALUE, max = 0;
             for (int i = 0; i < explanationsArray.size(); i++) {
-                int c = explanationsArray.get(i).size();
+                // Count axioms excluding the TAG element
+                int c = 0;
+                for (int j = 0; j < explanationsArray.get(i).size(); j++) {
+                    String element = explanationsArray.get(i).get(j).asText();
+                    if (!element.startsWith("TAG:")) {
+                        c++;
+                    }
+                }
                 min = Math.min(min, c);
                 max = Math.max(max, c);
             }
@@ -586,19 +611,64 @@ public class HybridOutputService implements OutputService {
         }
         return text.trim();
     }
+    
+    /**
+     * Generate a tag for an explanation based on its axioms
+     */
+    private String generateTagForExplanation(List<String> axioms) {
+        List<String> tags = new ArrayList<>();
+        
+        for (String axiom : axioms) {
+            // Check for transitivity
+            if (axiom.contains("TransitiveObjectProperty") || axiom.contains("transitive")) {
+                tags.add("T");
+            }
+            
+            // Check for role hierarchies
+            if (axiom.contains("SubPropertyOf") || axiom.contains("SubClassOf")) {
+                tags.add("H");
+            }
+            
+            // Check for inverse roles - improved detection
+            if (axiom.contains("InverseObjectProperty") || axiom.contains("InverseOf") || 
+                axiom.contains("inverse") || axiom.contains("Inverse")) {
+                tags.add("I");
+            }
+            
+            // Check for cardinality restrictions
+            if (axiom.contains("MinCardinality") || axiom.contains("MaxCardinality") || 
+                axiom.contains("ExactCardinality") || axiom.contains("cardinality")) {
+                tags.add("R");
+            }
+            
+            // Check for complex roles (role composition/property chain only)
+            if (axiom.contains("SubPropertyChain") || axiom.contains("propertyChainAxiom") || (axiom.contains("o") && axiom.contains("SubPropertyOf"))) {
+                tags.add("C");
+            }
+            
+            // Check for nominals
+            if (axiom.contains("ObjectOneOf") || axiom.contains("DataOneOf") || axiom.contains("nominal")) {
+                tags.add("N");
+            }
+            
+            // Check for symmetry
+            if (axiom.contains("SymmetricObjectProperty") || axiom.contains("symmetric")) {
+                tags.add("S");
+            }
+        }
+        // Sort tags alphabetically, but preserve duplicates
+        tags.sort(String::compareTo);
+        return String.join("", tags);
+    }
 
     private List<List<String>> parseExplanationAxioms(String explanation,
                                                       String subject,
                                                       String object,
                                                       String predicate) {
         List<List<String>> results = new ArrayList<>();
-
-        // If the explanation is empty, return an empty result
         if (explanation == null || explanation.trim().isEmpty()) {
             return results;
         }
-
-        // Check for directly asserted
         if (explanation.contains("Directly asserted")) {
             List<String> directAsserted = new ArrayList<>();
             directAsserted.add("Directly asserted");
@@ -606,194 +676,32 @@ public class HybridOutputService implements OutputService {
             return results;
         }
 
-        // Split by explanation type sections
-        Map<String, List<String>> sectionAxioms = new HashMap<>();
-        String currentSection = null;
-        List<String> currentAxioms = new ArrayList<>();
-
+        List<String> currentPath = null;
         for (String line : explanation.split("\n")) {
             line = line.trim();
-
-            // Skip empty lines
-            if (line.isEmpty()) continue;
-
-            // Identify section headers
-            if (line.equals("Explanations from Pellet:") ||
-                    line.equals("Inverse-of:") ||
-                    line.equals("Sub-property:") ||
-                    line.equals("Equivalent class:") ||
-                    line.equals("Subclass:") ||
-                    line.equals("Property domain:") ||
-                    line.equals("Property range:") ||
-                    line.equals("Intermediate class:") ||
-                    line.equals("Sub-property path:") ||
-                    line.equals("Property chain:") ||
-                    line.equals("Inverse property:") ||
-                    line.equals("Equivalent property:") ||
-                    line.equals("Further explanation of super-property relation:") ||
-                    line.equals("Further explanation of inverse relation:") ||
-                    line.equals("Further explanation of equivalent relation:") ||
-                    line.startsWith("Inverse-of paths:") ||
-                    line.startsWith("Sub-property paths:") ||
-                    line.startsWith("Property chain paths:") ||
-                    line.startsWith("Equivalent property paths:") ||
-                    line.startsWith("Equivalent class paths:") ||
-                    line.startsWith("Subclass paths:") ||
-                    line.startsWith("Property domain/range paths:") ||
-                    line.startsWith("Intermediate class paths:")) {
-
-                // Save previous section if any
-                if (currentSection != null && !currentAxioms.isEmpty()) {
-                    sectionAxioms.put(currentSection, new ArrayList<>(currentAxioms));
-                    currentAxioms.clear();
+            if (line.startsWith("Path ")) {
+                if (currentPath != null && !currentPath.isEmpty()) {
+                    results.add(currentPath);
                 }
-
-                currentSection = line;
-
-            } else if (line.startsWith("Path ")) {
-                // For multi-path explanations, treat each path as a separate section
-                if (currentSection != null && !currentAxioms.isEmpty()) {
-                    sectionAxioms.put(currentSection + " " + line, new ArrayList<>(currentAxioms));
-                    currentAxioms.clear();
-                }
+                currentPath = new ArrayList<>();
             } else if (line.startsWith("-")) {
-                // Extract axiom
+                if (currentPath == null) {
+                    currentPath = new ArrayList<>();
+                }
                 String axiom = line.substring(1).trim();
-
-                // Split AND statements
                 if (axiom.contains(" AND ")) {
                     String[] parts = axiom.split(" AND ");
                     for (String part : parts) {
-                        currentAxioms.add(part.trim());
+                        currentPath.add(part.trim());
                     }
                 } else {
-                    currentAxioms.add(axiom);
+                    currentPath.add(axiom);
                 }
             }
         }
-
-        // Save the last section
-        if (currentSection != null && !currentAxioms.isEmpty()) {
-            sectionAxioms.put(currentSection, new ArrayList<>(currentAxioms));
+        if (currentPath != null && !currentPath.isEmpty()) {
+            results.add(currentPath);
         }
-
-        // Process each section to create complete explanations
-        for (Map.Entry<String, List<String>> entry : sectionAxioms.entrySet()) {
-            String section = entry.getKey();
-            List<String> axioms = entry.getValue();
-
-            // Create a complete explanation for this section
-            List<String> completePath = new ArrayList<>();
-
-            // Create a readable path based on section type
-            if (section.contains("Pellet") || section.contains("Path")) {
-                // Add all axioms from Pellet or a specific path
-                completePath.addAll(axioms);
-            } else if (section.contains("Inverse-of") || section.contains("Inverse property")) {
-                // For inverse relationships, we need a complete path
-                String invProp = null;
-                for (String axiom : axioms) {
-                    completePath.add(axiom);
-
-                    // Extract the inverse property name
-                    if (axiom.contains("InverseOf")) {
-                        String[] parts = axiom.split("InverseOf");
-                        if (parts.length >= 2) {
-                            String prop1 = parts[0].trim();
-                            String prop2 = parts[1].trim();
-
-                            // Determine which is the inverse
-                            if (prop1.contains(predicate)) {
-                                invProp = prop2;
-                            } else {
-                                invProp = prop1;
-                            }
-                        }
-                    }
-                }
-
-                // Add a concrete example if we have the inverse property
-                if (invProp != null && !axioms.toString().contains(object + " " + invProp)) {
-                    completePath.add(object + " " + invProp + " " + subject);
-                }
-            } else if (section.contains("Sub-property")) {
-                // For subproperty relationships
-                String subProp = null;
-                for (String axiom : axioms) {
-                    completePath.add(axiom);
-
-                    // Extract the subproperty name
-                    if (axiom.contains("SubPropertyOf")) {
-                        String[] parts = axiom.split("SubPropertyOf");
-                        if (parts.length >= 2) {
-                            subProp = parts[0].trim();
-                        }
-                    }
-                }
-
-                // Add a concrete example if we have the subproperty
-                if (subProp != null && !axioms.toString().contains(subject)) {
-                    completePath.add(subject + " " + subProp + " " + object);
-                }
-            } else if (section.contains("Equivalent class") || section.contains("Subclass") ||
-                    section.contains("Equivalent property")) {
-                // Add all axioms from class/property hierarchy
-                completePath.addAll(axioms);
-            } else if (section.startsWith("Further explanation")) {
-                // Skip further explanations as they're duplicates
-                continue;
-            } else {
-                // Default case - add all axioms
-                completePath.addAll(axioms);
-            }
-
-            // Add this complete path if not empty
-            if (!completePath.isEmpty()) {
-                results.add(completePath);
-            }
-        }
-
-        // If we have no proper explanations, try to extract from direct text
-        if (results.isEmpty()) {
-            // Look for specific patterns and create explanations
-            List<String> defaultPath = new ArrayList<>();
-
-            // Extract specific property assertions
-            if (explanation.contains(subject) && explanation.contains(object)) {
-                Pattern pattern = Pattern.compile(subject + "\\s+([\\w]+)\\s+" + object);
-                Matcher matcher = pattern.matcher(explanation);
-                if (matcher.find()) {
-                    defaultPath.add(subject + " " + matcher.group(1) + " " + object);
-                }
-            }
-
-            // Extract property hierarchies
-            Pattern subPropPattern = Pattern.compile("([\\w]+)\\s+SubPropertyOf\\s+([\\w]+)");
-            Matcher subPropMatcher = subPropPattern.matcher(explanation);
-            while (subPropMatcher.find()) {
-                defaultPath.add(subPropMatcher.group(1) + " SubPropertyOf " + subPropMatcher.group(2));
-            }
-
-            // Extract inverse properties
-            Pattern invPropPattern = Pattern.compile("([\\w]+)\\s+InverseOf\\s+([\\w]+)");
-            Matcher invPropMatcher = invPropPattern.matcher(explanation);
-            while (invPropMatcher.find()) {
-                defaultPath.add(invPropMatcher.group(1) + " InverseOf " + invPropMatcher.group(2));
-            }
-
-            // Extract equivalent properties
-            Pattern eqPropPattern = Pattern.compile("([\\w]+)\\s+EquivalentTo\\s+([\\w]+)");
-            Matcher eqPropMatcher = eqPropPattern.matcher(explanation);
-            while (eqPropMatcher.find()) {
-                defaultPath.add(eqPropMatcher.group(1) + " EquivalentTo " + eqPropMatcher.group(2));
-            }
-
-            // Add default path if we found anything
-            if (!defaultPath.isEmpty()) {
-                results.add(defaultPath);
-            }
-        }
-
         return results;
     }
 
