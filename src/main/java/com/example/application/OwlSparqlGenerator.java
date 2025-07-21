@@ -39,10 +39,10 @@ public class OwlSparqlGenerator implements CommandLineRunner {
     @Autowired
     private OutputService outputService;
 
-    @Value("${output.csv.path:SPARQL_questions.csv}")
+    @Value("${output.csv.path:SPARQL_questions_1hop.csv}")
     private String csvOutputPath;
 
-    @Value("${output.json.path:explanations.json}")
+    @Value("${output.json.path:explanations_1hop.json}")
     private String jsonOutputPath;
 
     public static void main(String[] args) {

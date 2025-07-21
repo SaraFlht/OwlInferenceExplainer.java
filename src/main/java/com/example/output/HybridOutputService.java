@@ -80,10 +80,10 @@ public class HybridOutputService implements OutputService {
         this.currentRootEntity = rootEntity;
     }
 
-    @Value("${output.csv.path:SPARQL_questions.csv}")
+    @Value("${output.csv.path:SPARQL_questions_2hop.csv}")
     private String csvFilePath;
 
-    @Value("${output.json.path:explanations.json}")
+    @Value("${output.json.path:explanations_2hop.json}")
     private String jsonFilePath;
 
     @Override
@@ -391,9 +391,17 @@ public class HybridOutputService implements OutputService {
                         .matcher(sparql);
                 if (m.find()) baseSubject = extractShortName(m.group(1));
             } else if (sparql.contains("SELECT ?class")) {
-                Matcher m = Pattern.compile("<([^>]+)>\\s+rdf:type\\s+\\?class")
+                Matcher m = Pattern.compile("<([^>]+)>\\s+<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>\\s+\\?class")
                         .matcher(sparql);
-                if (m.find()) baseSubject = extractShortName(m.group(1));
+                if (m.find()) {
+                    baseSubject = extractShortName(m.group(1));
+                } else {
+                    // Fallback for different rdf:type syntax
+                    m = Pattern.compile("<([^>]+)>\\s+a\\s+\\?class").matcher(sparql);
+                    if (m.find()) {
+                        baseSubject = extractShortName(m.group(1));
+                    }
+                }
             }
         }
 
@@ -423,9 +431,16 @@ public class HybridOutputService implements OutputService {
                     if (m.find()) subject = extractShortName(m.group(1));
                 } else if (sparql.contains("SELECT ?class")) {
                     object = simp;
-                    Matcher m = Pattern.compile("<([^>]+)>\\s+rdf:type\\s+\\?class")
+                    Matcher m = Pattern.compile("<([^>]+)>\\s+<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>\\s+\\?class")
                             .matcher(sparql);
-                    if (m.find()) subject = extractShortName(m.group(1));
+                    if (m.find()) {
+                        subject = extractShortName(m.group(1));
+                    } else {
+                        m = Pattern.compile("<([^>]+)>\\s+a\\s+\\?class").matcher(sparql);
+                        if (m.find()) {
+                            subject = extractShortName(m.group(1));
+                        }
+                    }
                 }
             }
 
@@ -686,6 +701,7 @@ public class HybridOutputService implements OutputService {
                 currentPath = new ArrayList<>();
             } else if (line.startsWith("-")) {
                 if (currentPath == null) {
+                    // This handles cases where explanation does not start with a "Path" header
                     currentPath = new ArrayList<>();
                 }
                 String axiom = line.substring(1).trim();
@@ -701,6 +717,20 @@ public class HybridOutputService implements OutputService {
         }
         if (currentPath != null && !currentPath.isEmpty()) {
             results.add(currentPath);
+        }
+
+        // If no paths were found but the explanation is not empty, treat the whole thing as one path
+        if (results.isEmpty() && !explanation.trim().isEmpty() && !explanation.contains("Directly asserted")) {
+            currentPath = new ArrayList<>();
+            for (String line : explanation.split("\n")) {
+                line = line.trim();
+                if (!line.isEmpty()) {
+                    currentPath.add(line);
+                }
+            }
+            if (!currentPath.isEmpty()) {
+                results.add(currentPath);
+            }
         }
         return results;
     }

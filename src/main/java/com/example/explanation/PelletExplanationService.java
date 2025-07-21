@@ -868,6 +868,8 @@ public class PelletExplanationService implements ExplanationService {
                         List<OWLAxiom> path = new ArrayList<>();
                         path.add(invAxiom);
                         path.add(inverseAssertion);
+                        addPropertyCharacteristicAxioms(path, property);
+                        addPropertyCharacteristicAxioms(path, inverseProp);
                         paths.add(path);
                     }
                 }
@@ -909,6 +911,9 @@ public class PelletExplanationService implements ExplanationService {
                                     List<OWLAxiom> path = new ArrayList<>();
                                     path.add(subPropAx);
                                     path.add(subPropertyAssertion);
+                                    // Also add characteristics of the properties involved
+                                    addPropertyCharacteristicAxioms(path, subProperty);
+                                    addPropertyCharacteristicAxioms(path, property);
                                     paths.add(path);
                                     found = true;
                                     break;
@@ -924,12 +929,46 @@ public class PelletExplanationService implements ExplanationService {
                             List<OWLAxiom> path = new ArrayList<>();
                             path.add(subPropertyAxiom);
                             path.add(subPropertyAssertion);
+                            // Also add characteristics of the properties involved
+                            addPropertyCharacteristicAxioms(path, subProperty);
+                            addPropertyCharacteristicAxioms(path, property);
                             paths.add(path);
                         }
                     }
                 });
 
         return paths;
+    }
+
+    /**
+     * Helper method to add all relevant property characteristic axioms to a path
+     */
+    private void addPropertyCharacteristicAxioms(List<OWLAxiom> path, OWLObjectPropertyExpression prop) {
+        if (prop.isAnonymous()) return;
+        OWLObjectProperty p = prop.asOWLObjectProperty();
+
+        // Add common property characteristics if they are entailed
+        if (reasoner.isEntailed(dataFactory.getOWLTransitiveObjectPropertyAxiom(p))) {
+            path.add(dataFactory.getOWLTransitiveObjectPropertyAxiom(p));
+        }
+        if (reasoner.isEntailed(dataFactory.getOWLSymmetricObjectPropertyAxiom(p))) {
+            path.add(dataFactory.getOWLSymmetricObjectPropertyAxiom(p));
+        }
+        if (reasoner.isEntailed(dataFactory.getOWLAsymmetricObjectPropertyAxiom(p))) {
+            path.add(dataFactory.getOWLAsymmetricObjectPropertyAxiom(p));
+        }
+        if (reasoner.isEntailed(dataFactory.getOWLReflexiveObjectPropertyAxiom(p))) {
+            path.add(dataFactory.getOWLReflexiveObjectPropertyAxiom(p));
+        }
+        if (reasoner.isEntailed(dataFactory.getOWLIrreflexiveObjectPropertyAxiom(p))) {
+            path.add(dataFactory.getOWLIrreflexiveObjectPropertyAxiom(p));
+        }
+        if (reasoner.isEntailed(dataFactory.getOWLFunctionalObjectPropertyAxiom(p))) {
+            path.add(dataFactory.getOWLFunctionalObjectPropertyAxiom(p));
+        }
+        if (reasoner.isEntailed(dataFactory.getOWLInverseFunctionalObjectPropertyAxiom(p))) {
+            path.add(dataFactory.getOWLInverseFunctionalObjectPropertyAxiom(p));
+        }
     }
 
     /**
@@ -974,6 +1013,9 @@ public class PelletExplanationService implements ExplanationService {
                                int chainIndex,
                                List<OWLAxiom> currentPath,
                                Set<List<OWLAxiom>> resultPaths) {
+
+        // Add property characteristics for the super property of the chain
+        addPropertyCharacteristicAxioms(currentPath, chainAxiom.getSuperProperty());
 
         // Base case: we've reached the end of the chain
         if (chainIndex >= chain.size()) {
@@ -1074,6 +1116,8 @@ public class PelletExplanationService implements ExplanationService {
                                     List<OWLAxiom> path = new ArrayList<>();
                                     path.add(equivAx);
                                     path.add(equivAssertion);
+                                    addPropertyCharacteristicAxioms(path, property);
+                                    addPropertyCharacteristicAxioms(path, equivProperty);
                                     paths.add(path);
                                     found = true;
                                     break;
@@ -1089,6 +1133,8 @@ public class PelletExplanationService implements ExplanationService {
                             List<OWLAxiom> path = new ArrayList<>();
                             path.add(equivAxiom);
                             path.add(equivAssertion);
+                            addPropertyCharacteristicAxioms(path, property);
+                            addPropertyCharacteristicAxioms(path, equivProperty);
                             paths.add(path);
                         }
                     }
@@ -2071,6 +2117,27 @@ public class PelletExplanationService implements ExplanationService {
             OWLObjectPropertyRangeAxiom rangeAx = (OWLObjectPropertyRangeAxiom) axiom;
             return "Range(" + shortFormProvider.getShortForm(rangeAx.getProperty().asOWLObjectProperty()) +
                     ") = " + shortFormProvider.getShortForm(rangeAx.getRange().asOWLClass());
+        } else if (axiom instanceof OWLTransitiveObjectPropertyAxiom) {
+            OWLTransitiveObjectPropertyAxiom transAx = (OWLTransitiveObjectPropertyAxiom) axiom;
+            return "TransitiveObjectProperty(" + shortFormProvider.getShortForm(transAx.getProperty().asOWLObjectProperty()) + ")";
+        } else if (axiom instanceof OWLSymmetricObjectPropertyAxiom) {
+            OWLSymmetricObjectPropertyAxiom symAx = (OWLSymmetricObjectPropertyAxiom) axiom;
+            return "SymmetricObjectProperty(" + shortFormProvider.getShortForm(symAx.getProperty().asOWLObjectProperty()) + ")";
+        } else if (axiom instanceof OWLAsymmetricObjectPropertyAxiom) {
+            OWLAsymmetricObjectPropertyAxiom asymAx = (OWLAsymmetricObjectPropertyAxiom) axiom;
+            return "AsymmetricObjectProperty(" + shortFormProvider.getShortForm(asymAx.getProperty().asOWLObjectProperty()) + ")";
+        } else if (axiom instanceof OWLReflexiveObjectPropertyAxiom) {
+            OWLReflexiveObjectPropertyAxiom reflexAx = (OWLReflexiveObjectPropertyAxiom) axiom;
+            return "ReflexiveObjectProperty(" + shortFormProvider.getShortForm(reflexAx.getProperty().asOWLObjectProperty()) + ")";
+        } else if (axiom instanceof OWLIrreflexiveObjectPropertyAxiom) {
+            OWLIrreflexiveObjectPropertyAxiom irreflexAx = (OWLIrreflexiveObjectPropertyAxiom) axiom;
+            return "IrreflexiveObjectProperty(" + shortFormProvider.getShortForm(irreflexAx.getProperty().asOWLObjectProperty()) + ")";
+        } else if (axiom instanceof OWLFunctionalObjectPropertyAxiom) {
+            OWLFunctionalObjectPropertyAxiom funcAx = (OWLFunctionalObjectPropertyAxiom) axiom;
+            return "FunctionalObjectProperty(" + shortFormProvider.getShortForm(funcAx.getProperty().asOWLObjectProperty()) + ")";
+        } else if (axiom instanceof OWLInverseFunctionalObjectPropertyAxiom) {
+            OWLInverseFunctionalObjectPropertyAxiom invFuncAx = (OWLInverseFunctionalObjectPropertyAxiom) axiom;
+            return "InverseFunctionalObjectProperty(" + shortFormProvider.getShortForm(invFuncAx.getProperty().asOWLObjectProperty()) + ")";
         } else if (axiom instanceof OWLSubPropertyChainOfAxiom) {
             OWLSubPropertyChainOfAxiom chainAx = (OWLSubPropertyChainOfAxiom) axiom;
             StringBuilder sb = new StringBuilder();

@@ -1,0 +1,8 @@
+Processing Statistics
+====================
+Total questions: 2292
+Successfully processed: 2292
+Errors: 0
+Success rate: 100.0%
+Total processing time: 1849.66 seconds
+Average time per question: 0.81 seconds

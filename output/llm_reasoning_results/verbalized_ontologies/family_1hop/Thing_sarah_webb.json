@@ -1,0 +1,238 @@
+{
+  "ontology": {
+    "name": "Thing_sarah_webb",
+    "triples": 216
+  },
+  "classes": [
+    {
+      "uri": "http://www.example.com/genealogy.owl#Ancestor",
+      "classLabel": "Ancestor",
+      "description": "Ancestor is defined as the intersection of Person. Ancestor is defined as a class in this ontology."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#DomainEntity",
+      "classLabel": "Domain entity",
+      "description": "Domain entity is defined as a class in this ontology."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#Female",
+      "classLabel": "Female",
+      "description": "Female is a subclass of Sex. Female is defined as a class in this ontology."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#Male",
+      "classLabel": "Male",
+      "description": "Male is a subclass of Sex. Male is defined as a class in this ontology."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#Man",
+      "classLabel": "Man",
+      "description": "Man is defined as the intersection of Person. The domain of Is brother of is Man, which means that Man can Is brother of Person. The domain of Is uncle of is Man, which means that Man can Is uncle of Person. The range of Has male partner is Man, which means that Marriage can Has male partner Man. The range of Has father is Man, which means that Person can Has father Man. The range of Has husband is Man, which means that other things can Has husband Man. Man is defined as a class in this ontology."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#Marriage",
+      "classLabel": "Marriage",
+      "description": "Marriage is a subclass of Domain entity. The domain of Has male partner is Marriage, which means that Marriage can Has male partner Man. The domain of Has female partner is Marriage, which means that Marriage can Has female partner Woman. The domain of Has partner is Marriage, which means that Marriage can Has partner Person. Marriage is defined as a class in this ontology."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#Person",
+      "classLabel": "Person",
+      "description": "Person is a subclass of Domain entity. Person is defined as the union of Man, Woman. The domain of Has relation is Person, which means that Person can Has relation Person. The domain of Has parent is Person, which means that Person can Has parent Person. The domain of Has father is Person, which means that Person can Has father Man. The domain of Has sex is Person, which means that Person can Has sex Sex. The domain of Has mother is Person, which means that Person can Has mother Woman. The range of Has relation is Person, which means that Person can Has relation Person. The range of Is sister of is Person, which means that Woman can Is sister of Person. The range of Has parent is Person, which means that Person can Has parent Person. The range of Is brother of is Person, which means that Man can Is brother of Person. The range of Has partner is Person, which means that Marriage can Has partner Person. The range of Is uncle of is Person, which means that Man can Is uncle of Person. Person is defined as a class in this ontology."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#Sex",
+      "classLabel": "Sex",
+      "description": "Sex is a subclass of Domain entity. Sex is defined as the union of Female, Male. The range of Has sex is Sex, which means that Person can Has sex Sex. Sex is defined as a class in this ontology."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#Woman",
+      "classLabel": "Woman",
+      "description": "Woman is defined as the intersection of Person. The domain of Is sister of is Woman, which means that Woman can Is sister of Person. The range of Has female partner is Woman, which means that Marriage can Has female partner Woman. The range of Has mother is Woman, which means that Person can Has mother Woman. The range of Has wife is Woman, which means that other things can Has wife Woman. Woman is defined as a class in this ontology."
+    }
+  ],
+  "objectProperties": [
+    {
+      "uri": "http://www.example.com/genealogy.owl#hasAncestor",
+      "propertyLabel": "Has ancestor",
+      "description": "Has ancestor is an object property. It is a transitive property, meaning if A Has ancestor B and B Has ancestor C, then A Has ancestor C. The inverse of Has ancestor is Is ancestor of. The sub-properties of Has ancestor include Has parent. Has ancestor is a sub-property of Has relation."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#hasBrother",
+      "propertyLabel": "Has brother",
+      "description": "Has brother is an object property. The inverse of Has brother is Is brother of."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#hasChild",
+      "propertyLabel": "Has child",
+      "description": "Has child is an object property. The inverse of Has child is Is child of. The sub-properties of Has child include Has daughter, Has son."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#hasDaughter",
+      "propertyLabel": "Has daughter",
+      "description": "Has daughter is an object property. The inverse of Has daughter is Is daughter of. Has daughter is a sub-property of Has child."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#hasFather",
+      "propertyLabel": "Has father",
+      "description": "Has father is an object property. It is a functional property, meaning each subject can have at most one Has father relationship. The domain of Has father is Person, which means that only Person can have this property. The range of Has father is Man, which means this property can only point to Man. The inverse of Has father is Is father of. Has father is a sub-property of Has parent."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#hasFemalePartner",
+      "propertyLabel": "Has female partner",
+      "description": "Has female partner is an object property. The domain of Has female partner is Marriage, which means that only Marriage can have this property. The range of Has female partner is Woman, which means this property can only point to Woman. The inverse of Has female partner is Is female partner in. Has female partner is a sub-property of Has partner."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#hasHusband",
+      "propertyLabel": "Has husband",
+      "description": "Has husband is an object property. The range of Has husband is Man, which means this property can only point to Man. The inverse of Has husband is Is husband of. Has husband is a sub-property of Has spouse. Has husband is defined as a chain of: Is female partner in followed by Has male partner."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#hasMalePartner",
+      "propertyLabel": "Has male partner",
+      "description": "Has male partner is an object property. The domain of Has male partner is Marriage, which means that only Marriage can have this property. The range of Has male partner is Man, which means this property can only point to Man. The inverse of Has male partner is Is male partner in. Has male partner is a sub-property of Has partner."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#hasMother",
+      "propertyLabel": "Has mother",
+      "description": "Has mother is an object property. It is a functional property, meaning each subject can have at most one Has mother relationship. The domain of Has mother is Person, which means that only Person can have this property. The range of Has mother is Woman, which means this property can only point to Woman. The inverse of Has mother is Is mother of. Has mother is a sub-property of Has parent."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#hasParent",
+      "propertyLabel": "Has parent",
+      "description": "Has parent is an object property. The domain of Has parent is Person, which means that only Person can have this property. The range of Has parent is Person, which means this property can only point to Person. The inverse of Has parent is Is parent of. The sub-properties of Has parent include Has father, Has mother. Has parent is a sub-property of Has ancestor."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#hasPartner",
+      "propertyLabel": "Has partner",
+      "description": "Has partner is an object property. The domain of Has partner is Marriage, which means that only Marriage can have this property. The range of Has partner is Person, which means this property can only point to Person. The inverse of Has partner is Is partner in. The sub-properties of Has partner include Has female partner, Has male partner."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#hasRelation",
+      "propertyLabel": "Has relation",
+      "description": "Has relation is an object property. It is a symmetric property, meaning if A Has relation B, then B Has relation A. The domain of Has relation is Person, which means that only Person can have this property. The range of Has relation is Person, which means this property can only point to Person. The sub-properties of Has relation include Has ancestor, Is bloodrelation of."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#hasSex",
+      "propertyLabel": "Has sex",
+      "description": "Has sex is an object property. It is a functional property, meaning each subject can have at most one Has sex relationship. The domain of Has sex is Person, which means that only Person can have this property. The range of Has sex is Sex, which means this property can only point to Sex."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#hasSister",
+      "propertyLabel": "Has sister",
+      "description": "Has sister is an object property. The inverse of Has sister is Is sister of."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#hasSon",
+      "propertyLabel": "Has son",
+      "description": "Has son is an object property. The inverse of Has son is Is son of. Has son is a sub-property of Has child."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#hasSpouse",
+      "propertyLabel": "Has spouse",
+      "description": "Has spouse is an object property. The inverse of Has spouse is Is spouse of. The sub-properties of Has spouse include Has husband, Has wife."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#hasWife",
+      "propertyLabel": "Has wife",
+      "description": "Has wife is an object property. The range of Has wife is Woman, which means this property can only point to Woman. The inverse of Has wife is Is wife of. Has wife is a sub-property of Has spouse. Has wife is defined as a chain of: Is male partner in followed by Has female partner."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isAncestorOf",
+      "propertyLabel": "Is ancestor of",
+      "description": "Is ancestor of is an object property. The inverse of Is ancestor of is Has ancestor."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isBloodrelationOf",
+      "propertyLabel": "Is bloodrelation of",
+      "description": "Is bloodrelation of is an object property. The sub-properties of Is bloodrelation of include Is sibling of. Is bloodrelation of is a sub-property of Has relation."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isBrotherOf",
+      "propertyLabel": "Is brother of",
+      "description": "Is brother of is an object property. The domain of Is brother of is Man, which means that only Man can have this property. The range of Is brother of is Person, which means this property can only point to Person. The inverse of Is brother of is Has brother. Is brother of is a sub-property of Is sibling of."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isChildOf",
+      "propertyLabel": "Is child of",
+      "description": "Is child of is an object property. The inverse of Is child of is Has child. The sub-properties of Is child of include Is daughter of, Is son of."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isDaughterOf",
+      "propertyLabel": "Is daughter of",
+      "description": "Is daughter of is an object property. The inverse of Is daughter of is Has daughter. Is daughter of is a sub-property of Is child of."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isFatherOf",
+      "propertyLabel": "Is father of",
+      "description": "Is father of is an object property. The inverse of Is father of is Has father."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isFemalePartnerIn",
+      "propertyLabel": "Is female partner in",
+      "description": "Is female partner in is an object property. The inverse of Is female partner in is Has female partner."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isHusbandOf",
+      "propertyLabel": "Is husband of",
+      "description": "Is husband of is an object property. The inverse of Is husband of is Has husband."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isMalePartnerIn",
+      "propertyLabel": "Is male partner in",
+      "description": "Is male partner in is an object property. The inverse of Is male partner in is Has male partner."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isMotherOf",
+      "propertyLabel": "Is mother of",
+      "description": "Is mother of is an object property. The inverse of Is mother of is Has mother."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isParentOf",
+      "propertyLabel": "Is parent of",
+      "description": "Is parent of is an object property. The inverse of Is parent of is Has parent."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isPartnerIn",
+      "propertyLabel": "Is partner in",
+      "description": "Is partner in is an object property. The inverse of Is partner in is Has partner."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isSiblingOf",
+      "propertyLabel": "Is sibling of",
+      "description": "Is sibling of is an object property. It is a symmetric property, meaning if A Is sibling of B, then B Is sibling of A. It is a transitive property, meaning if A Is sibling of B and B Is sibling of C, then A Is sibling of C. The sub-properties of Is sibling of include Is sister of, Is brother of. Is sibling of is a sub-property of Is bloodrelation of. Is sibling of is defined as a chain of: Has parent followed by Is parent of."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isSisterOf",
+      "propertyLabel": "Is sister of",
+      "description": "Is sister of is an object property. The domain of Is sister of is Woman, which means that only Woman can have this property. The range of Is sister of is Person, which means this property can only point to Person. The inverse of Is sister of is Has sister. Is sister of is a sub-property of Is sibling of."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isSonOf",
+      "propertyLabel": "Is son of",
+      "description": "Is son of is an object property. The inverse of Is son of is Has son. Is son of is a sub-property of Is child of."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isSpouseOf",
+      "propertyLabel": "Is spouse of",
+      "description": "Is spouse of is an object property. The inverse of Is spouse of is Has spouse."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isUncleOf",
+      "propertyLabel": "Is uncle of",
+      "description": "Is uncle of is an object property. The domain of Is uncle of is Man, which means that only Man can have this property. The range of Is uncle of is Person, which means this property can only point to Person. Is uncle of is defined as a chain of: Is brother of followed by Is parent of."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isWifeOf",
+      "propertyLabel": "Is wife of",
+      "description": "Is wife of is an object property. The inverse of Is wife of is Has wife."
+    }
+  ],
+  "dataProperties": [],
+  "individuals": [
+    {
+      "uri": "http://www.example.com/genealogy.owl#sarah_webb",
+      "individualLabel": "Sarah webb",
+      "description": "Sarah webb is an individual in this ontology. Sarah webb Is mother of Caroline bright 1822. Sarah webb Is mother of Edmund bright 1813. Sarah webb Is mother of Eliza bright 1825. Sarah webb Is mother of Harriet bright 1811. Sarah webb Is mother of James bright 1809. Sarah webb Is mother of Jane bright 1820. Sarah webb Is mother of Mary ann bright 1815. Sarah webb Is mother of Sarah bright 1817. Sarah webb Is mother of William bright 1827. M119 Has female partner Sarah webb."
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+@prefix ns1: <http://www.example.com/genealogy.owl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<http://www.co-ode.org/roberts/family-tree.owl> rdf:first _:nd5697963fa3b4385967153faa5c4cd4eb2 .
+
+<http://www.co-ode.org/roberts/family-tree.owl#hasBirthYear> owl:onProperty ns1:hasParent .
+
+ns1:alsoKnownAs a ns1:Man,
+        owl:ObjectProperty .
+
+ns1:hasAncestor rdfs:domain ns1:Man .
+
+ns1:hasBrother a owl:Ontology ;
+    rdf:first ns1:Male .
+
+ns1:hasDaughter rdfs:subPropertyOf [ rdf:rest _:nd5697963fa3b4385967153faa5c4cd4eb30 ;
+            owl:onProperty ns1:hasChild ] .
+
+ns1:hasDeathYear a owl:FunctionalProperty .
+
+ns1:hasHusband rdfs:subPropertyOf [ ] ;
+    owl:inverseOf ns1:Marriage .
+
+ns1:hasMarriageYear rdf:rest () ;
+    owl:inverseOf ns1:isSpouseOf .
+
+ns1:hasMother owl:intersectionOf [ ] .
+
+ns1:hasPartner rdfs:domain ns1:isBloodrelationOf ;
+    owl:inverseOf [ ] .
+
+ns1:hasSex a ns1:isMalePartnerIn .
+
+ns1:hasSister a ns1:isChildOf .
+
+ns1:hasSon a ns1:isSpouseOf ;
+    owl:unionOf _:nd5697963fa3b4385967153faa5c4cd4eb29 .
+
+ns1:isBrotherOf a owl:Class .
+
+ns1:isPartnerIn owl:inverseOf ns1:isMotherOf ;
+    owl:someValuesFrom ns1:Female .
+
+ns1:isSiblingOf owl:propertyChainAxiom [ owl:onProperty _:nd5697963fa3b4385967153faa5c4cd4eb2 ] .
+
+ns1:isUncleOf rdfs:subPropertyOf ns1:hasChild .
+
+ns1:knownAs owl:unionOf _:nd5697963fa3b4385967153faa5c4cd4eb29 .
+
+ns1:m135 ns1:hasMalePartner ns1:hasSpouse .
+
+ns1:Female rdfs:subClassOf ns1:isParentOf .
+
+ns1:hasParent rdfs:subPropertyOf ns1:isBloodrelationOf .
+
+ns1:isParentOf a owl:NamedIndividual .
+
+ns1:Male a owl:ObjectProperty .
+
+ns1:hasChild a [ owl:someValuesFrom ns1:Man ] .
+
+ns1:isBloodrelationOf a [ a ns1:Man ] .
+
+ns1:isChildOf rdfs:domain ns1:Person .
+
+[] rdf:first ns1:Male .
+
+[] a rdfs:Datatype .
+
+[] rdf:first ns1:isFatherOf .
+
+[] rdfs:subPropertyOf ns1:isChildOf .
+
+[] owl:someValuesFrom ns1:isHusbandOf .
+
+[] a owl:NamedIndividual ;
+    owl:onClass [ ] ;
+    owl:onProperty ns1:Man .
+
+[] a _:nd5697963fa3b4385967153faa5c4cd4eb30 .
+
+[] rdf:first ns1:Woman .
+
+[] owl:propertyChainAxiom [ ] .
+
+_:nd5697963fa3b4385967153faa5c4cd4eb2 rdfs:subClassOf ns1:DomainEntity .
+
+_:nd5697963fa3b4385967153faa5c4cd4eb30 rdfs:domain ns1:Person .
+
