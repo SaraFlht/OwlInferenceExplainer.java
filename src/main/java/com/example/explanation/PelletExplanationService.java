@@ -23,6 +23,8 @@ public class PelletExplanationService implements ExplanationService {
     private ShortFormProvider shortFormProvider;
     private final Map<String, String> explanationCache = new ConcurrentHashMap<>();
     private final ThreadLocal<Set<String>> currentExplanations = ThreadLocal.withInitial(HashSet::new);
+    // Add this field to cache property characteristics
+    private final Map<OWLObjectProperty, Set<String>> propertyCharacteristics = new HashMap<>();
 
     // Maximum depth for recursive explanation searches
     private static final int MAX_EXPLANATION_DEPTH = 50;
@@ -43,10 +45,37 @@ public class PelletExplanationService implements ExplanationService {
         PelletExplanation.setup();
         this.explanation = new PelletExplanation(reasoner);
 
-
         // Pre-compute common inferences to improve response time
         LOGGER.info("Precomputing inferences to improve explanation performance");
         reasoner.precomputeInferences();
+
+        // Precompute property characteristics for all object properties
+        propertyCharacteristics.clear();
+        for (OWLObjectProperty prop : ontology.getObjectPropertiesInSignature()) {
+            Set<String> characteristics = new HashSet<>();
+            if (reasoner.isEntailed(dataFactory.getOWLTransitiveObjectPropertyAxiom(prop))) {
+                characteristics.add("Transitive");
+            }
+            if (reasoner.isEntailed(dataFactory.getOWLSymmetricObjectPropertyAxiom(prop))) {
+                characteristics.add("Symmetric");
+            }
+            if (reasoner.isEntailed(dataFactory.getOWLAsymmetricObjectPropertyAxiom(prop))) {
+                characteristics.add("Asymmetric");
+            }
+            if (reasoner.isEntailed(dataFactory.getOWLReflexiveObjectPropertyAxiom(prop))) {
+                characteristics.add("Reflexive");
+            }
+            if (reasoner.isEntailed(dataFactory.getOWLIrreflexiveObjectPropertyAxiom(prop))) {
+                characteristics.add("Irreflexive");
+            }
+            if (reasoner.isEntailed(dataFactory.getOWLFunctionalObjectPropertyAxiom(prop))) {
+                characteristics.add("Functional");
+            }
+            if (reasoner.isEntailed(dataFactory.getOWLInverseFunctionalObjectPropertyAxiom(prop))) {
+                characteristics.add("InverseFunctional");
+            }
+            propertyCharacteristics.put(prop, characteristics);
+        }
     }
 
     @Override
@@ -946,27 +975,26 @@ public class PelletExplanationService implements ExplanationService {
     private void addPropertyCharacteristicAxioms(List<OWLAxiom> path, OWLObjectPropertyExpression prop) {
         if (prop.isAnonymous()) return;
         OWLObjectProperty p = prop.asOWLObjectProperty();
-
-        // Add common property characteristics if they are entailed
-        if (reasoner.isEntailed(dataFactory.getOWLTransitiveObjectPropertyAxiom(p))) {
+        Set<String> characteristics = propertyCharacteristics.getOrDefault(p, Collections.emptySet());
+        if (characteristics.contains("Transitive")) {
             path.add(dataFactory.getOWLTransitiveObjectPropertyAxiom(p));
         }
-        if (reasoner.isEntailed(dataFactory.getOWLSymmetricObjectPropertyAxiom(p))) {
+        if (characteristics.contains("Symmetric")) {
             path.add(dataFactory.getOWLSymmetricObjectPropertyAxiom(p));
         }
-        if (reasoner.isEntailed(dataFactory.getOWLAsymmetricObjectPropertyAxiom(p))) {
+        if (characteristics.contains("Asymmetric")) {
             path.add(dataFactory.getOWLAsymmetricObjectPropertyAxiom(p));
         }
-        if (reasoner.isEntailed(dataFactory.getOWLReflexiveObjectPropertyAxiom(p))) {
+        if (characteristics.contains("Reflexive")) {
             path.add(dataFactory.getOWLReflexiveObjectPropertyAxiom(p));
         }
-        if (reasoner.isEntailed(dataFactory.getOWLIrreflexiveObjectPropertyAxiom(p))) {
+        if (characteristics.contains("Irreflexive")) {
             path.add(dataFactory.getOWLIrreflexiveObjectPropertyAxiom(p));
         }
-        if (reasoner.isEntailed(dataFactory.getOWLFunctionalObjectPropertyAxiom(p))) {
+        if (characteristics.contains("Functional")) {
             path.add(dataFactory.getOWLFunctionalObjectPropertyAxiom(p));
         }
-        if (reasoner.isEntailed(dataFactory.getOWLInverseFunctionalObjectPropertyAxiom(p))) {
+        if (characteristics.contains("InverseFunctional")) {
             path.add(dataFactory.getOWLInverseFunctionalObjectPropertyAxiom(p));
         }
     }

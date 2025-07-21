@@ -317,9 +317,19 @@ public class HybridOutputService implements OutputService {
                 if (m.find()) subject = extractShortName(m.group(1));
             } else if (sparql.contains("SELECT ?class")) {
                 object = simplifiedAnswer;
-                Matcher m = Pattern.compile("<([^>]+)>\\s+rdf:type\\s+\\?class")
-                        .matcher(sparql);
-                if (m.find()) subject = extractShortName(m.group(1));
+                Matcher m = Pattern.compile("<([^>]+)>\\s*<http://www\\.w3\\.org/1999/02/22-rdf-syntax-ns#type>\\s*\\?class", Pattern.CASE_INSENSITIVE).matcher(sparql);
+                if (m.find()) {
+                    subject = extractShortName(m.group(1));
+                } else {
+                    // Fallback: extract the first IRI in the query
+                    m = Pattern.compile("<([^>]+)>").matcher(sparql);
+                    if (m.find()) {
+                        subject = extractShortName(m.group(1));
+                    }
+                }
+                if (subject.isEmpty()) {
+                    LOGGER.warn("Subject extraction failed for SPARQL: {}", sparql);
+                }
             }
         }
 
@@ -391,16 +401,18 @@ public class HybridOutputService implements OutputService {
                         .matcher(sparql);
                 if (m.find()) baseSubject = extractShortName(m.group(1));
             } else if (sparql.contains("SELECT ?class")) {
-                Matcher m = Pattern.compile("<([^>]+)>\\s+<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>\\s+\\?class")
-                        .matcher(sparql);
+                Matcher m = Pattern.compile("<([^>]+)>\\s*<http://www\\.w3\\.org/1999/02/22-rdf-syntax-ns#type>\\s*\\?class", Pattern.CASE_INSENSITIVE).matcher(sparql);
                 if (m.find()) {
                     baseSubject = extractShortName(m.group(1));
                 } else {
-                    // Fallback for different rdf:type syntax
-                    m = Pattern.compile("<([^>]+)>\\s+a\\s+\\?class").matcher(sparql);
+                    // Fallback: extract the first IRI in the query
+                    m = Pattern.compile("<([^>]+)>").matcher(sparql);
                     if (m.find()) {
                         baseSubject = extractShortName(m.group(1));
                     }
+                }
+                if (baseSubject.isEmpty()) {
+                    LOGGER.warn("Base subject extraction failed for SPARQL: {}", sparql);
                 }
             }
         }
@@ -431,15 +443,17 @@ public class HybridOutputService implements OutputService {
                     if (m.find()) subject = extractShortName(m.group(1));
                 } else if (sparql.contains("SELECT ?class")) {
                     object = simp;
-                    Matcher m = Pattern.compile("<([^>]+)>\\s+<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>\\s+\\?class")
-                            .matcher(sparql);
+                    Matcher m = Pattern.compile("<([^>]+)>\\s*<http://www\\.w3\\.org/1999/02/22-rdf-syntax-ns#type>\\s*\\?class", Pattern.CASE_INSENSITIVE).matcher(sparql);
                     if (m.find()) {
                         subject = extractShortName(m.group(1));
                     } else {
-                        m = Pattern.compile("<([^>]+)>\\s+a\\s+\\?class").matcher(sparql);
+                        m = Pattern.compile("<([^>]+)>").matcher(sparql);
                         if (m.find()) {
                             subject = extractShortName(m.group(1));
                         }
+                    }
+                    if (subject.isEmpty()) {
+                        LOGGER.warn("Subject extraction failed for grouped answer SPARQL: {}", sparql);
                     }
                 }
             }

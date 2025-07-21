@@ -121,7 +121,7 @@ def plot_type_analysis(df, model_cols, out_prefix):
     plt.close()
 
 def plot_error_rate_analysis(df, model_cols, out_prefix):
-    """Report 3: Error rate heatmaps for shortest and longest tag complexity."""
+    """Report 3: Error rate heatmaps for shortest and longest tag complexity with 3 degrees."""
     fig, axes = plt.subplots(1, 2, figsize=(16, 6))
     fig.suptitle('Error Rate vs. Tag Complexity', fontsize=16, weight='bold')
 
@@ -130,8 +130,8 @@ def plot_error_rate_analysis(df, model_cols, out_prefix):
         if df_nonzero.empty:
             ax.text(0.5, 0.5, 'No Data', ha='center', va='center'); return
 
-        bin_labels = ['Low', 'Mid-Low', 'Mid', 'Mid-High', 'High']
-        df_nonzero['Complexity Bin'] = pd.qcut(df_nonzero[complexity_col].rank(method='first'), q=5, labels=bin_labels)
+        bin_labels = ['Low', 'Mid', 'High']
+        df_nonzero['Complexity Bin'] = pd.qcut(df_nonzero[complexity_col].rank(method='first'), q=3, labels=bin_labels)
         long_format_df = df_nonzero.melt(id_vars=['Complexity Bin'], value_vars=[f"{m}_accuracy" for m in model_cols],
                                          var_name='Model', value_name='Accuracy')
         long_format_df['Model'] = long_format_df['Model'].str.replace('_accuracy', '').str.replace('_response', '')
@@ -208,7 +208,7 @@ def main(results_csv, explanation_json, out_prefix="eval"):
     print(f"✅ Analysis complete! Four report images have been saved with prefix '{out_prefix}'.")
 
 if __name__ == "__main__":
-    RESULTS_CSV = "output/llm_reasoning_results/family_1hop_results_nl_verbalized.csv"
-    EXPLANATION_JSON = "output/explanations_1hop.json"
-    OUTPUT_PREFIX = "output/llm_reasoning_results/family_1hop_evaluation"
+    RESULTS_CSV = "C:/Users/saraf/IdeaProjects/owl-inference-explainer/output/llm_reasoning_results/family_1hop_results_sparql_ttl.csv"
+    EXPLANATION_JSON = "C:/Users/saraf/IdeaProjects/owl-inference-explainer/output/explanations_1hop.json"
+    OUTPUT_PREFIX = "C:/Users/saraf/IdeaProjects/owl-inference-explainer/output/llm_reasoning_results/family_1hop_sparql_evaluation"
     main(results_csv=RESULTS_CSV, explanation_json=EXPLANATION_JSON, out_prefix=OUTPUT_PREFIX)
