@@ -15,6 +15,15 @@ import re
 import json
 import glob
 import inflect
+from pathlib import Path
+
+# Navigate to project root (2 levels up from current script)
+script_dir = Path(__file__).resolve().parent  # scripts/llm_pipeline/
+project_root = script_dir.parent.parent       # owl-inference-explainer/
+os.chdir(project_root)
+
+print(f"Working directory set to: {os.getcwd()}")
+
 p = inflect.engine()
 
 def get_nice_label(g, entity):

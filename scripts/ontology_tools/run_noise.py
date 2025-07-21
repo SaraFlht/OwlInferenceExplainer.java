@@ -12,6 +12,14 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from add_noise import add_triples_random
 import rdflib
+from pathlib import Path
+
+# Navigate to project root (2 levels up from current script)
+script_dir = Path(__file__).resolve().parent  # scripts/llm_pipeline/
+project_root = script_dir.parent.parent       # owl-inference-explainer/
+os.chdir(project_root)
+
+print(f"Working directory set to: {os.getcwd()}")
 
 def main():
     # Configuration - modify these parameters as needed

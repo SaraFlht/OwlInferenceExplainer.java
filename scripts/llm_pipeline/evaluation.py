@@ -10,6 +10,14 @@ import ast
 import matplotlib.pyplot as plt
 import seaborn as sns
 import json
+from pathlib import Path
+
+# Navigate to project root (2 levels up from current script)
+script_dir = Path(__file__).resolve().parent  # scripts/llm_pipeline/
+project_root = script_dir.parent.parent       # owl-inference-explainer/
+os.chdir(project_root)
+
+print(f"Working directory set to: {os.getcwd()}")
 
 # --- Utility Functions ---
 def parse_response_to_list(response_str):

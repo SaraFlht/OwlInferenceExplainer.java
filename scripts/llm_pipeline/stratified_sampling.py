@@ -10,6 +10,14 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 import os
+from pathlib import Path
+
+# Navigate to project root (2 levels up from current script)
+script_dir = Path(__file__).resolve().parent  # scripts/llm_pipeline/
+project_root = script_dir.parent.parent       # owl-inference-explainer/
+os.chdir(project_root)
+
+print(f"Working directory set to: {os.getcwd()}")
 
 def stratified_sample(input_csv='output/SPARQL_questions_2hop.csv', output_csv='output/SPARQL_questions_sampling_2hop.csv', test_size=0.95, random_state=42):
     print(f"Reading input: {input_csv}")

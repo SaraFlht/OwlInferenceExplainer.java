@@ -1,6 +1,14 @@
 import pandas as pd
 import os
 from api_calls import run_llm_reasoning, resume_failed_queries
+from pathlib import Path
+
+# Navigate to project root (2 levels up from current script)
+script_dir = Path(__file__).resolve().parent  # scripts/llm_pipeline/
+project_root = script_dir.parent.parent       # owl-inference-explainer/
+os.chdir(project_root)
+
+print(f"Working directory set to: {os.getcwd()}")
 
 # Paths - using the new output directory
 QUESTIONS_CSV = os.path.join("output", "llm_reasoning_results", "1hop_family_output_20250719_153248", "generated_questions.csv")
