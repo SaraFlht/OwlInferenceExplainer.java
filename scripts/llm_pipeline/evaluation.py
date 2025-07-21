@@ -208,7 +208,7 @@ def main(results_csv, explanation_json, out_prefix="eval"):
     print(f"✅ Analysis complete! Four report images have been saved with prefix '{out_prefix}'.")
 
 if __name__ == "__main__":
-    RESULTS_CSV = "C:/Users/saraf/IdeaProjects/owl-inference-explainer/output/llm_reasoning_results/family_1hop_results_sparql_ttl.csv"
-    EXPLANATION_JSON = "C:/Users/saraf/IdeaProjects/owl-inference-explainer/output/explanations_1hop.json"
-    OUTPUT_PREFIX = "C:/Users/saraf/IdeaProjects/owl-inference-explainer/output/llm_reasoning_results/family_1hop_sparql_evaluation"
+    RESULTS_CSV = "./output/llm_reasoning_results/family_1hop_results_sparql_ttl.csv"
+    EXPLANATION_JSON = "./output/explanations_1hop.json"
+    OUTPUT_PREFIX = "./output/llm_reasoning_results/family_1hop_sparql_evaluation"
     main(results_csv=RESULTS_CSV, explanation_json=EXPLANATION_JSON, out_prefix=OUTPUT_PREFIX)
