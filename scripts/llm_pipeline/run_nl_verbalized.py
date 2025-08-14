@@ -1,74 +1,143 @@
+"""
+Natural Language + Verbalized Ontologies: Tests LLM reasoning with human-readable questions and context
+"""
 import pandas as pd
 import os
+import time
+import json
 from pathlib import Path
-from api_calls import run_llm_reasoning, resume_failed_queries
+from datetime import datetime
+from api_calls import run_llm_reasoning, resume_failed_queries, calculate_model_performance_summary
+from test_config import get_sample_data, MODELS_CONFIG, DEEPEVAL_CONFIG, TEST_MODE
 
-# Navigate to project root (2 levels up from current script)
-script_dir = Path(__file__).resolve().parent  # scripts/llm_pipeline/
-project_root = script_dir.parent.parent       # owl-inference-explainer/
+# Navigate to project root
+script_dir = Path(__file__).resolve().parent
+project_root = script_dir.parent.parent
 os.chdir(project_root)
 
 print(f"Working directory set to: {os.getcwd()}")
 
-# Paths
-QUESTIONS_CSV = os.path.join("output", "llm_reasoning_results", "1hop_family_output_20250719_153248", "generated_questions.csv")
-VERBALIZED_ONTOLOGY_DIR = os.path.join("output", "llm_reasoning_results", "verbalized_ontologies", "family_1hop")
+# Create timestamped output directory
+timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+mode_suffix = "test" if TEST_MODE else "full"
+output_dir = Path(f"output/llm_reasoning_results/nl_verbalized_experiment_{mode_suffix}_{timestamp}")
+output_dir.mkdir(parents=True, exist_ok=True)
+print(f"📂 Output directory: {output_dir}")
 
-# Load questions
-questions_path = QUESTIONS_CSV
-df = pd.read_csv(questions_path)
+# Configuration for NL + Verbalized experiment
+CONFIG = {
+    'experiment_type': 'nl_verbalized',
+    'description': 'Natural language questions with verbalized JSON ontology context',
+    'questions_csv': "output/FamilyOWL/1hop/test.csv",  # Generated from SPARQL-to-NL conversion
+    'verbalized_ontology_dir': "output/verbalized_ontologies/FamilyOWL_1hop",  # Verbalized ontologies
+    'context_mode': 'json',
+    'question_column': 'Question',  # Natural language questions
+    'models_used': MODELS_CONFIG,
+    'max_workers': 3,
+    'enhanced_metrics': True,
+    'enable_deepeval': DEEPEVAL_CONFIG['enabled'],
+    'test_mode': TEST_MODE
+}
 
-print(f"Loaded {len(df)} questions")
-print("Starting LLM reasoning with verbalized ontologies (JSON)...")
-print("Using natural language questions from 'Question' column")
-print("Models: gpt-4o-mini (OpenAI), deepseek-reasoner (DeepSeek), llama-4-maverick (OpenRouter)")
+print("NATURAL LANGUAGE + VERBALIZED ONTOLOGIES EXPERIMENT")
+print("=" * 60)
+print(f"Experiment: {CONFIG['description']}")
+print(f"Mode: {'TEST' if TEST_MODE else 'PRODUCTION'}")
+print(f"Models: {', '.join(CONFIG['models_used'].keys())}")
+print(f"DeepEval: {'ENABLED' if CONFIG['enable_deepeval'] else 'DISABLED'}")
+print("=" * 60)
 
-# Run with optimized settings - using "Question" column
-results_df, logs = run_llm_reasoning(
-    df,
-    ontology_base_path=VERBALIZED_ONTOLOGY_DIR,
-    context_mode="json",
-    show_qa=True,   # Set to True if you want to see each Q&A in terminal
-    max_workers=5,   # Adjust based on your API rate limits
-    question_column="Question"  # Specify the column to use
+# Load natural language questions
+print(f"Loading NL questions from: {CONFIG['questions_csv']}")
+df = pd.read_csv(CONFIG['questions_csv'])
+print(f"Total questions available: {len(df)}")
+
+# Apply test mode sampling
+df_sample = get_sample_data(df)
+CONFIG['total_questions'] = len(df_sample)
+
+# Analyze question patterns
+def analyze_nl_patterns(df):
+    """Analyze patterns in natural language questions"""
+    patterns = {
+        'binary_questions': 0,
+        'multi_choice_questions': 0,
+        'membership_questions': 0,
+        'property_questions': 0,
+        'complex_questions': 0
+    }
+
+    for idx, row in df.iterrows():
+        question = str(row.get('Question', '')).lower()
+        answer_type = str(row.get('Answer Type', '')).lower()
+        task_type = str(row.get('Task Type', '')).lower()
+
+        if answer_type == 'bin':
+            patterns['binary_questions'] += 1
+        elif answer_type == 'mc':
+            patterns['multi_choice_questions'] += 1
+
+        if 'membership' in task_type:
+            patterns['membership_questions'] += 1
+        elif 'property' in task_type:
+            patterns['property_questions'] += 1
+
+        # Detect complex questions (longer, multiple clauses)
+        if len(question.split()) > 10 or ' and ' in question or ' or ' in question:
+            patterns['complex_questions'] += 1
+
+    return patterns
+
+nl_patterns = analyze_nl_patterns(df_sample)
+print(f"\nNatural Language Question Analysis:")
+for pattern, count in nl_patterns.items():
+    percentage = (count / len(df_sample)) * 100
+    print(f"   {pattern.replace('_', ' ').title()}: {count} ({percentage:.1f}%)")
+
+# Run NL reasoning experiment
+print(f"\nRunning Natural Language reasoning experiment...")
+start_time = time.time()
+
+results_df, logs, detailed_metrics, deepeval_results = run_llm_reasoning(
+    df_sample,
+    ontology_base_path=CONFIG['verbalized_ontology_dir'],
+    models=CONFIG['models_used'],
+    context_mode=CONFIG['context_mode'],
+    show_qa=True,
+    max_workers=CONFIG['max_workers'],
+    question_column=CONFIG['question_column'],
+    save_detailed_metrics=CONFIG['enhanced_metrics'],
+    enable_deepeval=CONFIG['enable_deepeval']
 )
 
-# Save results immediately
-output_file = os.path.join("output", "llm_reasoning_results", "family_1hop_results_nl_verbalized.csv")
-results_df.to_csv(output_file, index=False)
-print(f"\n✅ Results saved to {output_file}")
+experiment_time = time.time() - start_time
 
-# Check for any failures and optionally resume
-failed_indices = []
-model_columns = [col for col in results_df.columns if col.endswith('_response')]
+# Save results
+print(f"\nSaving NL experiment results...")
+results_file = output_dir / "nl_verbalized_results.csv"
+logs_file = output_dir / "nl_verbalized_logs.csv"
+metrics_file = output_dir / "nl_verbalized_metrics.json"
+config_file = output_dir / "experiment_config.json"
 
-for idx, row in results_df.iterrows():
-    if any(str(row[col]).startswith('[ERROR]') for col in model_columns):
-        failed_indices.append(idx)
+results_df.to_csv(results_file, index=False)
+pd.DataFrame(logs).to_csv(logs_file, index=False)
 
-if failed_indices:
-    print(f"\n⚠️  {len(failed_indices)} queries had errors.")
-    print("Failed query indices:", failed_indices[:20], "..." if len(failed_indices) > 20 else "")
+with open(metrics_file, 'w') as f:
+    json.dump(detailed_metrics, f, indent=2, default=str)
 
-    retry = input(f"Resume failed queries? This will cost additional API calls. (y/n): ")
-    if retry.lower() == 'y':
-        print("Resuming failed queries...")
-        results_df, retry_logs = resume_failed_queries(
-            results_df, failed_indices,
-            VERBALIZED_ONTOLOGY_DIR,
-            context_mode="json",
-            question_column="Question"
-        )
-        results_df.to_csv(output_file, index=False)
-        print(f"✅ Resumed results saved to {output_file}")
-else:
-    print("🎉 All queries completed successfully!")
+# Save experiment configuration and results
+experiment_summary = {
+    'config': CONFIG,
+    'nl_patterns': nl_patterns,
+    'experiment_time_seconds': experiment_time,
+    'total_questions_processed': len(df_sample),
+    'deepeval_results': deepeval_results if deepeval_results else {},
+    'timestamp': datetime.now().isoformat()
+}
 
-# Final summary
-total_responses = len(results_df) * len(model_columns)
-error_responses = 0
-for idx, row in results_df.iterrows():
-    error_responses += sum(1 for col in model_columns if str(row[col]).startswith('[ERROR]'))
+with open(config_file, 'w') as f:
+    json.dump(experiment_summary, f, indent=2, default=str)
 
-success_rate = ((total_responses - error_responses) / total_responses) * 100
-print(f"\nFinal Success Rate: {success_rate:.1f}% ({total_responses - error_responses}/{total_responses} responses)")
+print(f"Natural Language + Verbalized experiment completed!")
+print(f"Results saved to: {output_dir}")
+print(f"Total time: {experiment_time:.1f}s ({experiment_time/60:.1f}min)")

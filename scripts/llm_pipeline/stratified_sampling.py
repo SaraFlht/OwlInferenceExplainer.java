@@ -19,7 +19,7 @@ os.chdir(project_root)
 
 print(f"Working directory set to: {os.getcwd()}")
 
-def stratified_sample(input_csv='output/SPARQL_questions_2hop.csv', output_csv='output/SPARQL_questions_sampling_2hop.csv', test_size=0.95, random_state=42):
+def stratified_sample(input_csv='output/FamilyOWL/1hop/SPARQL_questions.csv', output_csv='output/FamilyOWL/1hop/SPARQL_questions_sampling.csv', test_size=0.95, random_state=42):
     print(f"Reading input: {input_csv}")
     df = pd.read_csv(input_csv)
     print(f"Initial rows: {len(df)}")
@@ -31,11 +31,11 @@ def stratified_sample(input_csv='output/SPARQL_questions_2hop.csv', output_csv='
     # Bin variables
     bin_edges = np.histogram_bin_edges(df['Size of ontology ABox'], bins='auto')
     df['Bin_Size of ontology ABox'] = pd.cut(df['Size of ontology ABox'], bins=bin_edges, labels=False)
-    bin_edges = np.histogram_bin_edges(df['Avg Min Explanation Size'], bins='auto')
-    df['Bin_Avg Min Explanation Size'] = pd.cut(df['Avg Min Explanation Size'], bins=bin_edges, labels=False)
+    bin_edges = np.histogram_bin_edges(df['Min Tag Length'], bins='auto')
+    df['Bin_Min Tag Length'] = pd.cut(df['Min Tag Length'], bins=bin_edges, labels=False)
 
     # Combine bins into a single stratification key
-    df['strata'] = df['Bin_Size of ontology ABox'].astype(str) + '_' + df['Bin_Avg Min Explanation Size'].astype(str)
+    df['strata'] = df['Bin_Size of ontology ABox'].astype(str) + '_' + df['Bin_Min Tag Length'].astype(str)
 
     # Group by Task ID temp
     df_groups = df.groupby('Task ID temp').first().reset_index()
@@ -64,8 +64,8 @@ def stratified_sample(input_csv='output/SPARQL_questions_2hop.csv', output_csv='
 
 def main():
     # Default file locations (can be changed as needed)
-    input_csv = 'output/SPARQL_questions_2hop.csv'
-    output_csv = 'output/SPARQL_questions_sampling_2hop.csv'
+    input_csv = 'output/FamilyOWL/1hop/SPARQL_questions.csv'
+    output_csv = 'output/FamilyOWL/1hop/SPARQL_questions_sampling.csv'
     stratified_sample(input_csv, output_csv)
 
 if __name__ == "__main__":
