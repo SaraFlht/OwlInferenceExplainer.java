@@ -1,0 +1,240 @@
+{
+  "ontology": {
+    "name": "Thing_eric_cleife_1951",
+    "domain": "family",
+    "triples": 212,
+    "description": "This family ontology contains information about 1 individuals, 9 classes, and 35 properties."
+  },
+  "classes": [
+    {
+      "uri": "http://www.example.com/genealogy.owl#Ancestor",
+      "classLabel": "Ancestor",
+      "description": "Ancestor is a class in this ontology."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#DomainEntity",
+      "classLabel": "Domain Entity",
+      "description": "Domain Entity is a class in this ontology."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#Female",
+      "classLabel": "Female",
+      "description": "Female is a type of Sex."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#Male",
+      "classLabel": "Male",
+      "description": "Male is a type of Sex."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#Man",
+      "classLabel": "Man",
+      "description": "Instances of this class can is Person, is Person. Instances of Man cans be related to Person and Marriage."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#Marriage",
+      "classLabel": "Marriage",
+      "description": "Marriage is a type of Domain Entity. Instances of this class can has Woman, has Person, has Man."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#Person",
+      "classLabel": "Person",
+      "description": "Person is a type of Domain Entity. Instances of this class can has Person, has Person, has Woman, has Sex, has Man. Instances of Person cans be related to Person, Woman, Man and Marriage."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#Sex",
+      "classLabel": "Sex",
+      "description": "Sex is a type of Domain Entity. Instances of Sex cans be related to Person."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#Woman",
+      "classLabel": "Woman",
+      "description": "Instances of this class can is Person. Instances of Woman cans be related to Person and Marriage."
+    }
+  ],
+  "objectProperties": [
+    {
+      "uri": "http://www.example.com/genealogy.owl#hasAncestor",
+      "propertyLabel": "Has Ancestor",
+      "description": "Has Ancestor is a property that relates entities in this ontology. This property is transitive, meaning it can form chains of relationships."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#hasBrother",
+      "propertyLabel": "Has Brother",
+      "description": "Has Brother is a property that relates entities in this ontology."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#hasChild",
+      "propertyLabel": "Has Child",
+      "description": "Has Child is a property that relates entities in this ontology."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#hasDaughter",
+      "propertyLabel": "Has Daughter",
+      "description": "Has Daughter is a property that relates entities in this ontology."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#hasFather",
+      "propertyLabel": "Has Father",
+      "description": "Has Father is a property that relates entities in this ontology. This property is functional, meaning each entity can have at most one value for this property. The domain of this property is Person, meaning only Person instances can have this property. The range of this property is Man, meaning this property can only point to Man instances."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#hasFemalePartner",
+      "propertyLabel": "Has Female Partner",
+      "description": "Has Female Partner is a property that relates entities in this ontology. The domain of this property is Marriage, meaning only Marriage instances can have this property. The range of this property is Woman, meaning this property can only point to Woman instances."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#hasHusband",
+      "propertyLabel": "Has Husband",
+      "description": "Has Husband is a property that relates entities in this ontology. The range of this property is Man, meaning this property can only point to Man instances."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#hasMalePartner",
+      "propertyLabel": "Has Male Partner",
+      "description": "Has Male Partner is a property that relates entities in this ontology. The domain of this property is Marriage, meaning only Marriage instances can have this property. The range of this property is Man, meaning this property can only point to Man instances."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#hasMother",
+      "propertyLabel": "Has Mother",
+      "description": "Has Mother is a property that relates entities in this ontology. This property is functional, meaning each entity can have at most one value for this property. The domain of this property is Person, meaning only Person instances can have this property. The range of this property is Woman, meaning this property can only point to Woman instances."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#hasParent",
+      "propertyLabel": "Has Parent",
+      "description": "Has Parent is a property that relates entities in this ontology. The domain of this property is Person, meaning only Person instances can have this property. The range of this property is Person, meaning this property can only point to Person instances."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#hasPartner",
+      "propertyLabel": "Has Partner",
+      "description": "Has Partner is a property that relates entities in this ontology. The domain of this property is Marriage, meaning only Marriage instances can have this property. The range of this property is Person, meaning this property can only point to Person instances."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#hasRelation",
+      "propertyLabel": "Has Relation",
+      "description": "Has Relation is a property that relates entities in this ontology. This property is symmetric, meaning if A relates to B, then B relates to A in the same way. The domain of this property is Person, meaning only Person instances can have this property. The range of this property is Person, meaning this property can only point to Person instances."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#hasSex",
+      "propertyLabel": "Has Sex",
+      "description": "Has Sex is a property that relates entities in this ontology. This property is functional, meaning each entity can have at most one value for this property. The domain of this property is Person, meaning only Person instances can have this property. The range of this property is Sex, meaning this property can only point to Sex instances."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#hasSister",
+      "propertyLabel": "Has Sister",
+      "description": "Has Sister is a property that relates entities in this ontology."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#hasSon",
+      "propertyLabel": "Has Son",
+      "description": "Has Son is a property that relates entities in this ontology."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#hasSpouse",
+      "propertyLabel": "Has Spouse",
+      "description": "Has Spouse is a property that relates entities in this ontology."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#hasWife",
+      "propertyLabel": "Has Wife",
+      "description": "Has Wife is a property that relates entities in this ontology. The range of this property is Woman, meaning this property can only point to Woman instances."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isAncestorOf",
+      "propertyLabel": "Is Ancestor Of",
+      "description": "Is Ancestor Of is a property that relates entities in this ontology."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isBloodrelationOf",
+      "propertyLabel": "Is Bloodrelation Of",
+      "description": "Is Bloodrelation Of is a property that relates entities in this ontology."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isBrotherOf",
+      "propertyLabel": "Is Brother Of",
+      "description": "Is Brother Of is a property that relates entities in this ontology. The domain of this property is Man, meaning only Man instances can have this property. The range of this property is Person, meaning this property can only point to Person instances."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isChildOf",
+      "propertyLabel": "Is Child Of",
+      "description": "Is Child Of is a property that relates entities in this ontology."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isDaughterOf",
+      "propertyLabel": "Is Daughter Of",
+      "description": "Is Daughter Of is a property that relates entities in this ontology."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isFatherOf",
+      "propertyLabel": "Is Father Of",
+      "description": "Is Father Of is a property that relates entities in this ontology."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isFemalePartnerIn",
+      "propertyLabel": "Is Female Partner In",
+      "description": "Is Female Partner In is a property that relates entities in this ontology."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isHusbandOf",
+      "propertyLabel": "Is Husband Of",
+      "description": "Is Husband Of is a property that relates entities in this ontology."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isMalePartnerIn",
+      "propertyLabel": "Is Male Partner In",
+      "description": "Is Male Partner In is a property that relates entities in this ontology."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isMotherOf",
+      "propertyLabel": "Is Mother Of",
+      "description": "Is Mother Of is a property that relates entities in this ontology."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isParentOf",
+      "propertyLabel": "Is Parent Of",
+      "description": "Is Parent Of is a property that relates entities in this ontology."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isPartnerIn",
+      "propertyLabel": "Is Partner In",
+      "description": "Is Partner In is a property that relates entities in this ontology."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isSiblingOf",
+      "propertyLabel": "Is Sibling Of",
+      "description": "Is Sibling Of is a property that relates entities in this ontology. This property is symmetric, meaning if A relates to B, then B relates to A in the same way. This property is transitive, meaning it can form chains of relationships."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isSisterOf",
+      "propertyLabel": "Is Sister Of",
+      "description": "Is Sister Of is a property that relates entities in this ontology. The domain of this property is Woman, meaning only Woman instances can have this property. The range of this property is Person, meaning this property can only point to Person instances."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isSonOf",
+      "propertyLabel": "Is Son Of",
+      "description": "Is Son Of is a property that relates entities in this ontology."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isSpouseOf",
+      "propertyLabel": "Is Spouse Of",
+      "description": "Is Spouse Of is a property that relates entities in this ontology."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isUncleOf",
+      "propertyLabel": "Is Uncle Of",
+      "description": "Is Uncle Of is a property that relates entities in this ontology. The domain of this property is Man, meaning only Man instances can have this property. The range of this property is Person, meaning this property can only point to Person instances."
+    },
+    {
+      "uri": "http://www.example.com/genealogy.owl#isWifeOf",
+      "propertyLabel": "Is Wife Of",
+      "description": "Is Wife Of is a property that relates entities in this ontology."
+    }
+  ],
+  "dataProperties": [],
+  "individuals": [
+    {
+      "uri": "http://www.example.com/genealogy.owl#eric_cleife_1951",
+      "individualLabel": "Eric Cleife",
+      "description": "Eric Cleife has Roy Cleife. Eric Cleife has Joyce Archer. Eric Cleife has Brenda Cleife and Sheila Cleife. Brenda Cleife has Eric Cleife."
+    }
+  ]
+}
